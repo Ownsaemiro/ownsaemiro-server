@@ -5,9 +5,11 @@ import lombok.*;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.TestAuthSignUpDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.EProvider;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.ERole;
+import org.hibernate.annotations.DynamicUpdate;
 
 @Entity
 @Getter
+@DynamicUpdate
 @Table(name = "users")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User {
@@ -18,19 +20,34 @@ public class User {
 
     /*    사용자 인증 관련 정보    */
 
+    @Column(name = "serial_id", nullable = false)
     private String serialId;
+
+    @Column(name = "password", nullable = false)
     private String password;
+
     @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false)
     private ERole role;
+
     @Enumerated(EnumType.STRING)
+    @Column(name = "provider", nullable = false)
     private EProvider provider;
 
     /*    사용자 정보    */
 
+    @Column(name = "name", nullable = false, length = 20)
     private String name;
+
+    @Column(name = "nickname", nullable = false, length = 10)
     private String nickname;
+
+    @Column(name = "phone_number", nullable = false, length = 11)
     private String phoneNumber;
+
+    @Column(name = "is_banned", nullable = false)
     private Boolean isBanned;
+
     @Builder
     public User(String serialId, String password, ERole role, EProvider provider) {
         this.serialId = serialId;
@@ -39,7 +56,7 @@ public class User {
         this.provider = provider;
     }
 
-    // 폼로그인 사용자 생성
+    // 사용자 생성
     public static User signUp(TestAuthSignUpDto authSignUpDto, String encodedPassword, ERole role){
         User newUser = User.builder()
                 .serialId(authSignUpDto.serialId())
@@ -50,7 +67,7 @@ public class User {
         newUser.register(authSignUpDto.name(), authSignUpDto.nickname(), authSignUpDto.phoneNumber());
         return newUser;
     }
-    // 폼로그인 사용자 정보 저장
+    // 사용자 정보 저장
     public void register(String name, String nickname, String phoneNumber){
         this.name = name;
         this.nickname = nickname;
