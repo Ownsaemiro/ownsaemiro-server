@@ -13,7 +13,7 @@ public class UserLikedTicket {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String id;
+    private Long id;
 
     /*  연관 관계 속성  */
     @ManyToOne(cascade = CascadeType.ALL)
