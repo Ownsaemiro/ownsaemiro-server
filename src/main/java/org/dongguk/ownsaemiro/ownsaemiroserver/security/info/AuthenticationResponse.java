@@ -7,6 +7,7 @@ import org.dongguk.ownsaemiro.ownsaemiroserver.dto.global.ExceptionDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.JwtTokenDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.exception.ErrorCode;
 import org.dongguk.ownsaemiro.ownsaemiroserver.util.CookieUtil;
+import org.dongguk.ownsaemiro.ownsaemiroserver.util.HeaderUtil;
 import org.springframework.http.HttpStatus;
 
 import java.io.IOException;
@@ -18,6 +19,11 @@ public class AuthenticationResponse {
         CookieUtil.addCookie(response, Constants.ACCESS_COOKIE_NAME, jwtTokenDto.accessToken());
         CookieUtil.addSecureCookie(response, Constants.REFRESH_COOKIE_NAME, jwtTokenDto.refreshToken(), refreshExpiration);
 
+        makeSuccessResponse(response);
+
+    }
+    public static void makeOauthSuccessResponse(HttpServletResponse response, JwtTokenDto jwtTokenDto) throws IOException {
+        HeaderUtil.addHeaders(response, jwtTokenDto);
         makeSuccessResponse(response);
 
     }
