@@ -8,12 +8,9 @@ import org.dongguk.ownsaemiro.ownsaemiroserver.security.handler.exception.Custom
 import org.dongguk.ownsaemiro.ownsaemiroserver.security.handler.exception.CustomAuthenticationEntryPointHandler;
 import org.dongguk.ownsaemiro.ownsaemiroserver.security.handler.login.DefaultFailureHandler;
 import org.dongguk.ownsaemiro.ownsaemiroserver.security.handler.login.DefaultSuccessHandler;
-import org.dongguk.ownsaemiro.ownsaemiroserver.security.handler.login.Oauth2FailureHandler;
-import org.dongguk.ownsaemiro.ownsaemiroserver.security.handler.login.Oauth2SuccessHandler;
 import org.dongguk.ownsaemiro.ownsaemiroserver.security.handler.logout.CustomLogoutProcessHandler;
 import org.dongguk.ownsaemiro.ownsaemiroserver.security.handler.logout.CustomLogoutResultHandler;
 import org.dongguk.ownsaemiro.ownsaemiroserver.security.provider.JwtAuthenticationManager;
-import org.dongguk.ownsaemiro.ownsaemiroserver.security.service.CustomOauth2UserDetailService;
 import org.dongguk.ownsaemiro.ownsaemiroserver.util.JwtUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -36,9 +33,6 @@ public class SecurityConfig {
     private final CustomLogoutResultHandler customLogoutResultHandler;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
     private final CustomAuthenticationEntryPointHandler customAuthenticationEntryPointHandler;
-    private final Oauth2SuccessHandler oauth2SuccessHandler;
-    private final Oauth2FailureHandler oauth2FailureHandler;
-    private final CustomOauth2UserDetailService customOauth2UserDetailService;
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
@@ -62,11 +56,6 @@ public class SecurityConfig {
                         .passwordParameter("password")
                         .successHandler(defaultSuccessHandler)
                         .failureHandler(defaultFailureHandler)
-                )
-                .oauth2Login(oauth2 -> oauth2
-                        .successHandler(oauth2SuccessHandler)
-                        .failureHandler(oauth2FailureHandler)
-                        .userInfoEndpoint(it -> it.userService(customOauth2UserDetailService))
                 )
                 .logout(logout -> logout
                         .logoutUrl("/api/auth/logout")
