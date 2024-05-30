@@ -24,10 +24,11 @@ public class EventImage extends Image{
     @Builder
     public EventImage(
             String url,
+            String name,
             LocalDate createdAt,
             Event event
     ) {
-        super(url, createdAt);
+        super(url, name, createdAt);
 
         this.event = event;
     }

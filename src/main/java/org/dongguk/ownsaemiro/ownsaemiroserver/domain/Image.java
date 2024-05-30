@@ -20,14 +20,18 @@ public abstract class Image {
     private Long id;
     @Column(name = "url", nullable = false)
     private String url;
+    @Column(name = "name", nullable = false)
+    private String name;
     @Column(name = "created_at", nullable = false)
     private LocalDate createdAt;
 
     public Image(
             String url,
+            String name,
             LocalDate createdAt
     ) {
         this.url = url;
+        this.name = name;
         this.createdAt = createdAt;
     }
 }

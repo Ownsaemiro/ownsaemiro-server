@@ -18,17 +18,18 @@ import java.time.LocalDate;
 )
 public class UserImage extends Image {
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @Builder
     public UserImage(
             String url,
+            String name,
             LocalDate createdAt,
             User user
     ) {
-        super(url, createdAt);
+        super(url, name, createdAt);
 
         this.user = user;
     }
