@@ -65,7 +65,7 @@ public class S3Service {
         } else if (object instanceof Event) {
             return eventImageRepository.findByEvent((Event) object);
         }
-        throw new IllegalArgumentException("Invalid object type. Expected User or Event.");
+        throw new CommonException(ErrorCode.NOT_FOUND_IMAGE);
     }
 
     private String getInfoString(Object object) {
