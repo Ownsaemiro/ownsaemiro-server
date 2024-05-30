@@ -24,7 +24,6 @@ public class UserWallet {
     }
 
     /*  사용자 지갑 초기 생성  */
-
     public static UserWallet create(Long userId){
         return UserWallet.builder()
                 .userId(userId)
