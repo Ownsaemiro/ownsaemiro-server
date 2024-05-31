@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.EEventRequestStatus;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Getter
@@ -31,11 +32,17 @@ public class EventRequest {
     @JoinColumn(name = "event_id", nullable = false)
     private Event event;
 
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+
     @Builder
-    public EventRequest(Long id, LocalDate createdAt, Event event) {
+    public EventRequest(Long id, LocalDate createdAt, Event event, User user) {
         this.id = id;
         this.createdAt = createdAt;
         this.event = event;
+        this.user = user;
         this.state = EEventRequestStatus.WAITING;
     }
 }
