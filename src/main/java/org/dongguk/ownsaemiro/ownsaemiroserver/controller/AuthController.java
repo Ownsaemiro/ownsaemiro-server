@@ -1,9 +1,7 @@
 package org.dongguk.ownsaemiro.ownsaemiroserver.controller;
 
-import com.amazonaws.Response;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.global.ResponseDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.AuthSignUpDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.AvailableSerialIdDto;
@@ -12,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 
-@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class AuthController {
