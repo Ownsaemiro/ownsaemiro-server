@@ -2,10 +2,11 @@ package org.dongguk.ownsaemiro.ownsaemiroserver.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.TestAuthSignUpDto;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.AuthSignUpDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.EProvider;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.ERole;
 import org.hibernate.annotations.DynamicUpdate;
+import org.springframework.transaction.annotation.Transactional;
 
 @Entity
 @Getter
@@ -57,11 +58,11 @@ public class User {
     }
 
     // 사용자 생성
-    public static User signUp(TestAuthSignUpDto authSignUpDto, String encodedPassword, ERole role){
+    public static User signUp(AuthSignUpDto authSignUpDto, String encodedPassword, EProvider provider, ERole role){
         User newUser = User.builder()
                 .serialId(authSignUpDto.serialId())
                 .password(encodedPassword)
-                .provider(EProvider.DEFAULT)
+                .provider(provider)
                 .role(role)
                 .build();
         newUser.register(authSignUpDto.name(), authSignUpDto.nickname(), authSignUpDto.phoneNumber());
@@ -73,5 +74,11 @@ public class User {
         this.nickname = nickname;
         this.phoneNumber = phoneNumber;
         this.isBanned = Boolean.FALSE;
+    }
+
+    @Transactional
+    public String updateNickname(String nickname){
+        this.nickname = nickname;
+        return this.nickname;
     }
 }
