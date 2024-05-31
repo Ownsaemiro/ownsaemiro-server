@@ -58,7 +58,10 @@ public class UserService {
                 .map(Image::getUrl)
                 .orElse(Constants.DEFAULT_IMAGE);
 
-        return new UserProfileDto(userImageUrl, nickname);
+        return UserProfileDto.builder()
+                .url(userImageUrl)
+                .nickname(nickname)
+                .build();
     }
 
 }
