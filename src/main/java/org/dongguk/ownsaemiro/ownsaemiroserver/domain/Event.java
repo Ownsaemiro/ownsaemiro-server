@@ -2,6 +2,7 @@ package org.dongguk.ownsaemiro.ownsaemiroserver.domain;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.ECategory;
@@ -56,4 +57,19 @@ public class Event {
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @Builder
+    public Event(String name, String brief, String description, String address, String duration, Integer runningTime, ECategory category, Integer price, EEventStatus status, Boolean isApproved, User user) {
+        this.name = name;
+        this.brief = brief;
+        this.description = description;
+        this.address = address;
+        this.duration = duration;
+        this.runningTime = runningTime;
+        this.category = category;
+        this.price = price;
+        this.status = status;
+        this.isApproved = isApproved;
+        this.user = user;
+    }
 }
