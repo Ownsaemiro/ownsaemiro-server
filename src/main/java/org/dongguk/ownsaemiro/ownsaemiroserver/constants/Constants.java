@@ -14,6 +14,7 @@ public class Constants {
     public static String NAVER_LOGIN_PATH = "https://openapi.naver.com/v1/nid/me";
     public static String KAKAO_LOGIN_PATH = "https://kapi.kakao.com/v2/user/me";
     public static String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_+=<>?";
+    public static String DEFAULT_IMAGE = "DEFAULT_IMAGE";
 
     public static List<String> NO_NEED_AUTH = List.of(
             "/api/auth/sign-up",

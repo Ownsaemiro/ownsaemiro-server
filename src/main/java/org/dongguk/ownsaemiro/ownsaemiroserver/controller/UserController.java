@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.dongguk.ownsaemiro.ownsaemiroserver.annotation.UserId;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.global.ResponseDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.UpdateNicknameDto;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.UserProfileDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.service.UserService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,8 +35,8 @@ public class UserController {
             @RequestPart("image") MultipartFile image,
             @RequestPart("message") UpdateNicknameDto updateNicknameDto) throws IOException {
 
-        userService.updateProfile(userId, image, updateNicknameDto);
+        UserProfileDto userProfileDto = userService.updateProfile(userId, image, updateNicknameDto);
 
-        return ResponseDto.ok(null);
+        return ResponseDto.ok(userProfileDto);
     }
 }

@@ -77,7 +77,8 @@ public class User {
     }
 
     @Transactional
-    public void updateNickname(String nickname){
+    public String updateNickname(String nickname){
         this.nickname = nickname;
+        return this.nickname;
     }
 }
