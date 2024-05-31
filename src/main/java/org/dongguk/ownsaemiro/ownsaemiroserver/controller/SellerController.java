@@ -7,10 +7,7 @@ import org.dongguk.ownsaemiro.ownsaemiroserver.dto.global.ResponseDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.ApplyEventDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.EventRequestDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.service.EventService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/seller")
@@ -23,5 +20,12 @@ public class SellerController {
         EventRequestDto eventRequestDto = eventService.saveEventRequest(newEvent);
 
         return ResponseDto.ok(eventRequestDto);
+    }
+
+    @DeleteMapping("/apply")
+    public ResponseDto<?> cancelApply(@UserId Long userId, @RequestParam("request_id") Long eventRequestId){
+        eventService.cancelApply(userId, eventRequestId);
+
+        return ResponseDto.ok(null);
     }
 }

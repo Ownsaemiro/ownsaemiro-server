@@ -72,4 +72,18 @@ public class EventService {
                 .state(eventRequest.getState().getStatus())
                 .build();
     }
+
+    @Transactional
+    public void cancelApply(Long userId, Long eventRequestId){
+        EventRequest eventRequest = eventRequestRepository.findById(eventRequestId)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_EVENT_REQUEST));
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
+
+        if (!eventRequest.getEvent().getUser().equals(user))
+            throw new CommonException(ErrorCode.INVALID_USER);
+
+        eventRequestRepository.delete(eventRequest);
+    }
 }

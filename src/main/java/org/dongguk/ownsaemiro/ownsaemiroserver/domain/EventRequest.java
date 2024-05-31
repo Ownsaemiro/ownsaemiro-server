@@ -27,7 +27,7 @@ public class EventRequest {
     private EEventRequestStatus state;
 
     /* 연관 관계 속성  */
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "event_id", nullable = false)
     private Event event;
 
