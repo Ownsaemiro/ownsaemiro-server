@@ -10,4 +10,12 @@ public enum EEventRequestStatus {
     REJECT("승인거절"),
     COMPLETE("승인완료");
     private final String status;
+
+    public static EEventRequestStatus toEnum(String status){
+        for(EEventRequestStatus eStatus : EEventRequestStatus.values()){
+            if (eStatus.status.equals(status))
+                return eStatus;
+        }
+        return null;
+    }
 }
