@@ -28,6 +28,15 @@ public class Event {
     @Column(name = "description", nullable = false, length = 3000)
     private String description;
 
+    @Column(name = "address", nullable = false, length = 100)
+    private String address;
+
+    @Column(name = "duration", nullable = false, length = 30)
+    private String duration;
+
+    @Column(name = "running_time", nullable = false)
+    private Integer runningTime;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "category", nullable = false)
     private ECategory category;
