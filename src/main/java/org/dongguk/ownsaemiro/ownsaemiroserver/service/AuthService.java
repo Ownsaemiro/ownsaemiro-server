@@ -8,6 +8,7 @@ import org.dongguk.ownsaemiro.ownsaemiroserver.constants.Constants;
 import org.dongguk.ownsaemiro.ownsaemiroserver.domain.User;
 import org.dongguk.ownsaemiro.ownsaemiroserver.domain.UserWallet;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.AuthSignUpDto;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.AvailableSerialIdDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.JwtTokenDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.EProvider;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.ERole;
@@ -34,12 +35,24 @@ public class AuthService {
     private final RestClientUtil restClientUtil;
     private final JwtUtil jwtUtil;
 
+    /**
+     * 카카오 로그인
+     * @param response
+     * @param accessToken
+     */
     @Transactional
     public void signUpKakao(HttpServletResponse response, String accessToken) {
         // TODO: 사용자 정보 어떻게 받을지 논의 후 수정할 예정
         JSONObject jsonObject = restClientUtil.sendAppKakaoLoginRequest(Constants.KAKAO_LOGIN_PATH, accessToken);
         log.info(jsonObject.toJSONString());
     }
+
+    /**
+     * 네이버 로그인
+     * @param response
+     * @param accessToken
+     * @throws IOException
+     */
 
     @Transactional
     public void signUpNaver(HttpServletResponse response, String accessToken) throws IOException {
@@ -77,6 +90,11 @@ public class AuthService {
 
     }
 
+    /**
+     * 폼 회원가입
+     * @param authSignUpDto
+     */
+
     @Transactional
     public void signUpDefault(AuthSignUpDto authSignUpDto){
         // 사용자 생성
@@ -88,6 +106,14 @@ public class AuthService {
                         ERole.toERole(authSignUpDto.role())
                 )
         );
+    }
+
+    public AvailableSerialIdDto isAvailableSerialId(String serialId){
+        Boolean isAvailable = !userRepository.existsBySerialId(serialId);
+
+        return AvailableSerialIdDto.builder()
+                .available(isAvailable)
+                .build();
     }
 
 }

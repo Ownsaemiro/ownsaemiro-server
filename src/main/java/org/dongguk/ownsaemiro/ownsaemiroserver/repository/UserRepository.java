@@ -10,7 +10,10 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findById(Long id);
+
     Optional<User> findBySerialId(String serialId);
+
+    Boolean existsBySerialId(String serialId);
 
     @Query("select u.id as id, u.role as role, u.password as password from User u where u.serialId = :serialId")
     Optional<UserSecurityForm> findUserSecurityFromBySerialId(String serialId);
