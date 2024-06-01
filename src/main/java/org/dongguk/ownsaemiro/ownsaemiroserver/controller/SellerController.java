@@ -45,6 +45,21 @@ public class SellerController {
         return ResponseDto.ok(changeEventStatusDto);
     }
 
+    /**
+     * 판매자 판매 행사 검색
+     */
+    @GetMapping("/histories/search")
+    public ResponseDto<?> searchMyEvent(
+            @UserId Long userId,
+            @RequestParam("name") String name,
+            @RequestParam(value = "page", defaultValue = "0") Integer page,
+            @RequestParam(value = "size", defaultValue = "10") Integer size
+    ) {
+        MyEventHistoriesDto myEventHistoriesDto = eventService.searchMyEvents(userId, name, page, size);
+
+        return ResponseDto.ok(myEventHistoriesDto);
+    }
+
 
     /*  판매자 판매 요청 api  */
     /**

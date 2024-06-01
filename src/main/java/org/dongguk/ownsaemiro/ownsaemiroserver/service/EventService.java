@@ -52,7 +52,37 @@ public class EventService {
                 PageRequest.of(page, size, Sort.by("createdAt").descending())
         );
 
-        List<EventHistoryDto> eventHistoriesDto = myApprovedHistories.getContent().stream()
+        List<EventHistoryDto> eventHistoriesDto = extracted(myApprovedHistories);
+
+        return MyEventHistoriesDto.builder()
+                .pageInfo(PageInfo.convert(myApprovedHistories, page))
+                .eventHistoriesDto(eventHistoriesDto)
+                .build();
+    }
+    /**
+     * 판매자 판매 행사 검색
+     */
+    public MyEventHistoriesDto searchMyEvents(Long userId, String name, Integer page, Integer size){
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
+
+        Page<EventRepository.EventHistory> myEvents = eventRepository.searchAllByUserAndName(
+                user,
+                name,
+                PageRequest.of(page, size, Sort.by("createdAt").descending())
+        );
+
+        List<EventHistoryDto> eventHistoriesDto = extracted(myEvents);
+
+        return MyEventHistoriesDto.builder()
+                .pageInfo(PageInfo.convert(myEvents, page))
+                .eventHistoriesDto(eventHistoriesDto)
+                .build();
+
+    }
+
+    private static List<EventHistoryDto> extracted(Page<EventRepository.EventHistory> myEvents) {
+        return myEvents.getContent().stream()
                 .map(eventHistory -> EventHistoryDto.builder()
                         .id(eventHistory.getEvent().getId())
                         .name(eventHistory.getEvent().getName())
@@ -63,13 +93,12 @@ public class EventService {
                         .duration(eventHistory.getEvent().getDuration())
                         .build()
                 ).toList();
-
-        return MyEventHistoriesDto.builder()
-                .pageInfo(PageInfo.convert(myApprovedHistories, page))
-                .eventHistoriesDto(eventHistoriesDto)
-                .build();
     }
 
+
+    /**
+     * 판매자 판매 행사 상태 변경
+     */
     @Transactional
     public ChangeEventStatusDto changeEventStatus(Long userId, ChangeSellingEventStatusDto changeSellingEventStatusDto){
         User user = userRepository.findById(userId)
