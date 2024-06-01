@@ -12,6 +12,9 @@ public record ApplyEventDto(
         @JsonProperty("end_date")
         String endDate,
 
+        @JsonProperty("seat_cnt")
+        Integer seats,
+
         @JsonProperty("price")
         Integer price,
 

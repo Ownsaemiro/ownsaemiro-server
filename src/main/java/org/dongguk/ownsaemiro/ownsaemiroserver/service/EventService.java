@@ -37,6 +37,14 @@ public class EventService {
     private final EventRepository eventRepository;
     private final EventRequestRepository eventRequestRepository;
 
+    public void showMyHistories(Long userId, Integer page, Integer size) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
+
+
+    }
+
+    /*  판매자 판매 요청 관련 로직  */
     /**
      * 이벤트 생성
      * @param userId
@@ -57,6 +65,7 @@ public class EventService {
                         .address(applyEventDto.address())
                         .price(applyEventDto.price())
                         .duration(applyEventDto.startDate() + " ~ " + applyEventDto.endDate())
+                        .seat(applyEventDto.seats())
                         .category(ECategory.toECategory(applyEventDto.category()))
                         .status(EEventStatus.BEFORE)
                         .runningTime((applyEventDto.runningTime() > 180) ? 180 : applyEventDto.runningTime())

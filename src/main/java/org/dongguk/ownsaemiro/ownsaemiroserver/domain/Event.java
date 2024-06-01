@@ -38,6 +38,9 @@ public class Event {
     @Column(name = "running_time", nullable = false)
     private Integer runningTime;
 
+    @Column(name = "seat", nullable = false)
+    private Integer seat;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "category", nullable = false)
     private ECategory category;
@@ -59,13 +62,14 @@ public class Event {
     private User user;
 
     @Builder
-    public Event(String name, String brief, String description, String address, String duration, Integer runningTime, ECategory category, Integer price, EEventStatus status, Boolean isApproved, User user) {
+    public Event(String name, String brief, String description, String address, String duration, Integer runningTime, Integer seat, ECategory category, Integer price, EEventStatus status, Boolean isApproved, User user) {
         this.name = name;
         this.brief = brief;
         this.description = description;
         this.address = address;
         this.duration = duration;
         this.runningTime = runningTime;
+        this.seat = seat;
         this.category = category;
         this.price = price;
         this.status = status;
