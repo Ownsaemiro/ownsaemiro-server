@@ -15,6 +15,12 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class SellerController {
     private final EventService eventService;
+
+    /*  판매자 판매 요청 api  */
+
+    /**
+     * 판매자 판매 요청하기
+     */
     @PostMapping("/apply")
     public ResponseDto<?> applyEvent(@UserId Long userId, @RequestBody ApplyEventDto applyEventDto){
         Event newEvent = eventService.saveEvent(userId, applyEventDto);
@@ -23,6 +29,10 @@ public class SellerController {
         return ResponseDto.ok(eventRequestDto);
     }
 
+    /**
+     * 판매자 판매 요청 목록보기
+     */
+
     @GetMapping("/apply")
     public ResponseDto<?> showApplies(@UserId Long userId, @RequestParam("page") Integer page, @RequestParam("size") Integer size){
         MyAppliesDto myAppliesDto = eventService.showMyApplies(userId, page-1, size);
@@ -30,17 +40,24 @@ public class SellerController {
         return ResponseDto.ok(myAppliesDto);
     }
 
+    /**
+     * 판매자 찬매 요청 검색하기
+     */
     @GetMapping("/apply/search")
     public ResponseDto<?> showApplies(
             @UserId Long userId,
             @RequestParam("name") String name,
             @RequestParam("status") String status,
-            @RequestParam("page") Integer page,
-            @RequestParam("size") Integer size){
+            @RequestParam(value = "page", defaultValue = "0") Integer page,
+            @RequestParam(value = "size", defaultValue = "10") Integer size){
         MyAppliesDto searchMyApplies = eventService.searchMyApplies(userId, name, status, page - 1, size);
 
         return ResponseDto.ok(searchMyApplies);
     }
+
+    /**
+     * 판매자 판매 요청 취소하기
+     */
 
     @DeleteMapping("/apply")
     public ResponseDto<?> cancelApply(@UserId Long userId, @RequestParam("request_id") Long eventRequestId){
