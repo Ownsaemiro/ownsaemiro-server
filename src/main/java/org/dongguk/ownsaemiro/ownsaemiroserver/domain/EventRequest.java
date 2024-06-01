@@ -20,6 +20,9 @@ public class EventRequest {
     private Long id;
 
     /*  행사 요청 기본 속성  */
+    @Column(name = "seat", nullable = false)
+    private Integer seat;
+
     @Column(name = "created_at", nullable = false)
     private LocalDate createdAt;
 
@@ -38,8 +41,9 @@ public class EventRequest {
 
 
     @Builder
-    public EventRequest(Long id, LocalDate createdAt, Event event, User user) {
+    public EventRequest(Long id, Integer seat, LocalDate createdAt, Event event, User user) {
         this.id = id;
+        this.seat = seat;
         this.createdAt = createdAt;
         this.event = event;
         this.user = user;
