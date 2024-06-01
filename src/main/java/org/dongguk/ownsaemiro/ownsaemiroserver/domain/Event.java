@@ -6,7 +6,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.ECategory;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.EEventRequestStatus;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.EEventStatus;
+import org.springframework.transaction.annotation.Transactional;
 
 @Entity
 @Getter
@@ -75,5 +77,14 @@ public class Event {
         this.status = status;
         this.isApproved = isApproved;
         this.user = user;
+    }
+
+    /**
+     * 행사 상태 변경 함수
+     */
+    @Transactional
+    public EEventStatus changeStatus(EEventStatus status){
+        this.status = status;
+        return this.status;
     }
 }

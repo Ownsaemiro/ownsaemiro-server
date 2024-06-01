@@ -5,6 +5,8 @@ import org.dongguk.ownsaemiro.ownsaemiroserver.annotation.UserId;
 import org.dongguk.ownsaemiro.ownsaemiroserver.domain.Event;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.global.ResponseDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.ApplyEventDto;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.ChangeSellingEventStatusDto;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.ChangeEventStatusDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.EventRequestDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.MyAppliesDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.MyEventHistoriesDto;
@@ -30,6 +32,19 @@ public class SellerController {
 
         return ResponseDto.ok(myEventHistoriesDto);
     }
+
+    /**
+     * 판매자 판매 행사 상태 변경
+     */
+    @PatchMapping("/events")
+    public ResponseDto<?> changeEventStatus(
+            @UserId Long userId,
+            @RequestBody ChangeSellingEventStatusDto changeSellingEventStatusDto){
+        ChangeEventStatusDto changeEventStatusDto = eventService.changeEventStatus(userId, changeSellingEventStatusDto);
+
+        return ResponseDto.ok(changeEventStatusDto);
+    }
+
 
     /*  판매자 판매 요청 api  */
     /**

@@ -7,6 +7,7 @@ import org.dongguk.ownsaemiro.ownsaemiroserver.domain.Event;
 import org.dongguk.ownsaemiro.ownsaemiroserver.domain.EventRequest;
 import org.dongguk.ownsaemiro.ownsaemiroserver.domain.User;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.ApplyEventDto;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.ChangeSellingEventStatusDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.*;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.ECategory;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.EEventRequestStatus;
@@ -35,6 +36,13 @@ public class EventService {
     private final EventRepository eventRepository;
     private final EventRequestRepository eventRequestRepository;
 
+    /**
+     * 판매 이력 조회
+     * @param userId
+     * @param page
+     * @param size
+     * @return
+     */
     public MyEventHistoriesDto showMyHistories(Long userId, Integer page, Integer size) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
@@ -60,6 +68,27 @@ public class EventService {
                 .pageInfo(PageInfo.convert(myApprovedHistories, page))
                 .eventHistoriesDto(eventHistoriesDto)
                 .build();
+    }
+
+    @Transactional
+    public ChangeEventStatusDto changeEventStatus(Long userId, ChangeSellingEventStatusDto changeSellingEventStatusDto){
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
+
+        Event event = eventRepository.findById(changeSellingEventStatusDto.id())
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_EVENT));
+
+        // 이벤트를 신청한 동일한 유저가 아니라면 -> exception
+        if (!event.getUser().equals(user))
+            throw new CommonException(ErrorCode.FORBIDDEN_ROLE);
+
+        EEventStatus changedStatus = event.changeStatus(EEventStatus.toEnum(changeSellingEventStatusDto.status()));
+
+        return ChangeEventStatusDto.builder()
+                .id(event.getId())
+                .status(changedStatus.getState())
+                .build();
+
     }
 
     /*  판매자 판매 요청 관련 로직  */
