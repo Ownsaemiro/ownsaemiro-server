@@ -7,9 +7,7 @@ import org.dongguk.ownsaemiro.ownsaemiroserver.domain.Event;
 import org.dongguk.ownsaemiro.ownsaemiroserver.domain.EventRequest;
 import org.dongguk.ownsaemiro.ownsaemiroserver.domain.User;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.ApplyEventDto;
-import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.EventRequestDto;
-import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.MyAppliesDto;
-import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.PageInfo;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.*;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.ECategory;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.EEventRequestStatus;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.EEventStatus;
@@ -37,11 +35,31 @@ public class EventService {
     private final EventRepository eventRepository;
     private final EventRequestRepository eventRequestRepository;
 
-    public void showMyHistories(Long userId, Integer page, Integer size) {
+    public MyEventHistoriesDto showMyHistories(Long userId, Integer page, Integer size) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
 
+        Page<EventRepository.EventHistory> myApprovedHistories = eventRepository.findAllMyApprovedHistories(
+                user,
+                PageRequest.of(page, size, Sort.by("createdAt").descending())
+        );
 
+        List<EventHistoryDto> eventHistoriesDto = myApprovedHistories.getContent().stream()
+                .map(eventHistory -> EventHistoryDto.builder()
+                        .id(eventHistory.getEvent().getId())
+                        .name(eventHistory.getEvent().getName())
+                        .seat(eventHistory.getEvent().getSeat())
+                        .applyDate(convertDate(eventHistory.getCreatedAt()))
+                        .hostNickname(eventHistory.getEvent().getUser().getNickname())
+                        .status(eventHistory.getEvent().getStatus().getState())
+                        .duration(eventHistory.getEvent().getDuration())
+                        .build()
+                ).toList();
+
+        return MyEventHistoriesDto.builder()
+                .pageInfo(PageInfo.convert(myApprovedHistories, page))
+                .eventHistoriesDto(eventHistoriesDto)
+                .build();
     }
 
     /*  판매자 판매 요청 관련 로직  */
@@ -71,6 +89,7 @@ public class EventService {
                         .runningTime((applyEventDto.runningTime() > 180) ? 180 : applyEventDto.runningTime())
                         .user(user)
                         .isApproved(Boolean.FALSE)
+                        //.isApproved(Boolean.TRUE)
                         .build()
         );
 
@@ -88,17 +107,16 @@ public class EventService {
                         .id(event.getId())
                         .event(event)
                         .user(event.getUser())
+                        .seat((event.getSeat()))
                         .createdAt(LocalDate.now())
                         .build()
         );
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
         return EventRequestDto.builder()
                 .id(eventRequest.getId())
                 .name(eventRequest.getEvent().getName())
                 .hostName(event.getUser().getNickname())
-                .applyDate(eventRequest.getCreatedAt().format(formatter))
+                .applyDate(convertDate(eventRequest.getCreatedAt()))
                 .duration(event.getDuration())
                 .state(eventRequest.getState().getStatus())
                 .build();
@@ -120,7 +138,7 @@ public class EventService {
                 PageRequest.of(page, size, Sort.by("createdAt").descending())
         );
 
-        List<EventRequestDto> eventRequestsDto = getEventRequestDtos(myApplies);
+        List<EventRequestDto> eventRequestsDto = getEventRequestsDto(myApplies);
 
         return MyAppliesDto.builder()
                 .pageInfo(PageInfo.convert(myApplies, page))
@@ -158,7 +176,7 @@ public class EventService {
             mySearchResult = eventRequestRepository.searchAllByUser(user, search, pageable);
         }
 
-        List<EventRequestDto> eventRequestsDto = getEventRequestDtos(mySearchResult);
+        List<EventRequestDto> eventRequestsDto = getEventRequestsDto(mySearchResult);
 
         return MyAppliesDto.builder()
                 .pageInfo(PageInfo.convert(mySearchResult, page))
@@ -171,20 +189,30 @@ public class EventService {
      * @param mySearchResult
      * @return
      */
-    private static List<EventRequestDto> getEventRequestDtos(Page<EventRequest> mySearchResult) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private static List<EventRequestDto> getEventRequestsDto(Page<EventRequest> mySearchResult) {
 
         List<EventRequestDto> eventRequestsDto = mySearchResult.getContent().stream()
                 .map(eventRequest -> EventRequestDto.builder()
                         .id(eventRequest.getId())
                         .name(eventRequest.getEvent().getName())
                         .hostName(eventRequest.getUser().getNickname())
-                        .applyDate(eventRequest.getCreatedAt().format(formatter))
+                        .applyDate(convertDate(eventRequest.getCreatedAt()))
                         .duration(eventRequest.getEvent().getDuration())
                         .state(eventRequest.getState().getStatus())
                         .build()
                 ).toList();
         return eventRequestsDto;
+    }
+
+    /**
+     * LocalDate -> String 변환
+     * @param date
+     * @return
+     */
+
+    private static String convertDate(LocalDate date){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        return date.format(formatter);
     }
 
 

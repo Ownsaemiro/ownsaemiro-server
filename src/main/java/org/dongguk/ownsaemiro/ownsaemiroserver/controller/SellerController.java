@@ -7,6 +7,7 @@ import org.dongguk.ownsaemiro.ownsaemiroserver.dto.global.ResponseDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.ApplyEventDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.EventRequestDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.MyAppliesDto;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.MyEventHistoriesDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.service.EventService;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,8 +17,21 @@ import org.springframework.web.bind.annotation.*;
 public class SellerController {
     private final EventService eventService;
 
-    /*  판매자 판매 요청 api  */
+    /*  판매자 판매 이력 api  */
+    /**
+     * 판매자 판매 이력 조회
+     */
+    @GetMapping("/histories")
+    public ResponseDto<?> showSellerHistories(
+            @UserId Long userId,
+            @RequestParam(value = "page", defaultValue = "0") Integer page,
+            @RequestParam(value = "size", defaultValue = "10") Integer size ) {
+        MyEventHistoriesDto myEventHistoriesDto = eventService.showMyHistories(userId, page-1, size);
 
+        return ResponseDto.ok(myEventHistoriesDto);
+    }
+
+    /*  판매자 판매 요청 api  */
     /**
      * 판매자 판매 요청하기
      */
@@ -34,7 +48,10 @@ public class SellerController {
      */
 
     @GetMapping("/apply")
-    public ResponseDto<?> showApplies(@UserId Long userId, @RequestParam("page") Integer page, @RequestParam("size") Integer size){
+    public ResponseDto<?> showApplies(
+            @UserId Long userId,
+            @RequestParam(value = "page", defaultValue = "0") Integer page,
+            @RequestParam(value = "size", defaultValue = "10") Integer size){
         MyAppliesDto myAppliesDto = eventService.showMyApplies(userId, page-1, size);
 
         return ResponseDto.ok(myAppliesDto);
