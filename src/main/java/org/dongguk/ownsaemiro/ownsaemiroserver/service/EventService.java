@@ -7,6 +7,7 @@ import org.dongguk.ownsaemiro.ownsaemiroserver.domain.Event;
 import org.dongguk.ownsaemiro.ownsaemiroserver.domain.EventRequest;
 import org.dongguk.ownsaemiro.ownsaemiroserver.domain.User;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.ApplyEventDto;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.ChangeEventRequestStatusDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.ChangeSellingEventStatusDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.*;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.ECategory;
@@ -95,7 +96,34 @@ public class EventService {
                 .eventRequestsDto(getEventRequestsDto(eventRequestsDto))
                 .build();
     }
+    /**
+     * 관리자 행사 승인 여부 결정
+     */
+    @Transactional
+    public ChangedEventRequestStatusDto changeEventRequestState(ChangeEventRequestStatusDto changeEventRequestStatusDto){
+        EventRequest eventRequest = eventRequestRepository.findById(changeEventRequestStatusDto.id())
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_EVENT_REQUEST));
 
+        EEventRequestStatus eEventRequestStatus = EEventRequestStatus.toEnum(changeEventRequestStatusDto.status());
+
+        // 잘못된 인자 값이 들어온 경우
+        if (eEventRequestStatus == null)
+            throw new CommonException(ErrorCode.INVALID_PARAMETER_FORMAT);
+
+        // 승인완료시, event에도 approved 적용
+        if (eEventRequestStatus.equals(EEventRequestStatus.COMPLETE)) {
+            Event event = eventRepository.findById(changeEventRequestStatusDto.id())
+                    .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_EVENT));
+            event.changeApproved(Boolean.TRUE);
+        }
+
+        EEventRequestStatus status = eventRequest.updateStatus(eEventRequestStatus);
+
+        return ChangedEventRequestStatusDto.builder()
+                .id(eventRequest.getId())
+                .status(status.getStatus())
+                .build();
+    }
 
     /* ================================================================= */
     //                          판매자 api                                 //

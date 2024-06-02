@@ -2,7 +2,9 @@ package org.dongguk.ownsaemiro.ownsaemiroserver.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.global.ResponseDto;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.ChangeEventRequestStatusDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.AdminApplyEventDto;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.ChangedEventRequestStatusDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.DetailOfEventRequestDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.service.EventService;
 import org.springframework.web.bind.annotation.*;
@@ -39,6 +41,13 @@ public class AdminController {
         AdminApplyEventDto adminApplyEventDto = eventService.searchEventRequest(name, state, page-1, size);
 
         return ResponseDto.ok(adminApplyEventDto);
+    }
+
+    @PatchMapping("/register")
+    public ResponseDto<?> changeEventRequestStatus(@RequestBody ChangeEventRequestStatusDto changeEventRequestStatusDto){
+        ChangedEventRequestStatusDto changedEventRequestStatusDto = eventService.changeEventRequestState(changeEventRequestStatusDto);
+
+        return ResponseDto.ok(changedEventRequestStatusDto);
     }
 
 }

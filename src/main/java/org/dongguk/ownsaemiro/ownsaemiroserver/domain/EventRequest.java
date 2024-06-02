@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.EEventRequestStatus;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -48,5 +49,11 @@ public class EventRequest {
         this.event = event;
         this.user = user;
         this.state = EEventRequestStatus.WAITING;
+    }
+
+    @Transactional
+    public EEventRequestStatus updateStatus(EEventRequestStatus eEventRequestStatus){
+        this.state = eEventRequestStatus;
+        return this.state;
     }
 }
