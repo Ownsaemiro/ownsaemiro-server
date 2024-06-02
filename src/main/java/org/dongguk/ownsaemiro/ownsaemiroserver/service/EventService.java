@@ -38,12 +38,56 @@ public class EventService {
     private final EventRepository eventRepository;
     private final EventRequestRepository eventRequestRepository;
 
+
+    /* ================================================================= */
+    //                          관리자 api                                 //
+    /* ================================================================= */
+    /**
+     * 관리자가 보는 판매자들의 판매 요청 목록
+     */
+    public AllApplyEventDto showAppliesOfSeller(Integer page, Integer size){
+        Page<EventRequest> appliesOfSeller = eventRequestRepository.findAll(PageRequest.of(page, size, Sort.by("createdAt").descending()));
+
+        List<EventRequestDto> eventRequestsDto = appliesOfSeller.getContent().stream()
+                .map(eventRequest -> EventRequestDto.builder()
+                        .id(eventRequest.getId())
+                        .name(eventRequest.getEvent().getName())
+                        .hostName(eventRequest.getUser().getNickname())
+                        .applyDate(DateUtil.convertDate(eventRequest.getCreatedAt()))
+                        .duration(eventRequest.getEvent().getDuration())
+                        .state(eventRequest.getState().getStatus())
+                        .build()
+                ).toList();
+
+        return AllApplyEventDto.builder()
+                .pageInfo(PageInfo.convert(appliesOfSeller, page))
+                .eventRequestsDto(eventRequestsDto)
+                .build();
+    }
+
+    /**
+     *  관리자가 보는 판매자들의 판매 요청 상세
+     */
+    public DetailOfEventRequestDto showDetailOfEventRequest(Long eventRequestId){
+        EventRequest eventRequest = eventRequestRepository.findById(eventRequestId)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_EVENT_REQUEST));
+
+        return DetailOfEventRequestDto.builder()
+                .name(eventRequest.getEvent().getName())
+                .duration(eventRequest.getEvent().getDuration())
+                .address(eventRequest.getEvent().getAddress())
+                .hostNickname(eventRequest.getUser().getNickname())
+                .runningTime(eventRequest.getEvent().getRunningTime())
+                .description(eventRequest.getEvent().getDescription())
+                .build();
+    }
+
+
+    /* ================================================================= */
+    //                          판매자 api                                 //
+    /* ================================================================= */
     /**
      * 판매 이력 조회
-     * @param userId
-     * @param page
-     * @param size
-     * @return
      */
     public MyEventHistoriesDto showMyHistories(Long userId, Integer page, Integer size) {
         User user = userRepository.findById(userId)
@@ -184,10 +228,6 @@ public class EventService {
 
     /**
      * 나의 행사 신청 목록 확인하기
-     * @param userId
-     * @param page
-     * @param size
-     * @return
      */
     public MyAppliesDto showMyApplies(Long userId, Integer page, Integer size){
         User user = userRepository.findById(userId)
@@ -208,12 +248,6 @@ public class EventService {
 
     /**
      * 나의 행사 신청 목록 검색하기
-     * @param userId
-     * @param search
-     * @param state
-     * @param page
-     * @param size
-     * @return
      */
 
     public MyAppliesDto searchMyApplies(Long userId, String search, String state, Integer page, Integer size){

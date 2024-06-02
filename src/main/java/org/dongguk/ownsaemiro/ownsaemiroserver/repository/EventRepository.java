@@ -13,6 +13,15 @@ import java.time.LocalDate;
 
 
 public interface EventRepository extends JpaRepository<Event, Long> {
+
+    /* ================================================================= */
+    //                         관리자 api 관련 쿼리                          //
+    /* ================================================================= */
+
+
+    /* ================================================================= */
+    //                         판매자 api 관련 쿼리                          //
+    /* ================================================================= */
     @Query("select e as event, er.createdAt as createdAt from Event e join EventRequest er on e.id = er.event.id where e.user = :user and e.isApproved = true")
     Page<EventHistory> findAllMyApprovedHistories(User user, Pageable pageable);
 

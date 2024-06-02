@@ -8,8 +8,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.Optional;
+
 
 public interface EventRequestRepository extends JpaRepository<EventRequest, Long> {
+
+    Optional<EventRequest> findById(Long id);
+
+    Page<EventRequest> findAll(Pageable pageable);
+
     Page<EventRequest> findAllByUser(User user, Pageable pageable);
 
     @Query("SELECT er FROM EventRequest er JOIN er.event e WHERE e.name LIKE %:searchString% AND er.user = :user")
