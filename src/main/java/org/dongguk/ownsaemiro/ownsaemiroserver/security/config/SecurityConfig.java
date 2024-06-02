@@ -45,8 +45,8 @@ public class SecurityConfig {
                         request
                                 .requestMatchers("/login").permitAll()
                                 .requestMatchers(Constants.NO_NEED_AUTH.toArray(String[]::new)).permitAll()
-                                .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                                .requestMatchers("/api/users/**").hasAnyRole("USER", "ADMIN")
+                                //.requestMatchers("/api/admin/**").hasRole("ADMIN")
+                                //.requestMatchers("/api/users/**").hasAnyRole("USER", "ADMIN")
                                 .anyRequest().authenticated()
                 )
                 .formLogin(login -> login
