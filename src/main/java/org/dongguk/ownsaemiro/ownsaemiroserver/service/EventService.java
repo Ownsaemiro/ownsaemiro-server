@@ -26,8 +26,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.List;
 
 @Slf4j
@@ -45,23 +43,12 @@ public class EventService {
     /**
      * 관리자가 보는 판매자들의 판매 요청 목록
      */
-    public AllApplyEventDto showAppliesOfSeller(Integer page, Integer size){
+    public AdminApplyEventDto showAppliesOfSeller(Integer page, Integer size){
         Page<EventRequest> appliesOfSeller = eventRequestRepository.findAll(PageRequest.of(page, size, Sort.by("createdAt").descending()));
 
-        List<EventRequestDto> eventRequestsDto = appliesOfSeller.getContent().stream()
-                .map(eventRequest -> EventRequestDto.builder()
-                        .id(eventRequest.getId())
-                        .name(eventRequest.getEvent().getName())
-                        .hostName(eventRequest.getUser().getNickname())
-                        .applyDate(DateUtil.convertDate(eventRequest.getCreatedAt()))
-                        .duration(eventRequest.getEvent().getDuration())
-                        .state(eventRequest.getState().getStatus())
-                        .build()
-                ).toList();
-
-        return AllApplyEventDto.builder()
+        return AdminApplyEventDto.builder()
                 .pageInfo(PageInfo.convert(appliesOfSeller, page))
-                .eventRequestsDto(eventRequestsDto)
+                .eventRequestsDto(getEventRequestsDto(appliesOfSeller))
                 .build();
     }
 
@@ -79,6 +66,33 @@ public class EventService {
                 .hostNickname(eventRequest.getUser().getNickname())
                 .runningTime(eventRequest.getEvent().getRunningTime())
                 .description(eventRequest.getEvent().getDescription())
+                .build();
+    }
+
+    /**
+     * 관리자의 판매자 요청 검색
+     */
+    public AdminApplyEventDto searchEventRequest(String name, String state, Integer page, Integer size){
+        EEventRequestStatus eEventRequestStatus = EEventRequestStatus.toEnum(state);
+        Page<EventRequest> eventRequestsDto;
+
+        // 전체 상태 없이 전체 조회인 경우
+        if (eEventRequestStatus == null){
+            eventRequestsDto = eventRequestRepository.searchAllByName(
+                    name,
+                    PageRequest.of(page, size, Sort.by("cratedAt").descending())
+            );
+        } else {
+            eventRequestsDto = eventRequestRepository.searchAllByNameAndState(
+                    name,
+                    eEventRequestStatus,
+                    PageRequest.of(page, size, Sort.by("cratedAt").descending())
+            );
+        }
+
+        return AdminApplyEventDto.builder()
+                .pageInfo(PageInfo.convert(eventRequestsDto, page))
+                .eventRequestsDto(getEventRequestsDto(eventRequestsDto))
                 .build();
     }
 

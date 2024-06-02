@@ -6,7 +6,7 @@ import lombok.Builder;
 import java.util.List;
 
 @Builder
-public record AllApplyEventDto(
+public record AdminApplyEventDto(
         @JsonProperty("page_info")
         PageInfo pageInfo,
 

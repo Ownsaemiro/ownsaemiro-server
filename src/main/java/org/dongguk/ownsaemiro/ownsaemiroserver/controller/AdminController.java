@@ -2,7 +2,7 @@ package org.dongguk.ownsaemiro.ownsaemiroserver.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.global.ResponseDto;
-import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.AllApplyEventDto;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.AdminApplyEventDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.DetailOfEventRequestDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.service.EventService;
 import org.springframework.web.bind.annotation.*;
@@ -17,15 +17,28 @@ public class AdminController {
             @RequestParam(value = "page", defaultValue = "0") Integer page,
             @RequestParam(value = "size", defaultValue = "10") Integer size
     ){
-        AllApplyEventDto allApplyEventDto = eventService.showAppliesOfSeller(page-1, size);
+        AdminApplyEventDto adminApplyEventDto = eventService.showAppliesOfSeller(page-1, size);
 
-        return ResponseDto.ok(allApplyEventDto);
+        return ResponseDto.ok(adminApplyEventDto);
     }
+
     @GetMapping("/register/detail")
     public ResponseDto<?> showDetailOfApply(@RequestParam("event_id") Long eventRequestId){
         DetailOfEventRequestDto detailOfEventRequestDto = eventService.showDetailOfEventRequest(eventRequestId);
 
         return ResponseDto.ok(detailOfEventRequestDto);
+    }
+
+    @GetMapping("/register/search")
+    public ResponseDto<?> searchEventRequest(
+            @RequestParam("name") String name,
+            @RequestParam("state") String state,
+            @RequestParam(value = "page", defaultValue = "0") Integer page,
+            @RequestParam(value = "size", defaultValue = "10") Integer size
+    ) {
+        AdminApplyEventDto adminApplyEventDto = eventService.searchEventRequest(name, state, page-1, size);
+
+        return ResponseDto.ok(adminApplyEventDto);
     }
 
 }
