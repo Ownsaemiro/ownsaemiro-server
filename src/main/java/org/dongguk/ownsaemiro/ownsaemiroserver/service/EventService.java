@@ -17,6 +17,7 @@ import org.dongguk.ownsaemiro.ownsaemiroserver.exception.ErrorCode;
 import org.dongguk.ownsaemiro.ownsaemiroserver.repository.EventRepository;
 import org.dongguk.ownsaemiro.ownsaemiroserver.repository.EventRequestRepository;
 import org.dongguk.ownsaemiro.ownsaemiroserver.repository.UserRepository;
+import org.dongguk.ownsaemiro.ownsaemiroserver.util.DateUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
 
 @Slf4j
@@ -87,7 +89,7 @@ public class EventService {
                         .id(eventHistory.getEvent().getId())
                         .name(eventHistory.getEvent().getName())
                         .seat(eventHistory.getEvent().getSeat())
-                        .applyDate(convertDate(eventHistory.getCreatedAt()))
+                        .applyDate(DateUtil.convertDate(eventHistory.getCreatedAt()))
                         .hostNickname(eventHistory.getEvent().getUser().getNickname())
                         .status(eventHistory.getEvent().getStatus().getState())
                         .duration(eventHistory.getEvent().getDuration())
@@ -174,7 +176,7 @@ public class EventService {
                 .id(eventRequest.getId())
                 .name(eventRequest.getEvent().getName())
                 .hostName(event.getUser().getNickname())
-                .applyDate(convertDate(eventRequest.getCreatedAt()))
+                .applyDate(DateUtil.convertDate(eventRequest.getCreatedAt()))
                 .duration(event.getDuration())
                 .state(eventRequest.getState().getStatus())
                 .build();
@@ -254,23 +256,12 @@ public class EventService {
                         .id(eventRequest.getId())
                         .name(eventRequest.getEvent().getName())
                         .hostName(eventRequest.getUser().getNickname())
-                        .applyDate(convertDate(eventRequest.getCreatedAt()))
+                        .applyDate(DateUtil.convertDate(eventRequest.getCreatedAt()))
                         .duration(eventRequest.getEvent().getDuration())
                         .state(eventRequest.getState().getStatus())
                         .build()
                 ).toList();
         return eventRequestsDto;
-    }
-
-    /**
-     * LocalDate -> String 변환
-     * @param date
-     * @return
-     */
-
-    private static String convertDate(LocalDate date){
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        return date.format(formatter);
     }
 
 
