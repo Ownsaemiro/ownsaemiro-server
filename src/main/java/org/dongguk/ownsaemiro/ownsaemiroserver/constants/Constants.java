@@ -15,10 +15,12 @@ public class Constants {
     public static String KAKAO_LOGIN_PATH = "https://kapi.kakao.com/v2/user/me";
     public static String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_+=<>?";
     public static String DEFAULT_IMAGE = "DEFAULT_IMAGE";
+    public static String ALL = "전체";
 
     public static List<String> NO_NEED_AUTH = List.of(
             "/api/auth/sign-up",
             "/api/auth/sign-in",
+            "/api/auth/check",
             "/oauth/login/naver",
             "/oauth/login/kakao"
     );

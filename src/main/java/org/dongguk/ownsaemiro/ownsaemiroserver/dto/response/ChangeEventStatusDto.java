@@ -4,11 +4,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 
 @Builder
-public record UserProfileDto(
-        @JsonProperty("image")
-        String url,
+public record ChangeEventStatusDto(
+        @JsonProperty("event_id")
+        Long id,
 
-        @JsonProperty("nickname")
-        String nickname
+        @JsonProperty("status")
+        String status
 ) {
 }

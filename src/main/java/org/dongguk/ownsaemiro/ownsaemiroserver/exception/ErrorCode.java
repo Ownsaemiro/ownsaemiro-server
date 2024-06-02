@@ -14,6 +14,7 @@ public enum ErrorCode {
     BAD_REQUEST_JSON(40003, HttpStatus.BAD_REQUEST, "잘못된 JSON 형식입니다."),
     INVALID_IMAGE(40004, HttpStatus.BAD_REQUEST, "유효하지 않은 사진입니다."),
     INVALID_IMAGE_EXTENSION(40005, HttpStatus.BAD_REQUEST, "유효하지 않은 이미지 확장자 입니다."),
+    INVALID_USER(40006, HttpStatus.BAD_REQUEST, "신청자가 아닙니다."),
 
     //401
     INVALID_HEADER_VALUE(40100, HttpStatus.UNAUTHORIZED, "올바르지 않은 헤더값입니다."),
@@ -36,10 +37,8 @@ public enum ErrorCode {
     NOT_FOUND_USER(40400, HttpStatus.NOT_FOUND, "존재하지 않는 사용자입니다."),
     NOT_FOUND_LOGIN_USER(40401, HttpStatus.NOT_FOUND, "로그인한 사용자를 찾을 수 없습니다"),
     NOT_FOUND_IMAGE(40402, HttpStatus.NOT_FOUND, "존재하지 않는 이미지입니다."),
-    NOT_FOUND_MEMBER(40403, HttpStatus.NOT_FOUND, "존재하지 않는 멤버입니다."),
-    NOT_FOUND_QUESTION(40404, HttpStatus.NOT_FOUND, "존재하지 않는 질문입니다."),
-    NOT_FOUND_SCRUM(40405, HttpStatus.NOT_FOUND, "존재하지 않는 스크럼입니다."),
-    NOT_FOUND_WORK(40406, HttpStatus.NOT_FOUND, "존재하지 않는 작업입니다."),
+    NOT_FOUND_EVENT(40403, HttpStatus.NOT_FOUND, "존재하지 않는 행사입니다."),
+    NOT_FOUND_EVENT_REQUEST(40403, HttpStatus.NOT_FOUND, "존재하지 않는 행사 요청입니다."),
 
     //500
     INTERNAL_SERVER_ERROR(50000, HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류입니다")

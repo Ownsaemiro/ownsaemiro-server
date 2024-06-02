@@ -2,15 +2,14 @@ package org.dongguk.ownsaemiro.ownsaemiroserver.controller;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.global.ResponseDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.AuthSignUpDto;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.AvailableSerialIdDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.service.AuthService;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 
-@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class AuthController {
@@ -24,6 +23,7 @@ public class AuthController {
         // TODO: 사용자 정보 어떻게 받을지 논의 후 수정할 예정
 
         authService.signUpKakao(response, accessToken);
+
         return ResponseDto.ok(null);
     }
 
@@ -41,7 +41,19 @@ public class AuthController {
     @PostMapping("/api/auth/sign-up")
     public ResponseDto<?> signUpDefault(@RequestBody AuthSignUpDto authSignUpDto){
         authService.signUpDefault(authSignUpDto);
+
         return ResponseDto.ok(null);
+    }
+
+    /**
+     * 아이디 중복 확인
+     */
+    @GetMapping("/check")
+    public ResponseDto<?> checkSerialId(@RequestParam("serial_id") String newSerialId){
+
+        AvailableSerialIdDto availableSerialIdDto = authService.isAvailableSerialId(newSerialId);
+
+        return ResponseDto.ok(availableSerialIdDto);
     }
 
 
