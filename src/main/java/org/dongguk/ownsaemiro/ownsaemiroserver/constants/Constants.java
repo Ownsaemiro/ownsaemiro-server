@@ -26,4 +26,25 @@ public class Constants {
             "/oauth/login/kakao",
             "/api/oauth/sign-up"
     );
+
+    public static List<String> NEED_USER_ROLE = List.of(
+            "/api/events",
+            "/api/events/search",
+            "/api/events/{eventId}/like",
+            "/api/events/likes"
+    );
+
+    public static List<String> NEED_SELLER_ROLE = List.of(
+            "/api/seller/histories",
+            "/api/seller/events",
+            "/api/seller/apply",
+            "/api/seller/apply/search"
+    );
+
+    public static List<String> NEED_ADMIN_ROLE = List.of(
+            "/api/admin/register",
+            "/api/admin/register/detail",
+            "/api/admin/register/search",
+            "/api/admin/banned"
+    );
 }
