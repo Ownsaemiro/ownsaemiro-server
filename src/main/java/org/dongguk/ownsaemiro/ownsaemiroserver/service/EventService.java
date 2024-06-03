@@ -68,6 +68,36 @@ public class EventService {
     }
 
     /**
+     * 사용자 행사 좋아요 목록
+     */
+    public UserLikedEventsDto showUserLikedEvents(Long userId, Integer page, Integer size){
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
+
+        Page<UserLikedEvent> userLikedEvents = userLikedEventRepository.findAllByUser(user, PageRequest.of(page, size));
+
+        List<UserLikedEventDto> userLikedEventsDto = userLikedEvents.getContent().stream()
+                .map(userLikedEvent -> {
+                    String imageUrl = eventImageRepository.findByEvent(userLikedEvent.getEvent())
+                            .map(Image::getUrl)
+                            .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_IMAGE));
+
+                    return UserLikedEventDto.builder()
+                            .likedId(userLikedEvent.getId())
+                            .eventId(userLikedEvent.getEvent().getId())
+                            .name(userLikedEvent.getEvent().getName())
+                            .url(imageUrl)
+                            .duration(userLikedEvent.getEvent().getDuration())
+                            .build();
+                }).toList();
+
+        return UserLikedEventsDto.builder()
+                .pageInfo(PageInfo.convert(userLikedEvents, page))
+                .userLikedEventsDto(userLikedEventsDto)
+                .build();
+    }
+
+    /**
      * 사용자 행사 좋아요 취소
      */
     @Transactional

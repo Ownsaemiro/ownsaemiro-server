@@ -3,10 +3,7 @@ package org.dongguk.ownsaemiro.ownsaemiroserver.controller;
 import lombok.RequiredArgsConstructor;
 import org.dongguk.ownsaemiro.ownsaemiroserver.annotation.UserId;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.global.ResponseDto;
-import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.EventsDto;
-import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.LikedEventDto;
-import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.SearchEventsDto;
-import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.UnlikedEventDto;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.*;
 import org.dongguk.ownsaemiro.ownsaemiroserver.service.EventService;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,6 +17,17 @@ public class EventController {
         LikedEventDto likedEventDto = eventService.userLikeEvent(userId, eventId);
 
         return ResponseDto.created(likedEventDto);
+    }
+
+    @GetMapping("/likes")
+    public ResponseDto<?> showUserLikedEvents(
+            @UserId Long userId,
+            @RequestParam(value = "page", defaultValue = "1") Integer page,
+            @RequestParam(value = "size", defaultValue = "10") Integer size
+    ) {
+        UserLikedEventsDto userLikedEventsDto = eventService.showUserLikedEvents(userId, page, size);
+
+        return ResponseDto.ok(userLikedEventsDto);
     }
 
     @DeleteMapping("{eventId}/like")
