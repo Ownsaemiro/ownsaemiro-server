@@ -25,7 +25,7 @@ public class EventController {
             @RequestParam(value = "page", defaultValue = "1") Integer page,
             @RequestParam(value = "size", defaultValue = "10") Integer size
     ) {
-        UserLikedEventsDto userLikedEventsDto = eventService.showUserLikedEvents(userId, page, size);
+        UserLikedEventsDto userLikedEventsDto = eventService.showUserLikedEvents(userId, page-1, size);
 
         return ResponseDto.ok(userLikedEventsDto);
     }
@@ -55,7 +55,7 @@ public class EventController {
             @RequestParam(value = "page", defaultValue = "1") Integer page,
             @RequestParam(value = "size", defaultValue = "10") Integer size
     ) {
-        EventsDto eventsDto = eventService.showEvents(status, process, page, size);
+        EventsDto eventsDto = eventService.showEvents(status, process, page-1, size);
 
         return ResponseDto.ok(eventsDto);
     }
