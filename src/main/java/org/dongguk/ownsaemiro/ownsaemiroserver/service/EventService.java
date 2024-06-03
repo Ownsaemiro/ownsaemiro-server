@@ -80,15 +80,17 @@ public class EventService {
 
         // 전체 상태 없이 전체 조회인 경우
         if (eEventRequestStatus == null){
+            if (!state.equals(Constants.ALL))
+                throw new CommonException(ErrorCode.INVALID_PARAMETER_FORMAT);
             eventRequestsDto = eventRequestRepository.searchAllByName(
                     name,
-                    PageRequest.of(page, size, Sort.by("cratedAt").descending())
+                    PageRequest.of(page, size, Sort.by("createdAt").descending())
             );
         } else {
             eventRequestsDto = eventRequestRepository.searchAllByNameAndState(
                     name,
                     eEventRequestStatus,
-                    PageRequest.of(page, size, Sort.by("cratedAt").descending())
+                    PageRequest.of(page, size, Sort.by("createdAt").descending())
             );
         }
 

@@ -19,11 +19,11 @@ public interface EventRequestRepository extends JpaRepository<EventRequest, Long
     /* ================================================================= */
 
     // 행사명 검색
-    @Query("select er from Event e join EventRequest er on e.id = er.id where e.name like %:name%")
+    @Query("select er from EventRequest er join er.event e where e.name like %:name% order by er.createdAt desc")
     Page<EventRequest> searchAllByName(String name, Pageable pageable);
 
     // 행사명 & 상태 검색
-    @Query("select e as event, er.createdAt as createdAt from Event e join EventRequest er on e.id = er.id where e.name like %:name% and er.state = :status")
+    @Query("select er from EventRequest er join er.event e where e.name like %:name% and er.state = :status order by er.createdAt desc")
     Page<EventRequest> searchAllByNameAndState(String name, EEventRequestStatus status, Pageable pageable);
 
     /* ================================================================= */
