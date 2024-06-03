@@ -51,7 +51,6 @@ public class EventRequest {
         this.state = EEventRequestStatus.WAITING;
     }
 
-    @Transactional
     public EEventRequestStatus updateStatus(EEventRequestStatus eEventRequestStatus){
         this.state = eEventRequestStatus;
         return this.state;

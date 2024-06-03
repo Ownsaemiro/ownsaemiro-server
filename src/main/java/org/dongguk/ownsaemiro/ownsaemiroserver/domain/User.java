@@ -76,7 +76,6 @@ public class User {
         this.isBanned = Boolean.FALSE;
     }
 
-    @Transactional
     public String updateNickname(String nickname){
         this.nickname = nickname;
         return this.nickname;

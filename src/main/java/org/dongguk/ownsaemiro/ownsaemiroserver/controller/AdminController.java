@@ -16,7 +16,7 @@ public class AdminController {
     private final EventService eventService;
     @GetMapping("/register")
     public ResponseDto<?> showAppliesOfSeller(
-            @RequestParam(value = "page", defaultValue = "0") Integer page,
+            @RequestParam(value = "page", defaultValue = "1") Integer page,
             @RequestParam(value = "size", defaultValue = "10") Integer size
     ){
         AdminApplyEventDto adminApplyEventDto = eventService.showAppliesOfSeller(page-1, size);
@@ -35,7 +35,7 @@ public class AdminController {
     public ResponseDto<?> searchEventRequest(
             @RequestParam("name") String name,
             @RequestParam("state") String state,
-            @RequestParam(value = "page", defaultValue = "0") Integer page,
+            @RequestParam(value = "page", defaultValue = "1") Integer page,
             @RequestParam(value = "size", defaultValue = "10") Integer size
     ) {
         AdminApplyEventDto adminApplyEventDto = eventService.searchEventRequest(name, state, page-1, size);
