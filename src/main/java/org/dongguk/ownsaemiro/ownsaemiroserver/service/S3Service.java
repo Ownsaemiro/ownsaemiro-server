@@ -94,7 +94,7 @@ public class S3Service {
     }
 
 
-    public String uploadToS3(User user, MultipartFile image) throws IOException {
+    public String uploadToS3(Object object, MultipartFile image) throws IOException {
         // 확장자
         String contentType = image.getOriginalFilename().split("\\.")[1];
 
@@ -111,7 +111,15 @@ public class S3Service {
         }
 
         // 이미지 이름
-        String fileName = image.getOriginalFilename().split("\\.")[0] + user.getSerialId();
+        String fileName;
+        if (object instanceof User){
+            User user = (User) object;
+            fileName = image.getOriginalFilename().split("\\.")[0] + user.getSerialId();
+        }
+        else {
+            Event event = (Event) object;
+            fileName = image.getOriginalFilename().split("\\.")[0] + event.getName();
+        }
 
         amazonS3Client.putObject(bucketName, fileName, image.getInputStream(), metadata);
         log.info("s3 전달 성공");
