@@ -15,8 +15,8 @@ public enum ErrorCode {
     INVALID_IMAGE(40004, HttpStatus.BAD_REQUEST, "유효하지 않은 사진입니다."),
     INVALID_IMAGE_EXTENSION(40005, HttpStatus.BAD_REQUEST, "유효하지 않은 이미지 확장자 입니다."),
     INVALID_USER(40006, HttpStatus.BAD_REQUEST, "신청자가 아닙니다."),
-
     ALREADY_SAME_BAN_INFO(40007, HttpStatus.BAD_REQUEST, "이미 요청 상태와 동일합니다."),
+    ALREADY_LIKED_EVENT(40008, HttpStatus.BAD_REQUEST, "이미 좋아요한 행사입니다."),
 
     //401
     INVALID_HEADER_VALUE(40100, HttpStatus.UNAUTHORIZED, "올바르지 않은 헤더값입니다."),
@@ -41,6 +41,7 @@ public enum ErrorCode {
     NOT_FOUND_IMAGE(40402, HttpStatus.NOT_FOUND, "존재하지 않는 이미지입니다."),
     NOT_FOUND_EVENT(40403, HttpStatus.NOT_FOUND, "존재하지 않는 행사입니다."),
     NOT_FOUND_EVENT_REQUEST(40403, HttpStatus.NOT_FOUND, "존재하지 않는 행사 요청입니다."),
+    NOT_FOUND_LIKED(40404, HttpStatus.NOT_FOUND, "존재하지 않는 좋아요입니다."),
 
     //500
     INTERNAL_SERVER_ERROR(50000, HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류입니다")

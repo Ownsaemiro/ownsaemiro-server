@@ -3,9 +3,7 @@ package org.dongguk.ownsaemiro.ownsaemiroserver.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dongguk.ownsaemiro.ownsaemiroserver.constants.Constants;
-import org.dongguk.ownsaemiro.ownsaemiroserver.domain.Event;
-import org.dongguk.ownsaemiro.ownsaemiroserver.domain.EventRequest;
-import org.dongguk.ownsaemiro.ownsaemiroserver.domain.User;
+import org.dongguk.ownsaemiro.ownsaemiroserver.domain.*;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.ApplyEventDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.ChangeEventRequestStatusDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.ChangeSellingEventStatusDto;
@@ -15,9 +13,7 @@ import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.EEventRequestStatus;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.EEventStatus;
 import org.dongguk.ownsaemiro.ownsaemiroserver.exception.CommonException;
 import org.dongguk.ownsaemiro.ownsaemiroserver.exception.ErrorCode;
-import org.dongguk.ownsaemiro.ownsaemiroserver.repository.EventRepository;
-import org.dongguk.ownsaemiro.ownsaemiroserver.repository.EventRequestRepository;
-import org.dongguk.ownsaemiro.ownsaemiroserver.repository.UserRepository;
+import org.dongguk.ownsaemiro.ownsaemiroserver.repository.*;
 import org.dongguk.ownsaemiro.ownsaemiroserver.util.DateUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -35,7 +32,163 @@ import java.util.List;
 public class EventService {
     private final UserRepository userRepository;
     private final EventRepository eventRepository;
+    private final EventImageRepository eventImageRepository;
     private final EventRequestRepository eventRequestRepository;
+    private final UserLikedEventRepository userLikedEventRepository;
+
+    /* ================================================================= */
+    //                          사용자 api                                 //
+    /* ================================================================= */
+    /**
+     * 사용자 행사 좋아요
+     */
+    @Transactional
+    public LikedEventDto userLikeEvent(Long userId, Long eventId){
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
+
+        Event event = eventRepository.findByIdAndIsApproved(eventId, Boolean.TRUE)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_EVENT));
+
+        // 이미 사용자가 좋아요한 행사인 경우
+        if (userLikedEventRepository.existsByUserAndEvent(user, event)){
+            throw new CommonException(ErrorCode.ALREADY_LIKED_EVENT);
+        }
+
+        // 사용자 좋아요 생성
+        UserLikedEvent userLikedEvent = userLikedEventRepository.save(
+                UserLikedEvent.create(user, event)
+        );
+
+        return LikedEventDto.builder()
+                .likedId(userLikedEvent.getId())
+                .eventId(event.getId())
+                .isLiked(Boolean.TRUE)
+                .build();
+    }
+
+    /**
+     * 사용자 행사 좋아요 목록
+     */
+    public UserLikedEventsDto showUserLikedEvents(Long userId, Integer page, Integer size){
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
+
+        Page<UserLikedEvent> userLikedEvents = userLikedEventRepository.findAllByUser(user, PageRequest.of(page, size));
+
+        List<UserLikedEventDto> userLikedEventsDto = userLikedEvents.getContent().stream()
+                .map(userLikedEvent -> {
+                    String imageUrl = eventImageRepository.findByEvent(userLikedEvent.getEvent())
+                            .map(Image::getUrl)
+                            .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_IMAGE));
+
+                    return UserLikedEventDto.builder()
+                            .likedId(userLikedEvent.getId())
+                            .eventId(userLikedEvent.getEvent().getId())
+                            .name(userLikedEvent.getEvent().getName())
+                            .url(imageUrl)
+                            .duration(userLikedEvent.getEvent().getDuration())
+                            .build();
+                }).toList();
+
+        return UserLikedEventsDto.builder()
+                .pageInfo(PageInfo.convert(userLikedEvents, page))
+                .userLikedEventsDto(userLikedEventsDto)
+                .build();
+    }
+
+    /**
+     * 사용자 행사 좋아요 취소
+     */
+    @Transactional
+    public UnlikedEventDto userDontLikeEvent(Long userId, Long eventId){
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
+
+        Event event = eventRepository.findByIdAndIsApproved(eventId, Boolean.TRUE)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_EVENT));
+
+        // 이미 사용자가 좋아요한 행사인 경우
+        UserLikedEvent userLikedEvent = userLikedEventRepository.findByUserAndEvent(user, event)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_LIKED));
+
+        // 사용자 좋아요 삭제
+        userLikedEventRepository.delete(userLikedEvent);
+
+        return UnlikedEventDto.builder()
+                .id(eventId)
+                .isLiked(Boolean.FALSE)
+                .build();
+    }
+
+    /**
+     * 사용자 행사 목록 조회
+     */
+    public EventsDto showEvents(String strStatus, String strCategory, Integer page, Integer size){
+        ECategory category = ECategory.filterCondition(strCategory);
+        EEventStatus status = EEventStatus.toEnum(strStatus);
+
+        Page<Event> events;
+        if (Constants.ALL.equals(strCategory)) {
+            // 전체 검색
+            events = eventRepository.findAllByStatus(status, PageRequest.of(page, size));
+        } else if (category == null) {
+            // 카테고리별 검색
+            events = eventRepository.findAllByStatusAndCategory(status, category, PageRequest.of(page, size));
+        } else {
+            // 잘못된 인자값
+            throw new CommonException(ErrorCode.INVALID_PARAMETER_FORMAT);
+        }
+
+        List<EventDto> eventsDto = events.getContent().stream()
+                .map(event -> {
+                    String imageUrl = eventImageRepository.findByEvent(event)
+                            .map(Image::getUrl)
+                            .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_IMAGE));
+
+                    return EventDto.builder()
+                            .id(event.getId())
+                            .image(imageUrl)
+                            .name(event.getName())
+                            .address(event.getAddress())
+                            .duration(DateUtil.splitDate(event.getDuration()))
+                            .build();
+                }
+                ).toList();
+
+        return EventsDto.builder()
+                .pageInfo(PageInfo.convert(events, page))
+                .eventsDto(eventsDto)
+                .build();
+    }
+
+    /**
+     * 사용자 행사 검색
+     */
+    public SearchEventsDto searchEvent(String name, Integer page, Integer size){
+        Page<Event> events = eventRepository.searchAllByName(name, PageRequest.of(page, size));
+
+        List<SearchEventDto> searchEventsDto = events.getContent().stream()
+                .map(event -> {
+                    String imageUrl = eventImageRepository.findByEvent(event)
+                            .map(Image::getUrl)
+                            .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_IMAGE));
+
+                    return SearchEventDto.builder()
+                            .eventId(event.getId())
+                            .name(event.getName())
+                            .address(event.getAddress())
+                            .duration(event.getDuration())
+                            .url(imageUrl)
+                            .build();
+                })
+                .toList();
+
+        return SearchEventsDto.builder()
+                .pageInfo(PageInfo.convert(events, page))
+                .searchEventDto(searchEventsDto)
+                .build();
+    }
 
 
     /* ================================================================= */

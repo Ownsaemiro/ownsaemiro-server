@@ -27,7 +27,7 @@ public class TicketHistory {
     private LocalDateTime createdAt;
 
     /*  연관 관계 속성  */
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "ticket_id", nullable = false)
     private Ticket ticket;
 
