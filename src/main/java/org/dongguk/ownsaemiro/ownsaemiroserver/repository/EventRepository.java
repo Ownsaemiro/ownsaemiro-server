@@ -17,9 +17,10 @@ import java.time.LocalDate;
 public interface EventRepository extends JpaRepository<Event, Long> {
 
     /* ================================================================= */
-    //                         관리자 api 관련 쿼리                          //
+    //                         사용자 api 관련 쿼리                          //
     /* ================================================================= */
-
+    @Query("select e from Event e where e.name like %:name% and e.isApproved = true")
+    Page<Event> searchAllByName(String name, Pageable pageable);
 
 
     /* ================================================================= */

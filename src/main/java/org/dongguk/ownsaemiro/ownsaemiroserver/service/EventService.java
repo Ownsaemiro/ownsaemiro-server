@@ -3,9 +3,7 @@ package org.dongguk.ownsaemiro.ownsaemiroserver.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dongguk.ownsaemiro.ownsaemiroserver.constants.Constants;
-import org.dongguk.ownsaemiro.ownsaemiroserver.domain.Event;
-import org.dongguk.ownsaemiro.ownsaemiroserver.domain.EventRequest;
-import org.dongguk.ownsaemiro.ownsaemiroserver.domain.User;
+import org.dongguk.ownsaemiro.ownsaemiroserver.domain.*;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.ApplyEventDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.ChangeEventRequestStatusDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.ChangeSellingEventStatusDto;
@@ -15,6 +13,7 @@ import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.EEventRequestStatus;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.EEventStatus;
 import org.dongguk.ownsaemiro.ownsaemiroserver.exception.CommonException;
 import org.dongguk.ownsaemiro.ownsaemiroserver.exception.ErrorCode;
+import org.dongguk.ownsaemiro.ownsaemiroserver.repository.EventImageRepository;
 import org.dongguk.ownsaemiro.ownsaemiroserver.repository.EventRepository;
 import org.dongguk.ownsaemiro.ownsaemiroserver.repository.EventRequestRepository;
 import org.dongguk.ownsaemiro.ownsaemiroserver.repository.UserRepository;
@@ -35,7 +34,40 @@ import java.util.List;
 public class EventService {
     private final UserRepository userRepository;
     private final EventRepository eventRepository;
+    private final EventImageRepository eventImageRepository;
     private final EventRequestRepository eventRequestRepository;
+
+    /* ================================================================= */
+    //                          사용자 api                                 //
+    /* ================================================================= */
+
+    /**
+     * 사용자 행사 검색
+     */
+    public SearchEventsDto searchEvent(String name, Integer page, Integer size){
+        Page<Event> events = eventRepository.searchAllByName(name, PageRequest.of(page, size));
+
+        List<SearchEventDto> searchEventsDto = events.getContent().stream()
+                .map(event -> {
+                    String imageUrl = eventImageRepository.findByEvent(event)
+                            .map(Image::getUrl)
+                            .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_IMAGE));
+
+                    return SearchEventDto.builder()
+                            .eventId(event.getId())
+                            .name(event.getName())
+                            .address(event.getAddress())
+                            .duration(event.getDuration())
+                            .url(imageUrl)
+                            .build();
+                })
+                .toList();
+
+        return SearchEventsDto.builder()
+                .pageInfo(PageInfo.convert(events, page))
+                .searchEventDto(searchEventsDto)
+                .build();
+    }
 
 
     /* ================================================================= */
