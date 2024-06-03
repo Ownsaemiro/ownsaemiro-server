@@ -21,7 +21,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -30,6 +32,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class EventService {
+    private final S3Service s3Service;
     private final UserRepository userRepository;
     private final EventRepository eventRepository;
     private final EventImageRepository eventImageRepository;
@@ -367,40 +370,48 @@ public class EventService {
     /*  판매자 판매 요청 관련 로직  */
     /**
      * 이벤트 생성
-     * @param userId
-     * @param applyEventDto
-     * @return
      */
     @Transactional
-    public Event saveEvent(Long userId, ApplyEventDto applyEventDto){
-
+    public Event saveEvent(Long userId, MultipartFile image, ApplyEventDto applyEventDto) throws IOException {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
 
-        return eventRepository.save(
+        // 이벤트 저장
+        Event event = eventRepository.save(
                 Event.builder()
                         .name(applyEventDto.name())
                         .brief(applyEventDto.description().substring(0, Math.min(applyEventDto.description().length(), 100)))
                         .description(applyEventDto.description())
                         .address(applyEventDto.address())
                         .price(applyEventDto.price())
-                        .duration(applyEventDto.startDate() + " ~ " + applyEventDto.endDate())
+                        .duration(applyEventDto.startDate() + Constants.STR_CONNECTOR + applyEventDto.endDate())
                         .seat(applyEventDto.seats())
                         .category(ECategory.toECategory(applyEventDto.category()))
                         .status(EEventStatus.BEFORE)
                         .runningTime((applyEventDto.runningTime() > 180) ? 180 : applyEventDto.runningTime())
                         .user(user)
                         .isApproved(Boolean.FALSE)
-                        //.isApproved(Boolean.TRUE)
                         .build()
         );
 
+        // 행사 이미지를 저장
+        if (!image.isEmpty() && s3Service.readyForUpload(event, image)){
+            String url = s3Service.uploadToS3(event, image);
+            eventImageRepository.save(
+                    EventImage.builder()
+                            .url(url)
+                            .name(image.getOriginalFilename().split("\\.")[0] + user.getSerialId())
+                            .createdAt(LocalDate.now())
+                            .event(event)
+                            .build()
+            );
+        }
+
+        return event;
     }
 
     /**
      * 이벤트 요청 생성
-     * @param event
-     * @return
      */
     @Transactional
     public EventRequestDto saveEventRequest(Event event){
