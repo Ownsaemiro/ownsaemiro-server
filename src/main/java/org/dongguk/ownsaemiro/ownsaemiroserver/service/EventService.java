@@ -67,6 +67,27 @@ public class EventService {
                 .build();
     }
 
+    @Transactional
+    public UnlikedEventDto userDontLikeEvent(Long userId, Long eventId){
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
+
+        Event event = eventRepository.findByIdAndIsApproved(eventId, Boolean.TRUE)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_EVENT));
+
+        // 이미 사용자가 좋아요한 행사인 경우
+        UserLikedEvent userLikedEvent = userLikedEventRepository.findByUserAndEvent(user, event)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_LIKED));
+
+        // 사용자 좋아요 삭제
+        userLikedEventRepository.delete(userLikedEvent);
+
+        return UnlikedEventDto.builder()
+                .id(eventId)
+                .isLiked(Boolean.FALSE)
+                .build();
+    }
+
     /**
      * 사용자 행사 목록 조회
      */

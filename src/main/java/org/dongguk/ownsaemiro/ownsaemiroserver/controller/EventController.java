@@ -6,6 +6,7 @@ import org.dongguk.ownsaemiro.ownsaemiroserver.dto.global.ResponseDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.EventsDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.LikedEventDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.SearchEventsDto;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.UnlikedEventDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.service.EventService;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,6 +21,14 @@ public class EventController {
 
         return ResponseDto.created(likedEventDto);
     }
+
+    @DeleteMapping("{eventId}/like")
+    public ResponseDto<?> deleteUserLikedEvent(@UserId Long userId, @PathVariable Long eventId){
+        UnlikedEventDto unlikedEventDto = eventService.userDontLikeEvent(userId, eventId);
+
+        return ResponseDto.ok(unlikedEventDto);
+    }
+
     @GetMapping("/search")
     public ResponseDto<?> searchEvents(
             @RequestParam("name") String name,
