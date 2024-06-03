@@ -3,7 +3,9 @@ package org.dongguk.ownsaemiro.ownsaemiroserver.repository;
 import org.dongguk.ownsaemiro.ownsaemiroserver.domain.Event;
 import org.dongguk.ownsaemiro.ownsaemiroserver.domain.User;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.EventHistoryDto;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.ECategory;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.EEventRequestStatus;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.EEventStatus;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.ERole;
 import org.springframework.cglib.core.Local;
 import org.springframework.data.domain.Page;
@@ -19,6 +21,10 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     /* ================================================================= */
     //                         사용자 api 관련 쿼리                          //
     /* ================================================================= */
+
+    Page<Event> findAllByStatus(EEventStatus status, Pageable pageable);
+    @Query("select e from Event e where e.category = :category and e.status = :status")
+    Page<Event> findAllByStatusAndCategory(EEventStatus status, ECategory category, Pageable pageable);
     @Query("select e from Event e where e.name like %:name% and e.isApproved = true")
     Page<Event> searchAllByName(String name, Pageable pageable);
 

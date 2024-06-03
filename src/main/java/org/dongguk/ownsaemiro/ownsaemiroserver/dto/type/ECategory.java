@@ -23,4 +23,11 @@ public enum ECategory {
         }
         throw new CommonException(ErrorCode.INVALID_PARAMETER_FORMAT);
     }
+    public static ECategory filterCondition(String category){
+        for(ECategory eCategory : ECategory.values()){
+            if (eCategory.category.equals(category))
+                return eCategory;
+        }
+        return null;
+    }
 }
