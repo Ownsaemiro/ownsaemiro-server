@@ -18,7 +18,7 @@ import java.time.LocalDate;
 )
 public class UserImage extends Image {
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 

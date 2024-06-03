@@ -17,7 +17,7 @@ import java.time.LocalDate;
         foreignKey = @ForeignKey(name = "fk_event_image_id")
 )
 public class EventImage extends Image{
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "event_id", nullable = false)
     private Event event;
 

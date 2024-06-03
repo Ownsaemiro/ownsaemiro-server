@@ -17,11 +17,11 @@ public class UserLikedEvent {
     private Long id;
 
     /*  연관 관계 속성  */
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "event_id", nullable = false)
     private Event event;
 
