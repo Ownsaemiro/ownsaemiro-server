@@ -12,6 +12,9 @@ import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.MyAppliesDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.MyEventHistoriesDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.service.EventService;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/seller")
@@ -66,8 +69,11 @@ public class SellerController {
      * 판매자 판매 요청하기
      */
     @PostMapping("/apply")
-    public ResponseDto<?> applyEvent(@UserId Long userId, @RequestBody ApplyEventDto applyEventDto){
-        Event newEvent = eventService.saveEvent(userId, applyEventDto);
+    public ResponseDto<?> applyEvent(
+            @UserId Long userId,
+            @RequestPart("image") MultipartFile image,
+            @RequestPart("data") ApplyEventDto applyEventDto) throws IOException {
+        Event newEvent = eventService.saveEvent(userId, image, applyEventDto);
         EventRequestDto eventRequestDto = eventService.saveEventRequest(newEvent);
 
         return ResponseDto.ok(eventRequestDto);
