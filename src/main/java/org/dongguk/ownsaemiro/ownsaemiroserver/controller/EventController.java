@@ -1,21 +1,25 @@
 package org.dongguk.ownsaemiro.ownsaemiroserver.controller;
 
-import com.amazonaws.Response;
 import lombok.RequiredArgsConstructor;
+import org.dongguk.ownsaemiro.ownsaemiroserver.annotation.UserId;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.global.ResponseDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.EventsDto;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.LikedEventDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.SearchEventsDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.service.EventService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/events")
 @RequiredArgsConstructor
 public class EventController {
     private final EventService eventService;
+    @PostMapping("{eventId}/like")
+    public ResponseDto<?> saveUserLikedEvent(@UserId Long userId, @PathVariable Long eventId){
+        LikedEventDto likedEventDto = eventService.userLikeEvent(userId, eventId);
+
+        return ResponseDto.created(likedEventDto);
+    }
     @GetMapping("/search")
     public ResponseDto<?> searchEvents(
             @RequestParam("name") String name,

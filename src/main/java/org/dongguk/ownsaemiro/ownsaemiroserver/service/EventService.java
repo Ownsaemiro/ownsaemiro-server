@@ -13,10 +13,7 @@ import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.EEventRequestStatus;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.EEventStatus;
 import org.dongguk.ownsaemiro.ownsaemiroserver.exception.CommonException;
 import org.dongguk.ownsaemiro.ownsaemiroserver.exception.ErrorCode;
-import org.dongguk.ownsaemiro.ownsaemiroserver.repository.EventImageRepository;
-import org.dongguk.ownsaemiro.ownsaemiroserver.repository.EventRepository;
-import org.dongguk.ownsaemiro.ownsaemiroserver.repository.EventRequestRepository;
-import org.dongguk.ownsaemiro.ownsaemiroserver.repository.UserRepository;
+import org.dongguk.ownsaemiro.ownsaemiroserver.repository.*;
 import org.dongguk.ownsaemiro.ownsaemiroserver.util.DateUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -27,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -36,10 +34,38 @@ public class EventService {
     private final EventRepository eventRepository;
     private final EventImageRepository eventImageRepository;
     private final EventRequestRepository eventRequestRepository;
+    private final UserLikedEventRepository userLikedEventRepository;
 
     /* ================================================================= */
     //                          사용자 api                                 //
     /* ================================================================= */
+    /**
+     * 사용자 행사 좋아요
+     */
+    @Transactional
+    public LikedEventDto userLikeEvent(Long userId, Long eventId){
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
+
+        Event event = eventRepository.findByIdAndIsApproved(eventId, Boolean.TRUE)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_EVENT));
+
+        // 이미 사용자가 좋아요한 행사인 경우
+        if (userLikedEventRepository.existsByUserAndEvent(user, event)){
+            throw new CommonException(ErrorCode.ALREADY_LIKED_EVENT);
+        }
+
+        // 사용자 좋아요 생성
+        UserLikedEvent userLikedEvent = userLikedEventRepository.save(
+                UserLikedEvent.create(user, event)
+        );
+
+        return LikedEventDto.builder()
+                .likedId(userLikedEvent.getId())
+                .eventId(event.getId())
+                .isLiked(Boolean.TRUE)
+                .build();
+    }
 
     /**
      * 사용자 행사 목록 조회

@@ -15,8 +15,8 @@ public enum ErrorCode {
     INVALID_IMAGE(40004, HttpStatus.BAD_REQUEST, "유효하지 않은 사진입니다."),
     INVALID_IMAGE_EXTENSION(40005, HttpStatus.BAD_REQUEST, "유효하지 않은 이미지 확장자 입니다."),
     INVALID_USER(40006, HttpStatus.BAD_REQUEST, "신청자가 아닙니다."),
-
     ALREADY_SAME_BAN_INFO(40007, HttpStatus.BAD_REQUEST, "이미 요청 상태와 동일합니다."),
+    ALREADY_LIKED_EVENT(40008, HttpStatus.BAD_REQUEST, "이미 좋아요한 행사입니다."),
 
     //401
     INVALID_HEADER_VALUE(40100, HttpStatus.UNAUTHORIZED, "올바르지 않은 헤더값입니다."),
