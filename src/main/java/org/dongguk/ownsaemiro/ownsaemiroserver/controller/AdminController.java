@@ -2,7 +2,7 @@ package org.dongguk.ownsaemiro.ownsaemiroserver.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.global.ResponseDto;
-import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.BanSerialId;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.BanInfo;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.ChangeEventRequestStatusDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.*;
 import org.dongguk.ownsaemiro.ownsaemiroserver.service.EventService;
@@ -26,11 +26,12 @@ public class AdminController {
 
         return ResponseDto.ok(showBannedUsers);
     }
-    @PostMapping("/banned")
-    public ResponseDto<?> banUser(@RequestBody BanSerialId banSerialId){
-        BannedUser bannedUser = userService.banUser(banSerialId);
 
-        return ResponseDto.ok(bannedUser);
+    @PatchMapping("/banned")
+    public ResponseDto<?> unBanUser(@RequestBody BanInfo banInfo){
+        BanUserInfo banUserInfo = userService.banUser(banInfo);
+
+        return ResponseDto.ok(banUserInfo);
     }
 
     /*  관리자 판매 요청 관련 api  */

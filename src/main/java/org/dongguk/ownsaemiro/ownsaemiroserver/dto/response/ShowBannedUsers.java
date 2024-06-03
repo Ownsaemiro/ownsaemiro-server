@@ -11,6 +11,6 @@ public record ShowBannedUsers(
         PageInfo pageInfo,
 
         @JsonProperty("banned_users")
-        List<BannedUser> bannedUsers
+        List<BanUserInfo> banUserInfos
 ) {
 }

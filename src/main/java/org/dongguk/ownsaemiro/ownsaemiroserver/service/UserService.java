@@ -6,9 +6,9 @@ import org.dongguk.ownsaemiro.ownsaemiroserver.constants.Constants;
 import org.dongguk.ownsaemiro.ownsaemiroserver.domain.Image;
 import org.dongguk.ownsaemiro.ownsaemiroserver.domain.User;
 import org.dongguk.ownsaemiro.ownsaemiroserver.domain.UserImage;
-import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.BanSerialId;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.BanInfo;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.UpdateNicknameDto;
-import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.BannedUser;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.BanUserInfo;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.PageInfo;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.ShowBannedUsers;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.UserProfileDto;
@@ -43,8 +43,8 @@ public class UserService {
     public ShowBannedUsers showBannedUsers(Integer page, Integer size){
         Page<User> allBannedUsers = userRepository.findAllByIsBanned(PageRequest.of(page, size));
 
-        List<BannedUser> bannedUsers = allBannedUsers.getContent().stream()
-                .map(user -> BannedUser.builder()
+        List<BanUserInfo> banUserInfos = allBannedUsers.getContent().stream()
+                .map(user -> BanUserInfo.builder()
                         .userId(user.getId())
                         .serialId(user.getSerialId())
                         .role(user.getRole().getRole())
@@ -54,25 +54,25 @@ public class UserService {
 
         return ShowBannedUsers.builder()
                 .pageInfo(PageInfo.convert(allBannedUsers, page))
-                .bannedUsers(bannedUsers)
+                .banUserInfos(banUserInfos)
                 .build();
     }
 
     /**
-     * 관리자 사용자 정지
+     * 관리자 사용자 정지 or 정지 해제
      */
     @Transactional
-    public BannedUser banUser(BanSerialId banSerialId){
-        User user = userRepository.findBySerialId(banSerialId.serialId())
+    public BanUserInfo banUser(BanInfo banInfo){
+        User user = userRepository.findBySerialId(banInfo.serialId())
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
 
-        // 이미 정지된 사용자인 경우
-        if (user.getIsBanned())
-            throw new CommonException(ErrorCode.ALREADY_BANNED_USER);
+        // 이미 요청 상태와 동일한 경우
+        if (user.getIsBanned().equals(banInfo.ban()))
+            throw new CommonException(ErrorCode.ALREADY_SAME_BAN_INFO);
 
         Boolean userBan = user.ban();
 
-        return BannedUser.builder()
+        return BanUserInfo.builder()
                 .userId(user.getId())
                 .serialId(user.getSerialId())
                 .role(user.getRole().getRole())
