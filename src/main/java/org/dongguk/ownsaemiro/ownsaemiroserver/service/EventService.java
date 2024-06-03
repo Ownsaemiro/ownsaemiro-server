@@ -67,6 +67,9 @@ public class EventService {
                 .build();
     }
 
+    /**
+     * 사용자 행사 좋아요 취소
+     */
     @Transactional
     public UnlikedEventDto userDontLikeEvent(Long userId, Long eventId){
         User user = userRepository.findById(userId)
