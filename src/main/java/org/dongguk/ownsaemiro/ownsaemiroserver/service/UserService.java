@@ -6,18 +6,25 @@ import org.dongguk.ownsaemiro.ownsaemiroserver.constants.Constants;
 import org.dongguk.ownsaemiro.ownsaemiroserver.domain.Image;
 import org.dongguk.ownsaemiro.ownsaemiroserver.domain.User;
 import org.dongguk.ownsaemiro.ownsaemiroserver.domain.UserImage;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.BanSerialId;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.UpdateNicknameDto;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.BannedUser;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.PageInfo;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.ShowBannedUsers;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.UserProfileDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.exception.CommonException;
 import org.dongguk.ownsaemiro.ownsaemiroserver.exception.ErrorCode;
 import org.dongguk.ownsaemiro.ownsaemiroserver.repository.UserImageRepository;
 import org.dongguk.ownsaemiro.ownsaemiroserver.repository.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -26,6 +33,56 @@ public class UserService {
     private final S3Service s3Service;
     private final UserRepository userRepository;
     private final UserImageRepository userImageRepository;
+
+    /* ================================================================= */
+    //                          관리자 api                                 //
+    /* ================================================================= */
+    /**
+     * 관리자 정지 사용자 목록 조회
+     */
+    public ShowBannedUsers showBannedUsers(Integer page, Integer size){
+        Page<User> allBannedUsers = userRepository.findAllByIsBanned(PageRequest.of(page, size));
+
+        List<BannedUser> bannedUsers = allBannedUsers.getContent().stream()
+                .map(user -> BannedUser.builder()
+                        .userId(user.getId())
+                        .serialId(user.getSerialId())
+                        .role(user.getRole().getRole())
+                        .provider(user.getProvider().getProvider())
+                        .build()
+                ).toList();
+
+        return ShowBannedUsers.builder()
+                .pageInfo(PageInfo.convert(allBannedUsers, page))
+                .bannedUsers(bannedUsers)
+                .build();
+    }
+
+    /**
+     * 관리자 사용자 정지
+     */
+    @Transactional
+    public BannedUser banUser(BanSerialId banSerialId){
+        User user = userRepository.findBySerialId(banSerialId.serialId())
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
+
+        // 이미 정지된 사용자인 경우
+        if (user.getIsBanned())
+            throw new CommonException(ErrorCode.ALREADY_BANNED_USER);
+
+        Boolean userBan = user.ban();
+
+        return BannedUser.builder()
+                .userId(user.getId())
+                .serialId(user.getSerialId())
+                .role(user.getRole().getRole())
+                .ban(userBan)
+                .build();
+    }
+
+    /* ================================================================= */
+    //                          사용자 api                                 //
+    /* ================================================================= */
     public String getNickname(Long userId){
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));

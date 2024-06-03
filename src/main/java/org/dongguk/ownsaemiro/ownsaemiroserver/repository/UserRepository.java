@@ -2,12 +2,17 @@ package org.dongguk.ownsaemiro.ownsaemiroserver.repository;
 
 import org.dongguk.ownsaemiro.ownsaemiroserver.domain.User;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.ERole;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
+
+    @Query("select u from User u where u.isBanned = true")
+    Page<User> findAllByIsBanned(Pageable pageable);
 
     Optional<User> findById(Long id);
 

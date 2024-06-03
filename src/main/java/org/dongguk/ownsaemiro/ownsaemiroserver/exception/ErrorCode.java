@@ -16,6 +16,8 @@ public enum ErrorCode {
     INVALID_IMAGE_EXTENSION(40005, HttpStatus.BAD_REQUEST, "유효하지 않은 이미지 확장자 입니다."),
     INVALID_USER(40006, HttpStatus.BAD_REQUEST, "신청자가 아닙니다."),
 
+    ALREADY_BANNED_USER(40007, HttpStatus.BAD_REQUEST, "이미 정지된 사용자입니다."),
+
     //401
     INVALID_HEADER_VALUE(40100, HttpStatus.UNAUTHORIZED, "올바르지 않은 헤더값입니다."),
 
