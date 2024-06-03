@@ -3,6 +3,7 @@ package org.dongguk.ownsaemiro.ownsaemiroserver.domain;
 import jakarta.persistence.*;
 import lombok.*;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.AuthSignUpDto;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.OauthSignUpDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.EProvider;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.ERole;
 import org.hibernate.annotations.DynamicUpdate;
@@ -27,6 +28,9 @@ public class User {
     @Column(name = "password", nullable = false)
     private String password;
 
+    @Column(name = "device_id")
+    private String deviceId;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
     private ERole role;
@@ -50,14 +54,15 @@ public class User {
     private Boolean isBanned;
 
     @Builder
-    public User(String serialId, String password, ERole role, EProvider provider) {
+    public User(String serialId, String deviceId, String password, ERole role, EProvider provider) {
         this.serialId = serialId;
+        this.deviceId = deviceId;
         this.password = password;
         this.role = role;
         this.provider = provider;
     }
 
-    // 사용자 생성
+    // 폼 회원가입: 사용자 생성
     public static User signUp(AuthSignUpDto authSignUpDto, String encodedPassword, EProvider provider, ERole role){
         User newUser = User.builder()
                 .serialId(authSignUpDto.serialId())
@@ -68,6 +73,20 @@ public class User {
         newUser.register(authSignUpDto.name(), authSignUpDto.nickname(), authSignUpDto.phoneNumber());
         return newUser;
     }
+
+    // oauth 회원가입: 사용자 생성
+    public static User signUp(OauthSignUpDto oauthSignUpDto, String encodedPassword, EProvider provider, ERole role){
+        User newUser = User.builder()
+                .serialId(oauthSignUpDto.serialId())
+                .deviceId(oauthSignUpDto.deviceId())
+                .password(encodedPassword)
+                .provider(provider)
+                .role(role)
+                .build();
+        newUser.register(oauthSignUpDto.name(), oauthSignUpDto.nickname(), oauthSignUpDto.phoneNumber());
+        return newUser;
+    }
+
     // 사용자 정보 저장
     public void register(String name, String nickname, String phoneNumber){
         this.name = name;
