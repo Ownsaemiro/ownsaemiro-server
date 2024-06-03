@@ -29,16 +29,14 @@ public class RestClientUtil {
         return new JSONObject(response);
     }
 
-    public JSONObject sendAppKakaoLoginRequest(String url, String accessToken){
+    public Map<String, Object> sendAppKakaoLoginRequest(String url, String accessToken){
         // TODO: 사용자 정보 어떻게 받을지 논의 후 수정할 예정
-        Map<String,Object> response = Objects.requireNonNull(restClient.get()
+        return (Map<String, Object>) Objects.requireNonNull(restClient.get()
                 .uri(url)
                 .header(Constants.CONTENT_TYPE, Constants.CONTENT_VALUE)
                 .header(Constants.PREFIX_AUTH, Constants.PREFIX_BEARER + accessToken)
                 .retrieve()
                 .toEntity(Map.class).getBody());
-
-        return new JSONObject(response);
     }
 
     public Map<String, Object> sendAppNaverLoginRequest(String url, String accessToken){
