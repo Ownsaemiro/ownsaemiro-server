@@ -87,4 +87,8 @@ public class Event {
         this.status = status;
         return this.status;
     }
+
+    public void changeApproved(Boolean isApproved){
+        this.isApproved = isApproved;
+    }
 }

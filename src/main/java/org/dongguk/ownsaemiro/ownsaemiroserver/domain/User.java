@@ -76,9 +76,15 @@ public class User {
         this.isBanned = Boolean.FALSE;
     }
 
-    @Transactional
+    // 사용자 닉네임 변경
     public String updateNickname(String nickname){
         this.nickname = nickname;
         return this.nickname;
+    }
+
+    // 사용자 정지
+    public Boolean ban(){
+        this.isBanned = Boolean.TRUE;
+        return true;
     }
 }

@@ -7,6 +7,7 @@ import org.dongguk.ownsaemiro.ownsaemiroserver.domain.Event;
 import org.dongguk.ownsaemiro.ownsaemiroserver.domain.EventRequest;
 import org.dongguk.ownsaemiro.ownsaemiroserver.domain.User;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.ApplyEventDto;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.ChangeEventRequestStatusDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.ChangeSellingEventStatusDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.*;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.ECategory;
@@ -26,8 +27,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.List;
 
 @Slf4j
@@ -38,12 +37,102 @@ public class EventService {
     private final EventRepository eventRepository;
     private final EventRequestRepository eventRequestRepository;
 
+
+    /* ================================================================= */
+    //                          관리자 api                                 //
+    /* ================================================================= */
+
+    /**
+     * 관리자가 보는 판매자들의 판매 요청 목록
+     */
+    public AdminApplyEventDto showAppliesOfSeller(Integer page, Integer size){
+        Page<EventRequest> appliesOfSeller = eventRequestRepository.findAll(PageRequest.of(page, size, Sort.by("createdAt").descending()));
+
+        return AdminApplyEventDto.builder()
+                .pageInfo(PageInfo.convert(appliesOfSeller, page))
+                .eventRequestsDto(getEventRequestsDto(appliesOfSeller))
+                .build();
+    }
+
+    /**
+     *  관리자가 보는 판매자들의 판매 요청 상세
+     */
+    public DetailOfEventRequestDto showDetailOfEventRequest(Long eventRequestId){
+        EventRequest eventRequest = eventRequestRepository.findById(eventRequestId)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_EVENT_REQUEST));
+
+        return DetailOfEventRequestDto.builder()
+                .name(eventRequest.getEvent().getName())
+                .duration(eventRequest.getEvent().getDuration())
+                .address(eventRequest.getEvent().getAddress())
+                .hostNickname(eventRequest.getUser().getNickname())
+                .runningTime(eventRequest.getEvent().getRunningTime())
+                .description(eventRequest.getEvent().getDescription())
+                .build();
+    }
+
+    /**
+     * 관리자의 판매자 요청 검색
+     */
+    public AdminApplyEventDto searchEventRequest(String name, String state, Integer page, Integer size){
+        EEventRequestStatus eEventRequestStatus = EEventRequestStatus.toEnum(state);
+        Page<EventRequest> eventRequestsDto;
+
+        // 전체 상태 없이 전체 조회인 경우
+        if (eEventRequestStatus == null){
+            if (!state.equals(Constants.ALL))
+                throw new CommonException(ErrorCode.INVALID_PARAMETER_FORMAT);
+            eventRequestsDto = eventRequestRepository.searchAllByName(
+                    name,
+                    PageRequest.of(page, size, Sort.by("createdAt").descending())
+            );
+        } else {
+            eventRequestsDto = eventRequestRepository.searchAllByNameAndState(
+                    name,
+                    eEventRequestStatus,
+                    PageRequest.of(page, size, Sort.by("createdAt").descending())
+            );
+        }
+
+        return AdminApplyEventDto.builder()
+                .pageInfo(PageInfo.convert(eventRequestsDto, page))
+                .eventRequestsDto(getEventRequestsDto(eventRequestsDto))
+                .build();
+    }
+    /**
+     * 관리자 행사 승인 여부 결정
+     */
+    @Transactional
+    public ChangedEventRequestStatusDto changeEventRequestState(ChangeEventRequestStatusDto changeEventRequestStatusDto){
+        EventRequest eventRequest = eventRequestRepository.findById(changeEventRequestStatusDto.id())
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_EVENT_REQUEST));
+
+        EEventRequestStatus eEventRequestStatus = EEventRequestStatus.toEnum(changeEventRequestStatusDto.status());
+
+        // 잘못된 인자 값이 들어온 경우
+        if (eEventRequestStatus == null)
+            throw new CommonException(ErrorCode.INVALID_PARAMETER_FORMAT);
+
+        // 승인완료시, event에도 approved 적용
+        if (eEventRequestStatus.equals(EEventRequestStatus.COMPLETE)) {
+            Event event = eventRepository.findById(changeEventRequestStatusDto.id())
+                    .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_EVENT));
+            event.changeApproved(Boolean.TRUE);
+        }
+
+        EEventRequestStatus status = eventRequest.updateStatus(eEventRequestStatus);
+
+        return ChangedEventRequestStatusDto.builder()
+                .id(eventRequest.getId())
+                .status(status.getStatus())
+                .build();
+    }
+
+    /* ================================================================= */
+    //                          판매자 api                                 //
+    /* ================================================================= */
     /**
      * 판매 이력 조회
-     * @param userId
-     * @param page
-     * @param size
-     * @return
      */
     public MyEventHistoriesDto showMyHistories(Long userId, Integer page, Integer size) {
         User user = userRepository.findById(userId)
@@ -184,10 +273,6 @@ public class EventService {
 
     /**
      * 나의 행사 신청 목록 확인하기
-     * @param userId
-     * @param page
-     * @param size
-     * @return
      */
     public MyAppliesDto showMyApplies(Long userId, Integer page, Integer size){
         User user = userRepository.findById(userId)
@@ -208,12 +293,6 @@ public class EventService {
 
     /**
      * 나의 행사 신청 목록 검색하기
-     * @param userId
-     * @param search
-     * @param state
-     * @param page
-     * @param size
-     * @return
      */
 
     public MyAppliesDto searchMyApplies(Long userId, String search, String state, Integer page, Integer size){

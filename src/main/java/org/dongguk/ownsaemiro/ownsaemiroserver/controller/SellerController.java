@@ -52,7 +52,7 @@ public class SellerController {
     public ResponseDto<?> searchMyEvent(
             @UserId Long userId,
             @RequestParam("name") String name,
-            @RequestParam(value = "page", defaultValue = "0") Integer page,
+            @RequestParam(value = "page", defaultValue = "1") Integer page,
             @RequestParam(value = "size", defaultValue = "10") Integer size
     ) {
         MyEventHistoriesDto myEventHistoriesDto = eventService.searchMyEvents(userId, name, page, size);
@@ -80,7 +80,7 @@ public class SellerController {
     @GetMapping("/apply")
     public ResponseDto<?> showApplies(
             @UserId Long userId,
-            @RequestParam(value = "page", defaultValue = "0") Integer page,
+            @RequestParam(value = "page", defaultValue = "1") Integer page,
             @RequestParam(value = "size", defaultValue = "10") Integer size){
         MyAppliesDto myAppliesDto = eventService.showMyApplies(userId, page-1, size);
 
@@ -95,7 +95,7 @@ public class SellerController {
             @UserId Long userId,
             @RequestParam("name") String name,
             @RequestParam("status") String status,
-            @RequestParam(value = "page", defaultValue = "0") Integer page,
+            @RequestParam(value = "page", defaultValue = "1") Integer page,
             @RequestParam(value = "size", defaultValue = "10") Integer size){
         MyAppliesDto searchMyApplies = eventService.searchMyApplies(userId, name, status, page - 1, size);
 
