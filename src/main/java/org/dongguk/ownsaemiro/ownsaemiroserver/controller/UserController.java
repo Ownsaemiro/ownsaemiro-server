@@ -52,4 +52,14 @@ public class UserController {
 
         return ResponseDto.ok(myPointDto);
     }
+
+    /**
+     * 사용자 잔고 충전하기 api
+     */
+    @PutMapping("wallets")
+    public ResponseDto<?> rechargePoint(@UserId Long userWalletId, @RequestBody MyPointDto rechargePointDto){
+        MyPointDto myPointDto = userWalletService.rechargePoint(userWalletId, rechargePointDto);
+
+        return ResponseDto.ok(myPointDto);
+    }
 }
