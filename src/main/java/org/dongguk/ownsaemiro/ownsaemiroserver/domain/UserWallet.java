@@ -37,5 +37,6 @@ public class UserWallet {
 
     public Integer recharge(Integer amount){
         this.point += amount;
+        return this.point;
     }
 }
