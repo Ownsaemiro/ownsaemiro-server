@@ -349,7 +349,7 @@ public class EventService {
                 UserTicket.builder()
                         .user(user)
                         .ticket(ticket)
-                        .createdAt(buyingTicketDto.buyingDate())
+                        .activatedAt(buyingTicketDto.buyingDate())
                         .build()
         );
 
@@ -364,7 +364,7 @@ public class EventService {
                 UserWalletHistory.builder()
                         .amount(-1 * event.getPrice())
                         .userWallet(userWallet)
-                        .createdAt(buyingTicketDto.buyingDate())
+                        .createdAt(LocalDate.now())
                         .build()
         );
 
@@ -373,7 +373,7 @@ public class EventService {
                 TicketHistory.builder()
                         .ticket(ticket)
                         .status(ETicketStatus.OCCUPIED)
-                        .createdAt(buyingTicketDto.buyingDate())
+                        .createdAt(LocalDate.now())
                         .build()
         );
 

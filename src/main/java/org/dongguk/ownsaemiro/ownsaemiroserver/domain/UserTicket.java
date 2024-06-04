@@ -21,8 +21,8 @@ public class UserTicket {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "created_at")
-    private LocalDate createdAt;
+    @Column(name = "activated_at")
+    private LocalDate activatedAt;
 
     /*  사용자 티켓 연관관계 속성  */
     @ManyToOne
@@ -34,8 +34,8 @@ public class UserTicket {
     private Ticket ticket;
 
     @Builder
-    public UserTicket(LocalDate createdAt, User user, Ticket ticket) {
-        this.createdAt = createdAt;
+    public UserTicket(LocalDate activatedAt, User user, Ticket ticket) {
+        this.activatedAt = activatedAt;
         this.user = user;
         this.ticket = ticket;
     }
