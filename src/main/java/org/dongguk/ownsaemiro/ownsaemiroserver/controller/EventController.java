@@ -92,4 +92,11 @@ public class EventController {
 
         return ResponseDto.ok(reviewsOfEvent);
     }
+
+    @GetMapping("{eventId}/seller")
+    public ResponseDto<?> showDetailInfoOfSeller(@PathVariable Long eventId){
+        SellerOfEventDto sellerOfEventDto = eventService.showDetailInfoOfSeller(eventId);
+
+        return ResponseDto.ok(sellerOfEventDto);
+    }
 }

@@ -251,6 +251,21 @@ public class EventService {
     }
 
     /**
+     * 행사 상세 정보 보기 - seller
+     */
+    public SellerOfEventDto showDetailInfoOfSeller(Long eventId){
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_EVENT));
+
+        return SellerOfEventDto.builder()
+                .nickname(event.getUser().getNickname())
+                .runningTime(event.getRunningTime() + Constants.MINUTE)
+                .rating(event.getRating())
+                .address(event.getAddress())
+                .build();
+    }
+
+    /**
      * 사용자 행사 검색
      */
     public SearchEventsDto searchEvent(String name, Integer page, Integer size){
