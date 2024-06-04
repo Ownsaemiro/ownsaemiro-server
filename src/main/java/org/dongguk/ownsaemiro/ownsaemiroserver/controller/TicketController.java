@@ -37,4 +37,14 @@ public class TicketController {
 
         return ResponseDto.ok(detailOfTicketDto);
     }
+
+    /**
+     * 사용자 공연 예매 취소 및 양도하기
+     */
+    @PatchMapping("{ticketId}")
+    public ResponseDto<?> cancelMyTicket(@UserId Long userId, @PathVariable Long ticketId){
+        userTicketService.cancelMyTicket(userId, ticketId);
+
+        return ResponseDto.ok(null);
+    }
 }
