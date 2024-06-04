@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.EUserTicketStatus;
 
 import java.time.LocalDate;
 
@@ -30,6 +31,10 @@ public class UserTicket {
     @Column(name = "order_id", nullable = false)
     private String orderId;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private EUserTicketStatus status;
+
     /*  사용자 티켓 연관관계 속성  */
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
@@ -44,8 +49,13 @@ public class UserTicket {
         this.activatedAt = activatedAt;
         this.boughtAt = boughtAt;
         this.orderId = orderId;
+        this.status = EUserTicketStatus.BEFORE_USE;
         this.user = user;
         this.ticket = ticket;
+    }
+
+    public void changeStatus(EUserTicketStatus status){
+        this.status = status;
     }
 
 }
