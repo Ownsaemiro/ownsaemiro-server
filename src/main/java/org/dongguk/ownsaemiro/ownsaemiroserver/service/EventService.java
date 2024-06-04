@@ -31,10 +31,12 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class EventService {
+    private final UserImageRepository userImageRepository;
     private final S3Service s3Service;
     private final UserRepository userRepository;
     private final EventRepository eventRepository;
     private final EventImageRepository eventImageRepository;
+    private final EventReviewRepository eventReviewRepository;
     private final EventRequestRepository eventRequestRepository;
     private final UserLikedEventRepository userLikedEventRepository;
 
@@ -202,6 +204,32 @@ public class EventService {
 
         return DetailDescriptionOfEvent.builder()
                 .description(event.getDescription())
+                .build();
+    }
+
+    /**
+     * 행사 상세 정보 보기 - review
+     */
+    public ReviewsOfEvent showReviewsOfEvent(Long eventId){
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_EVENT));
+
+        List<ReviewOfEvent> reviewOfEvents = eventReviewRepository.findTop3ByEvent(event).stream()
+                .map(eventReview -> {
+                    String image = userImageRepository.findByUser(eventReview.getUser())
+                            .map(Image::getUrl)
+                            .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_IMAGE));
+
+                    return ReviewOfEvent.builder()
+                            .id(eventReview.getId())
+                            .image(image)
+                            .nickname(eventReview.getUser().getNickname())
+                            .content(eventReview.getContent())
+                            .build();
+                }).toList();
+
+        return ReviewsOfEvent.builder()
+                .reviewsDto(reviewOfEvents)
                 .build();
     }
 

@@ -73,4 +73,11 @@ public class EventController {
 
         return ResponseDto.ok(detailDescriptionOfEvent);
     }
+
+    @GetMapping("{eventId}/top-review")
+    public ResponseDto<?> showReviewsOfEvent(@PathVariable Long eventId){
+        ReviewsOfEvent reviewsOfEvent = eventService.showReviewsOfEvent(eventId);
+
+        return ResponseDto.ok(reviewsOfEvent);
+    }
 }
