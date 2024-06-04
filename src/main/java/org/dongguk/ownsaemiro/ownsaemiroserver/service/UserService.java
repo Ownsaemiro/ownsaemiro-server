@@ -54,7 +54,7 @@ public class UserService {
 
         return ShowBannedUsersDto.builder()
                 .pageInfo(PageInfo.convert(allBannedUsers, page))
-                .banUserInfos(banUserInfoDtos)
+                .banUserInfosDto(banUserInfoDtos)
                 .build();
     }
 

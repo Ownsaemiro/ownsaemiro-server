@@ -26,11 +26,11 @@ public class UserTicket {
 
     /*  사용자 티켓 연관관계 속성  */
     @ManyToOne
-    @Column(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @ManyToOne
-    @Column(name = "ticket_id", nullable = false)
+    @JoinColumn(name = "ticket_id", nullable = false)
     private Ticket ticket;
 
     @Builder

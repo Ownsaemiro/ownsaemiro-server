@@ -28,7 +28,7 @@ public class Ticket {
 
     /*  티켓 연관관계 속성  */
     @ManyToOne
-    @Column(name = "event_id", nullable = false)
+    @JoinColumn(name = "event_id", nullable = false)
     private Event event;
 
     public void changeStatus(ETicketStatus status){

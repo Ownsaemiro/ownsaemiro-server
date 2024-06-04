@@ -11,6 +11,6 @@ public record ShowBannedUsersDto(
         PageInfo pageInfo,
 
         @JsonProperty("banned_users")
-        List<BanUserInfoDto> banUserInfoDtos
+        List<BanUserInfoDto> banUserInfosDto
 ) {
 }
