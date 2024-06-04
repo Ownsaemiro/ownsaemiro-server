@@ -2,8 +2,10 @@ package org.dongguk.ownsaemiro.ownsaemiroserver.domain;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.WriteReviewOfEvent;
 
 import java.time.LocalDate;
 
@@ -24,9 +26,6 @@ public class EventReview {
     @Column(name = "content", nullable = false, length = 3000)
     private String content;
 
-    @Column(name = "rating", nullable = false)
-    private Integer rating;
-
     @Column(name = "created_at", nullable = false)
     private LocalDate createdAt;
 
@@ -38,4 +37,21 @@ public class EventReview {
     @ManyToOne
     @JoinColumn(name = "event_id", nullable = false)
     private Event event;
+    @Builder
+    public EventReview(String title, String content, User user, Event event) {
+        this.title = title;
+        this.content = content;
+        this.createdAt = LocalDate.now();
+        this.user = user;
+        this.event = event;
+    }
+
+    public static EventReview create(User user, Event event, WriteReviewOfEvent writeReviewOfEvent){
+        return EventReview.builder()
+                .title(writeReviewOfEvent.title())
+                .content(writeReviewOfEvent.content())
+                .user(user)
+                .event(event)
+                .build();
+    }
 }

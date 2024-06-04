@@ -7,6 +7,7 @@ import org.dongguk.ownsaemiro.ownsaemiroserver.domain.*;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.ApplyEventDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.ChangeEventRequestStatusDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.ChangeSellingEventStatusDto;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.WriteReviewOfEvent;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.*;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.ECategory;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.EEventRequestStatus;
@@ -205,6 +206,22 @@ public class EventService {
         return DetailDescriptionOfEvent.builder()
                 .description(event.getDescription())
                 .build();
+    }
+
+    /**
+     * 행사 리뷰 작성
+     */
+    @Transactional
+    public void writeReviewOfEvent(Long userId, Long eventId, WriteReviewOfEvent writeReviewOfEvent){
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
+
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_EVENT));
+
+        eventReviewRepository.save(
+                EventReview.create(user, event, writeReviewOfEvent)
+        );
     }
 
     /**
