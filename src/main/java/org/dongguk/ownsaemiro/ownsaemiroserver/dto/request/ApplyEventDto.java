@@ -31,6 +31,9 @@ public record ApplyEventDto(
         String description,
 
         @JsonProperty("host_name")
-        String hostName
+        String hostName,
+
+        @JsonProperty("rating")
+        String rating
 ) {
 }

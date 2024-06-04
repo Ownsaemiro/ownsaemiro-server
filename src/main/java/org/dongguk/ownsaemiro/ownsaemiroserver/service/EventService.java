@@ -384,6 +384,7 @@ public class EventService {
                         .description(applyEventDto.description())
                         .address(applyEventDto.address())
                         .price(applyEventDto.price())
+                        .rating(applyEventDto.rating())
                         .duration(applyEventDto.startDate() + Constants.STR_CONNECTOR + applyEventDto.endDate())
                         .seat(applyEventDto.seats())
                         .category(ECategory.toECategory(applyEventDto.category()))
