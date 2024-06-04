@@ -8,11 +8,11 @@ import org.dongguk.ownsaemiro.ownsaemiroserver.exception.ErrorCode;
 @Getter
 @RequiredArgsConstructor
 public enum ECategory {
-    MUSICAL("뮤지컬"),
-    EXHIBITION("전시"),
-    THEATER("연극"),
-    CONCERT("콘서트"),
-    SPORT("스포츠");
+    MUSICAL("MUSICAL"),
+    EXHIBITION("EXHIBITION"),
+    THEATER("THEATER"),
+    CONCERT("CONCERT"),
+    SPORT("SPORT");
 
     private final String category;
 
