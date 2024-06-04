@@ -14,7 +14,7 @@ public class Constants {
     public static String NAVER_LOGIN_PATH = "https://openapi.naver.com/v1/nid/me";
     public static String KAKAO_LOGIN_PATH = "https://kapi.kakao.com/v2/user/me";
     public static String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_+=<>?";
-    public static String DEFAULT_IMAGE = "DEFAULT_IMAGE";
+    public static String DEFAULT_IMAGE = "https://ownsaemiro-bucket.s3.ap-northeast-2.amazonaws.com/ownsaemiro_default.png";
     public static String ALL = "전체";
     public static String STR_CONNECTOR = " ~ ";
     public static String MINUTE = "분";
