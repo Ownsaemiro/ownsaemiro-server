@@ -13,6 +13,7 @@ import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.ETicketStatus;
 import org.dongguk.ownsaemiro.ownsaemiroserver.exception.CommonException;
 import org.dongguk.ownsaemiro.ownsaemiroserver.exception.ErrorCode;
 import org.dongguk.ownsaemiro.ownsaemiroserver.repository.*;
+import org.dongguk.ownsaemiro.ownsaemiroserver.util.AuthUtil;
 import org.dongguk.ownsaemiro.ownsaemiroserver.util.DateUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -350,6 +351,8 @@ public class EventService {
                         .user(user)
                         .ticket(ticket)
                         .activatedAt(buyingTicketDto.buyingDate())
+                        .boughtAt(LocalDate.now())
+                        .orderId(AuthUtil.makeOrderId())
                         .build()
         );
 
