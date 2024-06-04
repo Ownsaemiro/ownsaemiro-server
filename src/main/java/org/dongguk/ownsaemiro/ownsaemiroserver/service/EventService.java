@@ -170,7 +170,7 @@ public class EventService {
     /**
      * 행사 상세 정보 보기 - info
      */
-    public DetailInfoOfEvent showDetailInfoOfEvent(Long userId, Long eventId){
+    public DetailInfoOfEventDto showDetailInfoOfEvent(Long userId, Long eventId){
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
 
@@ -181,7 +181,7 @@ public class EventService {
                 .map(Image::getUrl)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_IMAGE));
 
-        return DetailInfoOfEvent.builder()
+        return DetailInfoOfEventDto.builder()
                 .id(event.getId())
                 .name(event.getName())
                 .url(image)
@@ -199,11 +199,11 @@ public class EventService {
     /**
      * 행사 상세 정보 보기 - description
      */
-    public DetailDescriptionOfEvent showDescriptionOfEvent(Long eventId){
+    public DetailDescriptionOfEventDto showDescriptionOfEvent(Long eventId){
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_EVENT));
 
-        return DetailDescriptionOfEvent.builder()
+        return DetailDescriptionOfEventDto.builder()
                 .description(event.getDescription())
                 .build();
     }
@@ -227,17 +227,17 @@ public class EventService {
     /**
      * 행사 상세 정보 보기 - review
      */
-    public ReviewsOfEvent showReviewsOfEvent(Long eventId){
+    public ReviewsOfEventDto showReviewsOfEvent(Long eventId){
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_EVENT));
 
-        List<ReviewOfEvent> reviewOfEvents = eventReviewRepository.findTop3ByEvent(event).stream()
+        List<ReviewOfEventDto> reviewOfEventDtos = eventReviewRepository.findTop3ByEvent(event).stream()
                 .map(eventReview -> {
                     String image = userImageRepository.findByUser(eventReview.getUser())
                             .map(Image::getUrl)
                             .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_IMAGE));
 
-                    return ReviewOfEvent.builder()
+                    return ReviewOfEventDto.builder()
                             .id(eventReview.getId())
                             .image(image)
                             .nickname(eventReview.getUser().getNickname())
@@ -245,8 +245,8 @@ public class EventService {
                             .build();
                 }).toList();
 
-        return ReviewsOfEvent.builder()
-                .reviewsDto(reviewOfEvents)
+        return ReviewsOfEventDto.builder()
+                .reviewsDto(reviewOfEventDtos)
                 .build();
     }
 

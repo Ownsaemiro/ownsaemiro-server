@@ -22,16 +22,16 @@ public class AdminController {
             @RequestParam(value = "page", defaultValue = "1") Integer page,
             @RequestParam(value = "size", defaultValue = "10") Integer size
     ) {
-        ShowBannedUsers showBannedUsers = userService.showBannedUsers(page - 1, size);
+        ShowBannedUsersDto showBannedUsersDto = userService.showBannedUsers(page - 1, size);
 
-        return ResponseDto.ok(showBannedUsers);
+        return ResponseDto.ok(showBannedUsersDto);
     }
 
     @PatchMapping("/banned")
     public ResponseDto<?> unBanUser(@RequestBody BanInfo banInfo){
-        BanUserInfo banUserInfo = userService.banUser(banInfo);
+        BanUserInfoDto banUserInfoDto = userService.banUser(banInfo);
 
-        return ResponseDto.ok(banUserInfo);
+        return ResponseDto.ok(banUserInfoDto);
     }
 
     /*  관리자 판매 요청 관련 api  */

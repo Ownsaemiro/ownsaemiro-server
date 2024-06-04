@@ -63,16 +63,16 @@ public class EventController {
 
     @GetMapping("{eventId}/info")
     public ResponseDto<?> showDetailInfoOfEvent(@UserId Long userId, @PathVariable Long eventId){
-        DetailInfoOfEvent detailInfoOfEvent = eventService.showDetailInfoOfEvent(userId, eventId);
+        DetailInfoOfEventDto detailInfoOfEventDto = eventService.showDetailInfoOfEvent(userId, eventId);
 
-        return ResponseDto.ok(detailInfoOfEvent);
+        return ResponseDto.ok(detailInfoOfEventDto);
     }
 
     @GetMapping("{eventId}/brief")
     public ResponseDto<?> showDescriptionOfEvent(@PathVariable Long eventId){
-        DetailDescriptionOfEvent detailDescriptionOfEvent = eventService.showDescriptionOfEvent(eventId);
+        DetailDescriptionOfEventDto detailDescriptionOfEventDto = eventService.showDescriptionOfEvent(eventId);
 
-        return ResponseDto.ok(detailDescriptionOfEvent);
+        return ResponseDto.ok(detailDescriptionOfEventDto);
     }
 
     @PostMapping("{eventId}/review")
@@ -88,9 +88,9 @@ public class EventController {
 
     @GetMapping("{eventId}/top-review")
     public ResponseDto<?> showReviewsOfEvent(@PathVariable Long eventId){
-        ReviewsOfEvent reviewsOfEvent = eventService.showReviewsOfEvent(eventId);
+        ReviewsOfEventDto reviewsOfEventDto = eventService.showReviewsOfEvent(eventId);
 
-        return ResponseDto.ok(reviewsOfEvent);
+        return ResponseDto.ok(reviewsOfEventDto);
     }
 
     @GetMapping("{eventId}/seller")

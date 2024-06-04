@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 
 @Builder
-public record ReviewOfEvent(
+public record ReviewOfEventDto(
         @JsonProperty("id")
         Long id,
 
