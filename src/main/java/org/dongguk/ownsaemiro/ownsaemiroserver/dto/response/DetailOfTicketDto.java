@@ -33,6 +33,12 @@ public record DetailOfTicketDto(
         String phoneNumber,
 
         @JsonProperty("transaction_number")
-        String orderId
+        String orderId,
+
+        @JsonProperty("buyer_id")
+        Long buyerId,
+
+        @JsonProperty("ticket_hash")
+        String ticketHash
 ) {
 }

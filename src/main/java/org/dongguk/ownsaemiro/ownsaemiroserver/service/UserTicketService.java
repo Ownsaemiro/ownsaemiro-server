@@ -94,6 +94,8 @@ public class UserTicketService {
                 .duration(event.getDuration())
                 .phoneNumber(event.getUser().getPhoneNumber())
                 .orderId(orderId)
+                .buyerId(user.getId())
+                .ticketHash(ticket.getHash())
                 .build();
     }
 
