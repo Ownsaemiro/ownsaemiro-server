@@ -408,7 +408,6 @@ public class EventService {
         Event event = eventRepository.save(
                 Event.builder()
                         .name(applyEventDto.name())
-                        .brief(applyEventDto.description().substring(0, Math.min(applyEventDto.description().length(), 100)))
                         .description(applyEventDto.description())
                         .address(applyEventDto.address())
                         .price(applyEventDto.price())
