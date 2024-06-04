@@ -54,6 +54,9 @@ public class Event {
     @Column(name = "status")
     private EEventStatus status;
 
+    @Column(name = "rating")
+    private String rating;
+
     @Column(name = "is_approved", nullable = false)
     private Boolean isApproved;
 
@@ -64,7 +67,7 @@ public class Event {
     private User user;
 
     @Builder
-    public Event(String name, String brief, String description, String address, String duration, Integer runningTime, Integer seat, ECategory category, Integer price, EEventStatus status, Boolean isApproved, User user) {
+    public Event(String name, String brief, String description, String address, String duration, Integer runningTime, Integer seat, ECategory category, Integer price, String rating, EEventStatus status, Boolean isApproved, User user) {
         this.name = name;
         this.brief = brief;
         this.description = description;
@@ -75,6 +78,7 @@ public class Event {
         this.category = category;
         this.price = price;
         this.status = status;
+        this.rating = rating;
         this.isApproved = isApproved;
         this.user = user;
     }
