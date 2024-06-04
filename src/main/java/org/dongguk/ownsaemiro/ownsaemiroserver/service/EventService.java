@@ -140,7 +140,7 @@ public class EventService {
         if (Constants.ALL.equals(strCategory)) {
             // 전체 검색
             events = eventRepository.findAllByStatus(status, PageRequest.of(page, size));
-        } else if (category == null) {
+        } else if (category != null) {
             // 카테고리별 검색
             events = eventRepository.findAllByStatusAndCategory(status, category, PageRequest.of(page, size));
         } else {
@@ -234,7 +234,9 @@ public class EventService {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_EVENT));
 
-        List<ReviewOfEventDto> reviewOfEventDtos = eventReviewRepository.findTop3ByEvent(event).stream()
+
+        List<ReviewOfEventDto> reviewOfEventsDto = eventReviewRepository.findTop3ByEvent(event).stream()
+
                 .map(eventReview -> {
                     String image = userImageRepository.findByUser(eventReview.getUser())
                             .map(Image::getUrl)
@@ -249,7 +251,7 @@ public class EventService {
                 }).toList();
 
         return ReviewsOfEventDto.builder()
-                .reviewsDto(reviewOfEventDtos)
+                .reviewsDto(reviewOfEventsDto)
                 .build();
     }
 
