@@ -30,4 +30,8 @@ public class UserWallet {
                 .point(0)
                 .build();
     }
+
+    public void pay(Integer amount){
+        this.point -= amount;
+    }
 }

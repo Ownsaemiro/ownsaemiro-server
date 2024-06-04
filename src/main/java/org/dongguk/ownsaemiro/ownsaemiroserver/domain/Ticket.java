@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.EEventStatus;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.ETicketStatus;
 
 @Entity
@@ -29,5 +30,9 @@ public class Ticket {
     @ManyToOne
     @Column(name = "event_id", nullable = false)
     private Event event;
+
+    public void changeStatus(ETicketStatus status){
+        this.status = status;
+    }
 
 }

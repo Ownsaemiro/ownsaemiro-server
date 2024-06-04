@@ -4,14 +4,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dongguk.ownsaemiro.ownsaemiroserver.constants.Constants;
 import org.dongguk.ownsaemiro.ownsaemiroserver.domain.*;
-import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.ApplyEventDto;
-import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.ChangeEventRequestStatusDto;
-import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.ChangeSellingEventStatusDto;
-import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.WriteReviewOfEvent;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.*;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.*;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.ECategory;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.EEventRequestStatus;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.EEventStatus;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.ETicketStatus;
 import org.dongguk.ownsaemiro.ownsaemiroserver.exception.CommonException;
 import org.dongguk.ownsaemiro.ownsaemiroserver.exception.ErrorCode;
 import org.dongguk.ownsaemiro.ownsaemiroserver.repository.*;
@@ -32,10 +30,15 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class EventService {
+    private final TicketHistoryRepository ticketHistoryRepository;
+    private final UserWalletHistoryRepository userWalletHistoryRepository;
+    private final UserTicketRepository userTicketRepository;
+    private final UserWalletRepository userWalletRepository;
     private final UserImageRepository userImageRepository;
     private final S3Service s3Service;
     private final UserRepository userRepository;
     private final EventRepository eventRepository;
+    private final TicketRepository ticketRepository;
     private final EventImageRepository eventImageRepository;
     private final EventReviewRepository eventReviewRepository;
     private final EventRequestRepository eventRequestRepository;
@@ -291,6 +294,76 @@ public class EventService {
                 .pageInfo(PageInfo.convert(events, page))
                 .searchEventDto(searchEventsDto)
                 .build();
+    }
+
+    /**
+     * 사용자 행사 티켓 구매
+     */
+    @Transactional
+    public void buyingTicket(Long userId, Long eventId, BuyingTicketDto buyingTicketDto){
+        /*
+            1. 사용자 지갑에서 잔액 확인 및 대소 비교
+            2. 구매 전인 티켓이 남아있는지 확인
+            3. user ticket 객체 생성, 포인트 차감
+            4. ticket 상태 변경
+            5. user, ticket history 생성
+         */
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
+
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_EVENT));
+
+        UserWallet userWallet = userWalletRepository.findById(user.getId())
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_WALLET));
+
+        // 사용자 지갑 잔액 확인, 행사 티켓 가격과 대소 비교
+        if (userWallet.getPoint() < event.getPrice())
+            throw new CommonException(ErrorCode.NOT_ENOUGH_POINT);
+
+        // 구매 가능한 티켓 확인, 없다면 행사 매진처리 및 예외처리
+        Ticket ticket = ticketRepository.findFirstByEventAndStatus(event, ETicketStatus.BEFORE)
+                .orElseThrow(() -> {
+                    if (!event.getStatus().equals(EEventStatus.SOLDOUT))
+                        event.changeStatus(EEventStatus.SOLDOUT);
+
+                    return new CommonException(ErrorCode.SOLDOUT_EVENT);
+                });
+
+        // 사용자 구매 티켓 저장
+        UserTicket userTicket = userTicketRepository.save(
+                UserTicket.builder()
+                        .user(user)
+                        .ticket(ticket)
+                        .createdAt(buyingTicketDto.buyingDate())
+                        .build()
+        );
+
+        // 사용자 지갑 포인트 차감
+        userWallet.pay(event.getPrice());
+
+        // 티켓의 상태 변경
+        ticket.changeStatus(ETicketStatus.OCCUPIED);
+
+        // 사용자 지갑 이력 저장
+        userWalletHistoryRepository.save(
+                UserWalletHistory.builder()
+                        .amount(-1 * event.getPrice())
+                        .userWallet(userWallet)
+                        .createdAt(buyingTicketDto.buyingDate())
+                        .build()
+        );
+
+        // 티켓 구매 이력 저장
+        ticketHistoryRepository.save(
+                TicketHistory.builder()
+                        .ticket(ticket)
+                        .status(ETicketStatus.OCCUPIED)
+                        .createdAt(buyingTicketDto.buyingDate())
+                        .build()
+        );
+
     }
 
 

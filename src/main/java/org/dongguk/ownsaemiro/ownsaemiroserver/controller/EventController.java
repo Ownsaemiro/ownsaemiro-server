@@ -3,6 +3,7 @@ package org.dongguk.ownsaemiro.ownsaemiroserver.controller;
 import lombok.RequiredArgsConstructor;
 import org.dongguk.ownsaemiro.ownsaemiroserver.annotation.UserId;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.global.ResponseDto;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.BuyingTicketDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.WriteReviewOfEvent;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.*;
 import org.dongguk.ownsaemiro.ownsaemiroserver.service.EventService;
@@ -98,5 +99,19 @@ public class EventController {
         SellerOfEventDto sellerOfEventDto = eventService.showDetailInfoOfSeller(eventId);
 
         return ResponseDto.ok(sellerOfEventDto);
+    }
+    /**
+     * 사용자 티켓 구매하기
+     */
+    @PostMapping("{eventId}")
+    public ResponseDto<?> buyingTicket(
+            @UserId Long userId,
+            @PathVariable Long eventId,
+            @RequestBody BuyingTicketDto buyingTicketDto
+    ){
+        eventService.buyingTicket(userId, eventId, buyingTicketDto);
+
+        return ResponseDto.ok(null);
+
     }
 }

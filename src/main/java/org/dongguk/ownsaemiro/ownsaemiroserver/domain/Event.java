@@ -82,13 +82,16 @@ public class Event {
     /**
      * 행사 상태 변경 함수
      */
-    @Transactional
     public EEventStatus changeStatus(EEventStatus status){
         this.status = status;
         return this.status;
     }
 
+    /**
+     * 행사 승인 상태 변경 함수
+     */
     public void changeApproved(Boolean isApproved){
         this.isApproved = isApproved;
     }
+
 }

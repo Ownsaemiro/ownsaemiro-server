@@ -5,37 +5,39 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.ETicketStatus;
 
 import java.time.LocalDate;
 
 @Entity
 @Getter
-@Table(name = "ticket_histories")
+@Table(name = "user_tickets")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class TicketHistory {
+
+public class UserTicket {
+
+    /*  사용자 티켓 기본 속성  */
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    /*  티켓 기록 기본 속성  */
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
-    private ETicketStatus status;
-
-    @Column(name = "created_at", nullable = false)
+    @Column(name = "created_at")
     private LocalDate createdAt;
 
-    /*  연관 관계 속성  */
+    /*  사용자 티켓 연관관계 속성  */
     @ManyToOne
-    @JoinColumn(name = "ticket_id", nullable = false)
+    @Column(name = "user_id", nullable = false)
+    private User user;
+
+    @ManyToOne
+    @Column(name = "ticket_id", nullable = false)
     private Ticket ticket;
 
     @Builder
-    public TicketHistory(ETicketStatus status, LocalDate createdAt, Ticket ticket) {
-        this.status = status;
+    public UserTicket(LocalDate createdAt, User user, Ticket ticket) {
         this.createdAt = createdAt;
+        this.user = user;
         this.ticket = ticket;
     }
+
 }

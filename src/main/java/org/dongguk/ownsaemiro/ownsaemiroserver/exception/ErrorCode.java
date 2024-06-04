@@ -17,6 +17,9 @@ public enum ErrorCode {
     INVALID_USER(40006, HttpStatus.BAD_REQUEST, "신청자가 아닙니다."),
     ALREADY_SAME_BAN_INFO(40007, HttpStatus.BAD_REQUEST, "이미 요청 상태와 동일합니다."),
     ALREADY_LIKED_EVENT(40008, HttpStatus.BAD_REQUEST, "이미 좋아요한 행사입니다."),
+    SOLDOUT_EVENT(40009, HttpStatus.BAD_REQUEST, "매진된 행사입니다."),
+
+    NOT_ENOUGH_POINT(40010, HttpStatus.BAD_REQUEST, "포인트가 부족합니다."),
 
     //401
     INVALID_HEADER_VALUE(40100, HttpStatus.UNAUTHORIZED, "올바르지 않은 헤더값입니다."),
@@ -42,6 +45,7 @@ public enum ErrorCode {
     NOT_FOUND_EVENT(40403, HttpStatus.NOT_FOUND, "존재하지 않는 행사입니다."),
     NOT_FOUND_EVENT_REQUEST(40403, HttpStatus.NOT_FOUND, "존재하지 않는 행사 요청입니다."),
     NOT_FOUND_LIKED(40404, HttpStatus.NOT_FOUND, "존재하지 않는 좋아요입니다."),
+    NOT_FOUND_WALLET(40405, HttpStatus.NOT_FOUND, "존재하지 않는 사용자 지갑입니다."),
 
     //500
     INTERNAL_SERVER_ERROR(50000, HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류입니다")
