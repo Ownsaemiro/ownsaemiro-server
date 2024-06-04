@@ -26,7 +26,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -162,6 +161,35 @@ public class EventService {
         return EventsDto.builder()
                 .pageInfo(PageInfo.convert(events, page))
                 .eventsDto(eventsDto)
+                .build();
+    }
+
+    /**
+     * 행사 상세 정보 보기 - info
+     */
+    public DetailInfoOfEvent showDetailInfoOfEvent(Long userId, Long eventId){
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
+
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_EVENT));
+
+        String image = eventImageRepository.findByEvent(event)
+                .map(Image::getUrl)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_IMAGE));
+
+        return DetailInfoOfEvent.builder()
+                .id(event.getId())
+                .name(event.getName())
+                .url(image)
+                .category(event.getCategory().getCategory())
+                .runningTime(event.getRunningTime() + Constants.MINUTE)
+                .rating(event.getRating())
+                .address(event.getAddress())
+                .phoneNumber(event.getUser().getPhoneNumber())
+                .price(event.getPrice())
+                .duration(event.getDuration())
+                .isLiked(userLikedEventRepository.existsByUserAndEvent(user, event))
                 .build();
     }
 
