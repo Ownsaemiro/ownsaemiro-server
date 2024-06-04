@@ -234,7 +234,9 @@ public class EventService {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_EVENT));
 
+
         List<ReviewOfEventDto> reviewOfEventsDto = eventReviewRepository.findTop3ByEvent(event).stream()
+
                 .map(eventReview -> {
                     String image = userImageRepository.findByUser(eventReview.getUser())
                             .map(Image::getUrl)
