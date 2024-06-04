@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.ETicketStatus;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -24,7 +24,7 @@ public class TicketHistory {
     private ETicketStatus status;
 
     @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt;
+    private LocalDate createdAt;
 
     /*  연관 관계 속성  */
     @ManyToOne
