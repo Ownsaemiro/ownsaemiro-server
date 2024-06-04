@@ -66,4 +66,11 @@ public class EventController {
 
         return ResponseDto.ok(detailInfoOfEvent);
     }
+
+    @GetMapping("{eventId}/brief")
+    public ResponseDto<?> showDescriptionOfEvent(@PathVariable Long eventId){
+        DetailDescriptionOfEvent detailDescriptionOfEvent = eventService.showDescriptionOfEvent(eventId);
+
+        return ResponseDto.ok(detailDescriptionOfEvent);
+    }
 }

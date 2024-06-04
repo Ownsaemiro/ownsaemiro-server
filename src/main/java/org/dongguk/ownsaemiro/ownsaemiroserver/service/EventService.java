@@ -194,6 +194,18 @@ public class EventService {
     }
 
     /**
+     * 행사 상세 정보 보기 - description
+     */
+    public DetailDescriptionOfEvent showDescriptionOfEvent(Long eventId){
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_EVENT));
+
+        return DetailDescriptionOfEvent.builder()
+                .description(event.getDescription())
+                .build();
+    }
+
+    /**
      * 사용자 행사 검색
      */
     public SearchEventsDto searchEvent(String name, Integer page, Integer size){
