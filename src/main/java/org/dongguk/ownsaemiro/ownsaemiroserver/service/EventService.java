@@ -154,7 +154,7 @@ public class EventService {
                             .image(imageUrl)
                             .name(event.getName())
                             .address(event.getAddress())
-                            .duration(DateUtil.splitDate(event.getDuration()))
+                            .duration(event.getDuration())
                             .build();
                 }
                 ).toList();
