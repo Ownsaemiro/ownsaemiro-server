@@ -2,17 +2,15 @@ package org.dongguk.ownsaemiro.ownsaemiroserver.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.dongguk.ownsaemiro.ownsaemiroserver.domain.Image;
-import org.dongguk.ownsaemiro.ownsaemiroserver.domain.User;
-import org.dongguk.ownsaemiro.ownsaemiroserver.domain.UserTicket;
+import org.dongguk.ownsaemiro.ownsaemiroserver.constants.Constants;
+import org.dongguk.ownsaemiro.ownsaemiroserver.domain.*;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.DetailOfTicketDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.MyTicketDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.MyTicketsDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.PageInfo;
 import org.dongguk.ownsaemiro.ownsaemiroserver.exception.CommonException;
 import org.dongguk.ownsaemiro.ownsaemiroserver.exception.ErrorCode;
-import org.dongguk.ownsaemiro.ownsaemiroserver.repository.EventImageRepository;
-import org.dongguk.ownsaemiro.ownsaemiroserver.repository.UserRepository;
-import org.dongguk.ownsaemiro.ownsaemiroserver.repository.UserTicketRepository;
+import org.dongguk.ownsaemiro.ownsaemiroserver.repository.*;
 import org.dongguk.ownsaemiro.ownsaemiroserver.util.DateUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,9 +24,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserTicketService {
     private final UserRepository userRepository;
+    private final TicketRepository ticketRepository;
     private final EventImageRepository eventImageRepository;
     private final UserTicketRepository userTicketRepository;
 
+    /**
+     * 사용자 티켓 구매 내역 조회
+     */
     public MyTicketsDto showMyTickets(Long userId, Integer page, Integer size){
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
@@ -58,4 +60,36 @@ public class UserTicketService {
                 .build();
     }
 
+    /**
+     * 사용자 티켓 상세 보기
+     */
+    public DetailOfTicketDto showDetailOfTicket(Long userId, Long ticketId){
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
+
+        Ticket ticket = ticketRepository.findById(ticketId)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_TICKET));
+
+        String orderId = userTicketRepository.findOrderIdByUserAndTicket(user, ticket)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER_TICKET));
+
+        String image = eventImageRepository.findByEvent(ticket.getEvent())
+                .map(Image::getUrl)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_IMAGE));
+
+        Event event = ticket.getEvent();
+
+        return DetailOfTicketDto.builder()
+                .eventId(event.getId())
+                .image(image)
+                .name(event.getName())
+                .category(event.getCategory().getCategory())
+                .runningTime(event.getRunningTime() + Constants.MINUTE)
+                .rating(event.getRating())
+                .address(event.getAddress())
+                .duration(event.getDuration())
+                .phoneNumber(event.getUser().getPhoneNumber())
+                .orderId(orderId)
+                .build();
+    }
 }
