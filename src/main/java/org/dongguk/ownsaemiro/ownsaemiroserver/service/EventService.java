@@ -140,7 +140,7 @@ public class EventService {
         if (Constants.ALL.equals(strCategory)) {
             // 전체 검색
             events = eventRepository.findAllByStatus(status, PageRequest.of(page, size));
-        } else if (category == null) {
+        } else if (category != null) {
             // 카테고리별 검색
             events = eventRepository.findAllByStatusAndCategory(status, category, PageRequest.of(page, size));
         } else {

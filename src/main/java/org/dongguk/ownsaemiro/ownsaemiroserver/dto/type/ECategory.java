@@ -18,14 +18,14 @@ public enum ECategory {
 
     public static ECategory toECategory(String strCategory){
         for(ECategory eCategory : ECategory.values()){
-            if (eCategory.category.equals(strCategory))
+            if (eCategory.getCategory().equals(strCategory))
                 return eCategory;
         }
         throw new CommonException(ErrorCode.INVALID_PARAMETER_FORMAT);
     }
     public static ECategory filterCondition(String category){
         for(ECategory eCategory : ECategory.values()){
-            if (eCategory.category.equals(category))
+            if (eCategory.getCategory().equals(category))
                 return eCategory;
         }
         return null;
