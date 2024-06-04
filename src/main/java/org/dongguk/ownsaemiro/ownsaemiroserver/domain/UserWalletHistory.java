@@ -2,6 +2,7 @@ package org.dongguk.ownsaemiro.ownsaemiroserver.domain;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -29,4 +30,10 @@ public class UserWalletHistory {
     @JoinColumn(name = "user_wallet_id", nullable = false)
     private UserWallet userWallet;
 
+    @Builder
+    public UserWalletHistory(Integer amount, LocalDate createdAt, UserWallet userWallet) {
+        this.amount = amount;
+        this.createdAt = createdAt;
+        this.userWallet = userWallet;
+    }
 }

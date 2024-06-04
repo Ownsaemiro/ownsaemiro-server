@@ -3,6 +3,8 @@ package org.dongguk.ownsaemiro.ownsaemiroserver.controller;
 import lombok.RequiredArgsConstructor;
 import org.dongguk.ownsaemiro.ownsaemiroserver.annotation.UserId;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.global.ResponseDto;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.BuyingTicketDto;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.WriteReviewOfEvent;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.*;
 import org.dongguk.ownsaemiro.ownsaemiroserver.service.EventService;
 import org.springframework.web.bind.annotation.*;
@@ -58,5 +60,58 @@ public class EventController {
         EventsDto eventsDto = eventService.showEvents(status, process, page-1, size);
 
         return ResponseDto.ok(eventsDto);
+    }
+
+    @GetMapping("{eventId}/info")
+    public ResponseDto<?> showDetailInfoOfEvent(@UserId Long userId, @PathVariable Long eventId){
+        DetailInfoOfEventDto detailInfoOfEventDto = eventService.showDetailInfoOfEvent(userId, eventId);
+
+        return ResponseDto.ok(detailInfoOfEventDto);
+    }
+
+    @GetMapping("{eventId}/brief")
+    public ResponseDto<?> showDescriptionOfEvent(@PathVariable Long eventId){
+        DetailDescriptionOfEventDto detailDescriptionOfEventDto = eventService.showDescriptionOfEvent(eventId);
+
+        return ResponseDto.ok(detailDescriptionOfEventDto);
+    }
+
+    @PostMapping("{eventId}/review")
+    public ResponseDto<?> writeReviewOfEvent(
+            @UserId Long userId,
+            @PathVariable Long eventId,
+            @RequestBody WriteReviewOfEvent writeReviewOfEvent
+    ){
+        eventService.writeReviewOfEvent(userId, eventId, writeReviewOfEvent);
+
+        return ResponseDto.ok(null);
+    }
+
+    @GetMapping("{eventId}/top-review")
+    public ResponseDto<?> showReviewsOfEvent(@PathVariable Long eventId){
+        ReviewsOfEventDto reviewsOfEventDto = eventService.showReviewsOfEvent(eventId);
+
+        return ResponseDto.ok(reviewsOfEventDto);
+    }
+
+    @GetMapping("{eventId}/seller")
+    public ResponseDto<?> showDetailInfoOfSeller(@PathVariable Long eventId){
+        SellerOfEventDto sellerOfEventDto = eventService.showDetailInfoOfSeller(eventId);
+
+        return ResponseDto.ok(sellerOfEventDto);
+    }
+    /**
+     * 사용자 티켓 구매하기
+     */
+    @PostMapping("{eventId}")
+    public ResponseDto<?> buyingTicket(
+            @UserId Long userId,
+            @PathVariable Long eventId,
+            @RequestBody BuyingTicketDto buyingTicketDto
+    ){
+        eventService.buyingTicket(userId, eventId, buyingTicketDto);
+
+        return ResponseDto.ok(null);
+
     }
 }

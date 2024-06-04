@@ -8,9 +8,9 @@ import org.dongguk.ownsaemiro.ownsaemiroserver.domain.User;
 import org.dongguk.ownsaemiro.ownsaemiroserver.domain.UserImage;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.BanInfo;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.UpdateNicknameDto;
-import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.BanUserInfo;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.BanUserInfoDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.PageInfo;
-import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.ShowBannedUsers;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.ShowBannedUsersDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.UserProfileDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.exception.CommonException;
 import org.dongguk.ownsaemiro.ownsaemiroserver.exception.ErrorCode;
@@ -40,11 +40,11 @@ public class UserService {
     /**
      * 관리자 정지 사용자 목록 조회
      */
-    public ShowBannedUsers showBannedUsers(Integer page, Integer size){
+    public ShowBannedUsersDto showBannedUsers(Integer page, Integer size){
         Page<User> allBannedUsers = userRepository.findAllByIsBanned(PageRequest.of(page, size));
 
-        List<BanUserInfo> banUserInfos = allBannedUsers.getContent().stream()
-                .map(user -> BanUserInfo.builder()
+        List<BanUserInfoDto> banUserInfoDtos = allBannedUsers.getContent().stream()
+                .map(user -> BanUserInfoDto.builder()
                         .userId(user.getId())
                         .serialId(user.getSerialId())
                         .role(user.getRole().getRole())
@@ -52,9 +52,9 @@ public class UserService {
                         .build()
                 ).toList();
 
-        return ShowBannedUsers.builder()
+        return ShowBannedUsersDto.builder()
                 .pageInfo(PageInfo.convert(allBannedUsers, page))
-                .banUserInfos(banUserInfos)
+                .banUserInfosDto(banUserInfoDtos)
                 .build();
     }
 
@@ -62,7 +62,7 @@ public class UserService {
      * 관리자 사용자 정지 or 정지 해제
      */
     @Transactional
-    public BanUserInfo banUser(BanInfo banInfo){
+    public BanUserInfoDto banUser(BanInfo banInfo){
         User user = userRepository.findBySerialId(banInfo.serialId())
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
 
@@ -72,7 +72,7 @@ public class UserService {
 
         Boolean userBan = user.ban();
 
-        return BanUserInfo.builder()
+        return BanUserInfoDto.builder()
                 .userId(user.getId())
                 .serialId(user.getSerialId())
                 .role(user.getRole().getRole())

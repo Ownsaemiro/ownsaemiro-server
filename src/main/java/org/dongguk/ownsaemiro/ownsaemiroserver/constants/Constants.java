@@ -17,6 +17,7 @@ public class Constants {
     public static String DEFAULT_IMAGE = "DEFAULT_IMAGE";
     public static String ALL = "전체";
     public static String STR_CONNECTOR = " ~ ";
+    public static String MINUTE = "분";
 
     public static List<String> NO_NEED_AUTH = List.of(
             "/api/auth/sign-up",

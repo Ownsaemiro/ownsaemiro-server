@@ -6,11 +6,8 @@ import lombok.Builder;
 import java.util.List;
 
 @Builder
-public record ShowBannedUsers(
-        @JsonProperty("page_info")
-        PageInfo pageInfo,
-
-        @JsonProperty("banned_users")
-        List<BanUserInfo> banUserInfos
+public record ReviewsOfEventDto(
+        @JsonProperty("reviews")
+        List<ReviewOfEventDto> reviewsDto
 ) {
 }

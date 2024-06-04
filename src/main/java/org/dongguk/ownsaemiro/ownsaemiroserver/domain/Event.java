@@ -25,9 +25,6 @@ public class Event {
     @Column(name = "name", nullable = false, length = 30)
     private String name;
 
-    @Column(name = "brief", length = 100)
-    private String brief;
-
     @Column(name = "description", nullable = false, length = 3000)
     private String description;
 
@@ -67,9 +64,8 @@ public class Event {
     private User user;
 
     @Builder
-    public Event(String name, String brief, String description, String address, String duration, Integer runningTime, Integer seat, ECategory category, Integer price, String rating, EEventStatus status, Boolean isApproved, User user) {
+    public Event(String name, String description, String address, String duration, Integer runningTime, Integer seat, ECategory category, Integer price, String rating, EEventStatus status, Boolean isApproved, User user) {
         this.name = name;
-        this.brief = brief;
         this.description = description;
         this.address = address;
         this.duration = duration;
@@ -86,13 +82,16 @@ public class Event {
     /**
      * 행사 상태 변경 함수
      */
-    @Transactional
     public EEventStatus changeStatus(EEventStatus status){
         this.status = status;
         return this.status;
     }
 
+    /**
+     * 행사 승인 상태 변경 함수
+     */
     public void changeApproved(Boolean isApproved){
         this.isApproved = isApproved;
     }
+
 }

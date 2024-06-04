@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.EEventStatus;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.ETicketStatus;
 
 @Entity
@@ -11,6 +12,8 @@ import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.ETicketStatus;
 @Table(name = "tickets")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Ticket {
+
+    /*  티켓 기본 속성  */
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,5 +25,14 @@ public class Ticket {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private ETicketStatus status;
+
+    /*  티켓 연관관계 속성  */
+    @ManyToOne
+    @JoinColumn(name = "event_id", nullable = false)
+    private Event event;
+
+    public void changeStatus(ETicketStatus status){
+        this.status = status;
+    }
 
 }
