@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/events")
-@Slf4j
 @RequiredArgsConstructor
 public class EventController {
     private final EventService eventService;
@@ -122,11 +121,7 @@ public class EventController {
      */
     @GetMapping("/popular")
     public ResponseDto<?> showPopularEvents(){
-        PopularEventsDto popularEventsDto = eventService.showPopularEvents();
-
-        log.info("PopularEventsDto: {}", popularEventsDto.toString());
-
-        return ResponseDto.ok(popularEventsDto);
+        return ResponseDto.ok(eventService.showPopularEvents());
     }
 
     /**
