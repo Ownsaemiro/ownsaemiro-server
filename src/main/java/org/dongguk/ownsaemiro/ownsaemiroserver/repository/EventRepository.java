@@ -10,14 +10,33 @@ import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.ERole;
 import org.springframework.cglib.core.Local;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 
 public interface EventRepository extends JpaRepository<Event, Long> {
+
+    /* ================================================================= */
+    //                          홈 api 관련 쿼리                            //
+    /* ================================================================= */
+    /**
+     * 인기 있는 행사 조회
+     */
+    @Query("select e from Event e " +
+            "join UserLikedEvent ul " +
+            "on e.id = ul.event.id " +
+            "where e.isApproved = true " +
+            "group by e.id " +
+            "order by count(ul.id) desc limit 3")
+    List<Event> findPopularEvents();
+
+    @Query("select e from Event e where e.isApproved = true order by rand() limit 5")
+    List<Event> findTop5ByRandomOrder();
 
     /* ================================================================= */
     //                         사용자 api 관련 쿼리                          //
