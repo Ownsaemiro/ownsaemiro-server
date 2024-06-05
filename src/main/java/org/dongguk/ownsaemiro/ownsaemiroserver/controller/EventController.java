@@ -1,6 +1,7 @@
 package org.dongguk.ownsaemiro.ownsaemiroserver.controller;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.dongguk.ownsaemiro.ownsaemiroserver.annotation.UserId;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.global.ResponseDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.BuyingTicketDto;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/events")
+@Slf4j
 @RequiredArgsConstructor
 public class EventController {
     private final EventService eventService;
@@ -113,5 +115,25 @@ public class EventController {
 
         return ResponseDto.ok(null);
 
+    }
+
+    /**
+     * 인기 있는 행사
+     */
+    @GetMapping("/popular")
+    public ResponseDto<?> showPopularEvents(){
+        PopularEventsDto popularEventsDto = eventService.showPopularEvents();
+
+        log.info("PopularEventsDto: {}", popularEventsDto.toString());
+
+        return ResponseDto.ok(popularEventsDto);
+    }
+
+    /**
+     * 사용자 추천 행사
+     */
+    @GetMapping("/recommends")
+    public ResponseDto<?> showRecommendEvents() {
+        return ResponseDto.ok(eventService.showRecommendEvents());
     }
 }
