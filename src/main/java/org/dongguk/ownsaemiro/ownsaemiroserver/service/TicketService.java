@@ -99,7 +99,7 @@ public class TicketService {
 
 
         return AllAboutEventDto.builder()
-                .id(event.getId())
+                .id(ticket.getId())
                 .image(image)
                 .name(event.getName())
                 .runningTime(event.getRunningTime() + Constants.MINUTE)
