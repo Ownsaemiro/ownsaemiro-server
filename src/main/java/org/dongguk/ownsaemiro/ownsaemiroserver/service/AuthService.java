@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dongguk.ownsaemiro.ownsaemiroserver.constants.Constants;
 import org.dongguk.ownsaemiro.ownsaemiroserver.domain.User;
+import org.dongguk.ownsaemiro.ownsaemiroserver.domain.UserImage;
 import org.dongguk.ownsaemiro.ownsaemiroserver.domain.UserWallet;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.AuthSignUpDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.OauthSignUpDto;
@@ -13,6 +14,7 @@ import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.JwtTokenDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.ServiceSerialIdDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.EProvider;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.ERole;
+import org.dongguk.ownsaemiro.ownsaemiroserver.repository.UserImageRepository;
 import org.dongguk.ownsaemiro.ownsaemiroserver.repository.UserRepository;
 import org.dongguk.ownsaemiro.ownsaemiroserver.repository.UserWalletRepository;
 import org.dongguk.ownsaemiro.ownsaemiroserver.security.info.AuthenticationResponse;
@@ -24,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.Map;
 import java.util.UUID;
 
@@ -31,11 +34,14 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class AuthService {
+    private final JwtUtil jwtUtil;
+    private final RestClientUtil restClientUtil;
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final UserWalletRepository userWalletRepository;
-    private final RestClientUtil restClientUtil;
-    private final JwtUtil jwtUtil;
+    private final UserImageRepository userImageRepository;
+
+
 
     /**
      * 카카오 시리얼 아이디 조회
@@ -75,6 +81,16 @@ public class AuthService {
                         ERole.toERole(authSignUpDto.role())
                 )
         );
+
+        // 사용자 이미지 생성
+        userImageRepository.save(
+                UserImage.builder()
+                        .name(Constants.DEFAULT_IMAGE_NAME)
+                        .url(Constants.DEFAULT_IMAGE)
+                        .createdAt(LocalDate.now())
+                        .user(user)
+                        .build()
+        );
     }
 
     /**
@@ -92,10 +108,21 @@ public class AuthService {
                                     ERole.USER
                             ));
                             log.info("oauth 새로운 사용자 저장 완료");
+
                             userWalletRepository.save(
                                     UserWallet.create(newUser.getId())
                             );
                             log.info("oauth 새로운 사용자 지갑 생성 완료");
+
+                            userImageRepository.save(
+                                    UserImage.builder()
+                                            .name(Constants.DEFAULT_IMAGE_NAME)
+                                            .url(Constants.DEFAULT_IMAGE)
+                                            .createdAt(LocalDate.now())
+                                            .user(newUser)
+                                            .build()
+                            );
+                            log.info("oauth 사용자 이미지 생성");
 
                             return newUser;
                         });
