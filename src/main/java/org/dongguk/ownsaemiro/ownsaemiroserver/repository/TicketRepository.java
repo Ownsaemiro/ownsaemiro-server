@@ -14,6 +14,13 @@ import java.util.Optional;
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
 
     /**
+     * 구매가 가능한 티켓의 개수 파악
+     */
+    @Query("select count(t) from Ticket t " +
+            "where t.status = org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.ETicketStatus.BEFORE " +
+            "and t.event =:event" )
+    Long countAvailableTickets(Event event);
+    /**
      * 양도 가능한 티켓 조회 -> 전체 조회
      */
     @Query("select t from Ticket t " +
