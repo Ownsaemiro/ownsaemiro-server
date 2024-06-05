@@ -44,7 +44,9 @@ public class AssignmentController {
      * 양도 신청하기 api
      */
     @PutMapping("/tickets/{ticketId}")
-    public void applyAssignment(@PathVariable Long ticketId){
-        ticketService.applyAssignment(ticketId);
+    public ResponseDto<?> applyAssignment(@UserId Long userId, @PathVariable Long ticketId){
+        ticketService.applyAssignment(userId, ticketId);
+
+        return ResponseDto.created(null);
     }
 }
