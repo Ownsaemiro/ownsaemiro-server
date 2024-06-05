@@ -12,8 +12,10 @@ import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.ECategory;
 import org.dongguk.ownsaemiro.ownsaemiroserver.exception.CommonException;
 import org.dongguk.ownsaemiro.ownsaemiroserver.exception.ErrorCode;
 import org.dongguk.ownsaemiro.ownsaemiroserver.repository.EventImageRepository;
+import org.dongguk.ownsaemiro.ownsaemiroserver.repository.EventRepository;
 import org.dongguk.ownsaemiro.ownsaemiroserver.repository.TicketRepository;
 import org.dongguk.ownsaemiro.ownsaemiroserver.repository.UserTicketRepository;
+import org.dongguk.ownsaemiro.ownsaemiroserver.util.DateUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -26,7 +28,10 @@ import java.util.List;
 public class TicketService {
     private final TicketRepository ticketRepository;
     private final EventImageRepository eventImageRepository;
-    private final UserTicketRepository userTicketRepository;
+
+    /**
+     * 양도 티켓 목록 조회
+     */
     public AssignTicketsDto showAssignTickets(String strCategory, Integer page, Integer size){
         ECategory category = ECategory.filterCondition(strCategory);
 
@@ -48,14 +53,11 @@ public class TicketService {
                             .map(Image::getUrl)
                             .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_IMAGE));
 
-                    String activatedAt = userTicketRepository.findByTicket(ticket)
-                            .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER_TICKET));
-
                     return AssignTicketDto.builder()
                             .id(ticket.getId())
                             .image(image)
                             .name(ticket.getEvent().getName())
-                            .activatedAt(activatedAt)
+                            .activatedAt(DateUtil.convertDate(ticket.getActivatedAt()))
                             .build();
                 }).toList();
 

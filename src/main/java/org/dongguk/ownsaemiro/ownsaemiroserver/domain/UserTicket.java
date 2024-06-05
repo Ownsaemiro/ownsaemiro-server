@@ -22,9 +22,6 @@ public class UserTicket {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "activated_at", nullable = false)
-    private LocalDate activatedAt;
-
     @Column(name = "bought_at", nullable = false)
     private LocalDate boughtAt;
 
@@ -45,8 +42,7 @@ public class UserTicket {
     private Ticket ticket;
 
     @Builder
-    public UserTicket(LocalDate activatedAt, LocalDate boughtAt, String orderId, User user, Ticket ticket) {
-        this.activatedAt = activatedAt;
+    public UserTicket(LocalDate boughtAt, String orderId, User user, Ticket ticket) {
         this.boughtAt = boughtAt;
         this.orderId = orderId;
         this.status = EUserTicketStatus.BEFORE_USE;

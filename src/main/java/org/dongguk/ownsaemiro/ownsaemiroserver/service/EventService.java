@@ -346,11 +346,10 @@ public class EventService {
                 });
 
         // 사용자 구매 티켓 저장
-        UserTicket userTicket = userTicketRepository.save(
+        userTicketRepository.save(
                 UserTicket.builder()
                         .user(user)
                         .ticket(ticket)
-                        .activatedAt(buyingTicketDto.buyingDate())
                         .boughtAt(LocalDate.now())
                         .orderId(AuthUtil.makeOrderId())
                         .build()
@@ -359,8 +358,9 @@ public class EventService {
         // 사용자 지갑 포인트 차감
         userWallet.pay(event.getPrice());
 
-        // 티켓의 상태 변경
+        // 티켓의 상태 변경 and 티켓 입장 날짜 지정
         ticket.changeStatus(ETicketStatus.OCCUPIED);
+        ticket.chooseActivateDate(buyingTicketDto.buyingDate());
 
         // 사용자 지갑 이력 저장
         userWalletHistoryRepository.save(

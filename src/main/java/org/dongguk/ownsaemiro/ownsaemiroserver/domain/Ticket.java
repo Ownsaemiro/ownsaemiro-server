@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.EEventStatus;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.ETicketStatus;
 
+import java.time.LocalDate;
+
 @Entity
 @Getter
 @Table(name = "tickets")
@@ -26,11 +28,17 @@ public class Ticket {
     @Column(name = "status", nullable = false)
     private ETicketStatus status;
 
+    @Column(name = "activated_at")
+    private LocalDate activatedAt;
+
     /*  티켓 연관관계 속성  */
     @ManyToOne
     @JoinColumn(name = "event_id", nullable = false)
     private Event event;
 
+    public void chooseActivateDate(LocalDate activatedAt){
+        this.activatedAt = activatedAt;
+    }
     public void changeStatus(ETicketStatus status){
         this.status = status;
     }
