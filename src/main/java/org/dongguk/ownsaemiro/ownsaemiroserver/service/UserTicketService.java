@@ -7,6 +7,11 @@ import org.dongguk.ownsaemiro.ownsaemiroserver.domain.*;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.*;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.ETicketStatus;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.EUserTicketStatus;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.DetailOfTicketDto;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.MyTicketDto;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.MyTicketsDto;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.PageInfo;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.ETicketStatus;
 import org.dongguk.ownsaemiro.ownsaemiroserver.exception.CommonException;
 import org.dongguk.ownsaemiro.ownsaemiroserver.exception.ErrorCode;
 import org.dongguk.ownsaemiro.ownsaemiroserver.repository.*;
@@ -164,5 +169,6 @@ public class UserTicketService {
                 .pageInfo(PageInfo.convert(userParticipatedEvents, page))
                 .participatedEventsDto(participatedEventsDto)
                 .build();
+
     }
 }

@@ -12,6 +12,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.Optional;
 
 public interface UserTicketRepository extends JpaRepository<UserTicket, Long> {
+
     @Query("select ut from UserTicket ut where ut.user = :user and ut.status = :status")
     Page<UserTicket> findUserParticipatedEvent(User user, EUserTicketStatus status);
 
@@ -21,6 +22,5 @@ public interface UserTicketRepository extends JpaRepository<UserTicket, Long> {
     Optional<String> findOrderIdByUserAndTicket(User user, Ticket ticket);
 
     Page<UserTicket> findAllByUser(User user, Pageable pageable);
-
 
 }
