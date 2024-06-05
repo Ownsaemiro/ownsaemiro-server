@@ -198,6 +198,7 @@ public class EventService {
                 .price(event.getPrice())
                 .duration(event.getDuration())
                 .isLiked(userLikedEventRepository.existsByUserAndEvent(user, event))
+                .remainingSeats(ticketRepository.countAvailableTickets(event))
                 .build();
     }
 
