@@ -45,6 +45,6 @@ public class AssignmentController {
      */
     @PutMapping("/tickets/{ticketId}")
     public void applyAssignment(@PathVariable Long ticketId){
-        eventService.applyAssignment(ticketId);
+        ticketService.applyAssignment(ticketId);
     }
 }

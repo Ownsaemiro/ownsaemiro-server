@@ -20,6 +20,7 @@ import org.dongguk.ownsaemiro.ownsaemiroserver.util.DateUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -31,6 +32,10 @@ public class TicketService {
     private final TicketRepository ticketRepository;
     private final EventImageRepository eventImageRepository;
     private final UserLikedEventRepository userLikedEventRepository;
+
+    /* ================================================================= */
+    //                           사용자 양도 api                            //
+    /* ================================================================= */
 
     /**
      * 양도 티켓 목록 조회
@@ -106,5 +111,13 @@ public class TicketService {
                 .description(event.getDescription())
                 .isLiked(userLikedEventRepository.existsByUserAndEvent(user, event))
                 .build();
+    }
+
+    /**
+     * 티켓 양도 신청하기
+     */
+    @Transactional
+    public void applyAssignment(Long ticketId){
+
     }
 }

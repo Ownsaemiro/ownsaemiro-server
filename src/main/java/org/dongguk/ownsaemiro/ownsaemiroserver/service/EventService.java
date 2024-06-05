@@ -45,16 +45,6 @@ public class EventService {
     private final EventRequestRepository eventRequestRepository;
     private final UserLikedEventRepository userLikedEventRepository;
 
-    /* ================================================================= */
-    //                           사용자 양도 api                            //
-    /* ================================================================= */
-    /**
-     * 티켓 양도 신청하기
-     */
-    @Transactional
-    public void applyAssignment(Long ticketId){
-
-    }
 
     /* ================================================================= */
     //                           사용자 행사 api                            //
