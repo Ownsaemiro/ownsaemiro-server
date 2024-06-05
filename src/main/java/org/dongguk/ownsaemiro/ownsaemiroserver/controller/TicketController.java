@@ -6,6 +6,7 @@ import org.dongguk.ownsaemiro.ownsaemiroserver.dto.global.ResponseDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.test.CreateTicketDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.DetailOfTicketDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.MyTicketsDto;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.MyTicketsWaitingDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.service.TicketService;
 import org.dongguk.ownsaemiro.ownsaemiroserver.service.UserTicketService;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/tickets")
 @RequiredArgsConstructor
 public class TicketController {
+    private final TicketService ticketService;
     private final UserTicketService userTicketService;
 
     /**
@@ -48,6 +50,20 @@ public class TicketController {
         userTicketService.cancelMyTicket(userId, ticketId);
 
         return ResponseDto.ok(null);
+    }
+
+    /**
+     * 양도 대기 목록 api
+     */
+    @GetMapping("/assignment")
+    public ResponseDto<?> showTicketsWaiting(
+            @UserId Long userId,
+            @RequestParam(value = "page", defaultValue = "1") Integer page,
+            @RequestParam(value = "size", defaultValue = "10") Integer size
+    ) {
+        MyTicketsWaitingDto myTicketsWaitingDto = ticketService.showMyTicketWaiting(userId, page - 1, size);
+
+        return ResponseDto.ok(myTicketsWaitingDto);
     }
 
     /**

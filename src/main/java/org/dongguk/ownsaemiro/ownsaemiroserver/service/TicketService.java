@@ -4,10 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dongguk.ownsaemiro.ownsaemiroserver.constants.Constants;
 import org.dongguk.ownsaemiro.ownsaemiroserver.domain.*;
-import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.AllAboutEventDto;
-import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.AssignTicketDto;
-import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.AssignTicketsDto;
-import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.PageInfo;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.*;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.ECategory;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.ETicketStatus;
 import org.dongguk.ownsaemiro.ownsaemiroserver.exception.CommonException;
@@ -16,10 +13,14 @@ import org.dongguk.ownsaemiro.ownsaemiroserver.repository.*;
 import org.dongguk.ownsaemiro.ownsaemiroserver.util.DateUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
+
+import static ch.qos.logback.classic.spi.ThrowableProxyVO.build;
 
 @Slf4j
 @Service
@@ -131,7 +132,42 @@ public class TicketService {
                 UserAssignTicket.builder()
                         .user(user)
                         .ticket(ticket)
+                        .createdAt(LocalDate.now())
                         .build()
         );
+    }
+
+    /**
+     * 사용자 티켓 양도 목록 확인하기
+     */
+    public MyTicketsWaitingDto showMyTicketWaiting(Long userId, Integer page, Integer size){
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
+
+        Page<UserAssignTicket> userWaiting = userAssignTicketRepository.findAllByUser(
+                user,
+                PageRequest.of(page, size, Sort.by("createdAt").descending())
+        );
+
+        List<MyTicketWaitingDto> myTicketsWaiting = userWaiting.getContent().stream()
+                .map(userAssignTicket -> {
+                    Event event = userAssignTicket.getTicket().getEvent();
+
+                    String image = eventImageRepository.findByEvent(event)
+                            .map(Image::getUrl)
+                            .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_IMAGE));
+
+                    return MyTicketWaitingDto.builder()
+                            .name(event.getName())
+                            .image(image)
+                            .status(userAssignTicket.getStatus().getStatus())
+                            .activatedAt(DateUtil.convertDate(userAssignTicket.getTicket().getActivatedAt()))
+                            .build();
+                }).toList();
+
+        return MyTicketsWaitingDto.builder()
+                .pageInfo(PageInfo.convert(userWaiting,page+1))
+                .myTicketsWaiting(myTicketsWaiting)
+                .build();
     }
 }
