@@ -1,7 +1,9 @@
 package org.dongguk.ownsaemiro.ownsaemiroserver.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.dongguk.ownsaemiro.ownsaemiroserver.annotation.UserId;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.global.ResponseDto;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.AllAboutEventDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.AssignTicketsDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.service.EventService;
 import org.dongguk.ownsaemiro.ownsaemiroserver.service.TicketService;
@@ -26,6 +28,16 @@ public class AssignmentController {
         AssignTicketsDto assignTicketsDto = ticketService.showAssignTickets(category, page - 1, size);
 
         return ResponseDto.ok(assignTicketsDto);
+    }
+
+    /**
+     *  양도 티켓 상세보기 api
+     */
+    @GetMapping("/tickets/{ticketId}")
+    public ResponseDto<?> showDetailOfAssignTicket(@UserId Long userId, @PathVariable Long ticketId){
+        AllAboutEventDto allAboutEventDto = ticketService.showDetailOfAssignTicket(userId, ticketId);
+
+        return ResponseDto.ok(allAboutEventDto);
     }
 
     /**
