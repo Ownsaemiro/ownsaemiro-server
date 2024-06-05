@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dongguk.ownsaemiro.ownsaemiroserver.constants.Constants;
 import org.dongguk.ownsaemiro.ownsaemiroserver.domain.*;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.test.CreateTicketDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.*;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.ETicketStatus;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.EUserTicketStatus;
@@ -15,6 +16,7 @@ import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.ETicketStatus;
 import org.dongguk.ownsaemiro.ownsaemiroserver.exception.CommonException;
 import org.dongguk.ownsaemiro.ownsaemiroserver.exception.ErrorCode;
 import org.dongguk.ownsaemiro.ownsaemiroserver.repository.*;
+import org.dongguk.ownsaemiro.ownsaemiroserver.util.AuthUtil;
 import org.dongguk.ownsaemiro.ownsaemiroserver.util.DateUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -30,6 +32,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserTicketService {
     private final UserRepository userRepository;
+    private final EventRepository eventRepository; // -> 테스트용 DI
     private final TicketRepository ticketRepository;
     private final EventImageRepository eventImageRepository;
     private final UserTicketRepository userTicketRepository;
@@ -174,5 +177,25 @@ public class UserTicketService {
                 .participatedEventsDto(participatedEventsDto)
                 .build();
 
+    }
+
+    /**
+     * !!!!!!!!!!!  테스트용 티켓 생성   !!!!!!!!!!!
+     */
+    @Transactional
+    public void createTickets(CreateTicketDto createTicketDto){
+        Event event = eventRepository.findById(createTicketDto.eventId())
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_EVENT));
+
+        // 이벤트 당 10개의 임시 티켓 발행
+        for(int i=0; i<10; i++){
+            ticketRepository.save(
+                    Ticket.builder()
+                            .hash(AuthUtil.generateHash())
+                            .event(event)
+                            .status(ETicketStatus.BEFORE)
+                            .build()
+            );
+        }
     }
 }

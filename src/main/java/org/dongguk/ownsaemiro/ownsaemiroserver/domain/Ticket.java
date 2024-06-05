@@ -2,6 +2,7 @@ package org.dongguk.ownsaemiro.ownsaemiroserver.domain;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.EEventStatus;
@@ -35,6 +36,16 @@ public class Ticket {
     @ManyToOne
     @JoinColumn(name = "event_id", nullable = false)
     private Event event;
+
+    /**
+     * 테스트용 빌더
+     */
+    @Builder
+    public Ticket(String hash, ETicketStatus status, Event event) {
+        this.hash = hash;
+        this.status = status;
+        this.event = event;
+    }
 
     public void chooseActivateDate(LocalDate activatedAt){
         this.activatedAt = activatedAt;
