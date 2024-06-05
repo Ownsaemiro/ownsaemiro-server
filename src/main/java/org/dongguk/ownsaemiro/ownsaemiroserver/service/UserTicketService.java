@@ -54,7 +54,7 @@ public class UserTicketService {
                             .id(userTicket.getTicket().getId())
                             .name(userTicket.getTicket().getEvent().getName())
                             .image(image)
-                            .activatedAt(DateUtil.convertDate(userTicket.getActivatedAt()))
+                            .activatedAt(DateUtil.convertDate(userTicket.getTicket().getActivatedAt()))
                             .boughtAt(DateUtil.convertDate(userTicket.getBoughtAt()))
                             .orderId(userTicket.getOrderId())
                             .build();
@@ -145,7 +145,11 @@ public class UserTicketService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
 
-        Page<UserTicket> userParticipatedEvents = userTicketRepository.findUserParticipatedEvent(user, EUserTicketStatus.AFTER_USE);
+        Page<UserTicket> userParticipatedEvents = userTicketRepository.findUserParticipatedEvent(
+                user,
+                EUserTicketStatus.AFTER_USE,
+                PageRequest.of(page, size, Sort.by("boughtAt").descending())
+        );
 
         List<ParticipatedEventDto> participatedEventsDto = userParticipatedEvents.getContent().stream()
                 .map(userTicket -> {

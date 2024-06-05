@@ -13,14 +13,8 @@ import java.util.Optional;
 
 public interface UserTicketRepository extends JpaRepository<UserTicket, Long> {
 
-    /**
-     * 티켓의 활성화 날짜 조회
-     */
-    @Query("select ut.activatedAt from UserTicket ut where ut.ticket = :ticket")
-    Optional<String> findByTicket(Ticket ticket);
-
     @Query("select ut from UserTicket ut where ut.user = :user and ut.status = :status")
-    Page<UserTicket> findUserParticipatedEvent(User user, EUserTicketStatus status);
+    Page<UserTicket> findUserParticipatedEvent(User user, EUserTicketStatus status, Pageable pageable);
 
     Optional<UserTicket> findByUserAndTicket(User user, Ticket ticket);
 
