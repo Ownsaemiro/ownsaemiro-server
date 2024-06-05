@@ -319,6 +319,11 @@ public class EventService {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_EVENT));
 
+        // 승인되지 않은 행사라면 -> 예외처리
+        if (!event.getIsApproved()){
+            throw new CommonException(ErrorCode.NOT_FOUND_EVENT);
+        }
+
         UserWallet userWallet = userWalletRepository.findById(user.getId())
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_WALLET));
 
