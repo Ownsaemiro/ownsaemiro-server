@@ -46,6 +46,8 @@ public enum ErrorCode {
     NOT_FOUND_EVENT_REQUEST(40403, HttpStatus.NOT_FOUND, "존재하지 않는 행사 요청입니다."),
     NOT_FOUND_LIKED(40404, HttpStatus.NOT_FOUND, "존재하지 않는 좋아요입니다."),
     NOT_FOUND_WALLET(40405, HttpStatus.NOT_FOUND, "존재하지 않는 사용자 지갑입니다."),
+    NOT_FOUND_TICKET(40406, HttpStatus.NOT_FOUND, "존재하지 않는 티켓입니다."),
+    NOT_FOUND_USER_TICKET(40407, HttpStatus.NOT_FOUND, "존재하지 않는 사용자 티켓입니다."),
 
     //500
     INTERNAL_SERVER_ERROR(50000, HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류입니다")

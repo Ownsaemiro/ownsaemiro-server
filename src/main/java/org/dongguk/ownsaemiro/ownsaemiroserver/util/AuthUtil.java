@@ -16,6 +16,16 @@ public class AuthUtil {
         }
         return password.toString();
     }
+
+    public static String makeOrderId(){
+        StringBuilder orderId = new StringBuilder();
+        SecureRandom random = new SecureRandom();
+
+        for(int i=0; i<12; i++){
+            orderId.append(Constants.ORDER_ID.charAt(random.nextInt(Constants.ORDER_ID.length())));
+        }
+        return orderId.toString();
+    }
     public static String makeNickname(){
         String nickname = "osmr";
         SecureRandom random = new SecureRandom();

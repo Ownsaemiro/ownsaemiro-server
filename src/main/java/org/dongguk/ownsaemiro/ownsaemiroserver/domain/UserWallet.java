@@ -34,4 +34,9 @@ public class UserWallet {
     public void pay(Integer amount){
         this.point -= amount;
     }
+
+    public Integer recharge(Integer amount){
+        this.point += amount;
+        return this.point;
+    }
 }

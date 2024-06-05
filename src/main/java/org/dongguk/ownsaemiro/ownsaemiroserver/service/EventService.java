@@ -13,6 +13,7 @@ import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.ETicketStatus;
 import org.dongguk.ownsaemiro.ownsaemiroserver.exception.CommonException;
 import org.dongguk.ownsaemiro.ownsaemiroserver.exception.ErrorCode;
 import org.dongguk.ownsaemiro.ownsaemiroserver.repository.*;
+import org.dongguk.ownsaemiro.ownsaemiroserver.util.AuthUtil;
 import org.dongguk.ownsaemiro.ownsaemiroserver.util.DateUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -45,7 +46,18 @@ public class EventService {
     private final UserLikedEventRepository userLikedEventRepository;
 
     /* ================================================================= */
-    //                          사용자 api                                 //
+    //                           사용자 양도 api                            //
+    /* ================================================================= */
+    /**
+     * 티켓 양도 신청하기
+     */
+    @Transactional
+    public void applyAssignment(Long ticketId){
+
+    }
+
+    /* ================================================================= */
+    //                           사용자 행사 api                            //
     /* ================================================================= */
     /**
      * 사용자 행사 좋아요
@@ -338,7 +350,9 @@ public class EventService {
                 UserTicket.builder()
                         .user(user)
                         .ticket(ticket)
-                        .createdAt(buyingTicketDto.buyingDate())
+                        .activatedAt(buyingTicketDto.buyingDate())
+                        .boughtAt(LocalDate.now())
+                        .orderId(AuthUtil.makeOrderId())
                         .build()
         );
 
@@ -353,7 +367,7 @@ public class EventService {
                 UserWalletHistory.builder()
                         .amount(-1 * event.getPrice())
                         .userWallet(userWallet)
-                        .createdAt(buyingTicketDto.buyingDate())
+                        .createdAt(LocalDate.now())
                         .build()
         );
 
@@ -362,7 +376,7 @@ public class EventService {
                 TicketHistory.builder()
                         .ticket(ticket)
                         .status(ETicketStatus.OCCUPIED)
-                        .createdAt(buyingTicketDto.buyingDate())
+                        .createdAt(LocalDate.now())
                         .build()
         );
 
