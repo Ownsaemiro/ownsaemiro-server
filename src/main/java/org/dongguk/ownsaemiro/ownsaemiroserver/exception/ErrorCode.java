@@ -50,7 +50,8 @@ public enum ErrorCode {
     NOT_FOUND_USER_TICKET(40407, HttpStatus.NOT_FOUND, "존재하지 않는 사용자 티켓입니다."),
 
     //500
-    INTERNAL_SERVER_ERROR(50000, HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류입니다")
+    INTERNAL_SERVER_ERROR(50000, HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류입니다"),
+    INTERNAL_DATA_ERROR(50001, HttpStatus.INTERNAL_SERVER_ERROR, "데이터 처리 중 오류가 발생하였습니다."),
 
     ;
     private final Integer code;
