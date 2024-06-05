@@ -58,7 +58,7 @@ public class AuthController {
     /**
      * 아이디 중복 확인
      */
-    @GetMapping("/check")
+    @GetMapping("/api/auth/check")
     public ResponseDto<?> checkSerialId(@RequestParam("serial_id") String newSerialId){
 
         AvailableSerialIdDto availableSerialIdDto = authService.isAvailableSerialId(newSerialId);
