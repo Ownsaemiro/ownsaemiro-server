@@ -18,8 +18,8 @@ public enum ErrorCode {
     ALREADY_SAME_BAN_INFO(40007, HttpStatus.BAD_REQUEST, "이미 요청 상태와 동일합니다."),
     ALREADY_LIKED_EVENT(40008, HttpStatus.BAD_REQUEST, "이미 좋아요한 행사입니다."),
     SOLDOUT_EVENT(40009, HttpStatus.BAD_REQUEST, "매진된 행사입니다."),
-
     NOT_ENOUGH_POINT(40010, HttpStatus.BAD_REQUEST, "포인트가 부족합니다."),
+    INVALID_ASSIGN_TICKET(40011, HttpStatus.BAD_REQUEST, "양도 티켓이 아닙니다"),
 
     //401
     INVALID_HEADER_VALUE(40100, HttpStatus.UNAUTHORIZED, "올바르지 않은 헤더값입니다."),

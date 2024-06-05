@@ -12,6 +12,7 @@ import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.AssignTicketDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.AssignTicketsDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.PageInfo;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.ECategory;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.ETicketStatus;
 import org.dongguk.ownsaemiro.ownsaemiroserver.exception.CommonException;
 import org.dongguk.ownsaemiro.ownsaemiroserver.exception.ErrorCode;
 import org.dongguk.ownsaemiro.ownsaemiroserver.repository.*;
@@ -79,6 +80,11 @@ public class TicketService {
 
         Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_TICKET));
+
+        // 양도 티켓이 아닌 경우 -> 예외 발생
+        if (!ticket.getStatus().equals(ETicketStatus.TRANSFER)){
+            throw new CommonException(ErrorCode.INVALID_ASSIGN_TICKET);
+        }
 
         Event event = ticket.getEvent();
 
