@@ -10,7 +10,7 @@ import org.dongguk.ownsaemiro.ownsaemiroserver.service.TicketService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/assignment")
+@RequestMapping("/api/assignments")
 @RequiredArgsConstructor
 public class AssignmentController {
     private final EventService eventService;
