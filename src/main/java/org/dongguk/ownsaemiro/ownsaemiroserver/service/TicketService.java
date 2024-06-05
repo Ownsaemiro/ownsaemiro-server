@@ -3,14 +3,8 @@ package org.dongguk.ownsaemiro.ownsaemiroserver.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dongguk.ownsaemiro.ownsaemiroserver.constants.Constants;
-import org.dongguk.ownsaemiro.ownsaemiroserver.domain.Event;
-import org.dongguk.ownsaemiro.ownsaemiroserver.domain.Image;
-import org.dongguk.ownsaemiro.ownsaemiroserver.domain.Ticket;
-import org.dongguk.ownsaemiro.ownsaemiroserver.domain.User;
-import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.AllAboutEventDto;
-import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.AssignTicketDto;
-import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.AssignTicketsDto;
-import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.PageInfo;
+import org.dongguk.ownsaemiro.ownsaemiroserver.domain.*;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.*;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.ECategory;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.ETicketStatus;
 import org.dongguk.ownsaemiro.ownsaemiroserver.exception.CommonException;
@@ -19,10 +13,14 @@ import org.dongguk.ownsaemiro.ownsaemiroserver.repository.*;
 import org.dongguk.ownsaemiro.ownsaemiroserver.util.DateUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
+
+import static ch.qos.logback.classic.spi.ThrowableProxyVO.build;
 
 @Slf4j
 @Service
@@ -32,6 +30,7 @@ public class TicketService {
     private final TicketRepository ticketRepository;
     private final EventImageRepository eventImageRepository;
     private final UserLikedEventRepository userLikedEventRepository;
+    private final UserAssignTicketRepository userAssignTicketRepository;
 
     /* ================================================================= */
     //                           사용자 양도 api                            //
@@ -117,7 +116,58 @@ public class TicketService {
      * 티켓 양도 신청하기
      */
     @Transactional
-    public void applyAssignment(Long ticketId){
+    public void applyAssignment(Long userId, Long ticketId){
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
 
+        Ticket ticket = ticketRepository.findById(ticketId)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_TICKET));
+
+        // 양도 티켓이 아닌 경우, -> 예외 처리
+        if (!ticket.getStatus().equals(ETicketStatus.TRANSFER)){
+            throw new CommonException(ErrorCode.INVALID_ASSIGN_TICKET);
+        }
+
+        userAssignTicketRepository.save(
+                UserAssignTicket.builder()
+                        .user(user)
+                        .ticket(ticket)
+                        .createdAt(LocalDate.now())
+                        .build()
+        );
+    }
+
+    /**
+     * 사용자 티켓 양도 목록 확인하기
+     */
+    public MyTicketsWaitingDto showMyTicketWaiting(Long userId, Integer page, Integer size){
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
+
+        Page<UserAssignTicket> userWaiting = userAssignTicketRepository.findAllByUser(
+                user,
+                PageRequest.of(page, size, Sort.by("createdAt").descending())
+        );
+
+        List<MyTicketWaitingDto> myTicketsWaiting = userWaiting.getContent().stream()
+                .map(userAssignTicket -> {
+                    Event event = userAssignTicket.getTicket().getEvent();
+
+                    String image = eventImageRepository.findByEvent(event)
+                            .map(Image::getUrl)
+                            .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_IMAGE));
+
+                    return MyTicketWaitingDto.builder()
+                            .name(event.getName())
+                            .image(image)
+                            .status(userAssignTicket.getStatus().getStatus())
+                            .activatedAt(DateUtil.convertDate(userAssignTicket.getTicket().getActivatedAt()))
+                            .build();
+                }).toList();
+
+        return MyTicketsWaitingDto.builder()
+                .pageInfo(PageInfo.convert(userWaiting,page+1))
+                .myTicketsWaiting(myTicketsWaiting)
+                .build();
     }
 }
