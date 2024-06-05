@@ -3,10 +3,7 @@ package org.dongguk.ownsaemiro.ownsaemiroserver.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dongguk.ownsaemiro.ownsaemiroserver.constants.Constants;
-import org.dongguk.ownsaemiro.ownsaemiroserver.domain.Event;
-import org.dongguk.ownsaemiro.ownsaemiroserver.domain.Image;
-import org.dongguk.ownsaemiro.ownsaemiroserver.domain.Ticket;
-import org.dongguk.ownsaemiro.ownsaemiroserver.domain.User;
+import org.dongguk.ownsaemiro.ownsaemiroserver.domain.*;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.AllAboutEventDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.AssignTicketDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.AssignTicketsDto;
@@ -32,6 +29,7 @@ public class TicketService {
     private final TicketRepository ticketRepository;
     private final EventImageRepository eventImageRepository;
     private final UserLikedEventRepository userLikedEventRepository;
+    private final UserAssignTicketRepository userAssignTicketRepository;
 
     /* ================================================================= */
     //                           사용자 양도 api                            //
@@ -117,7 +115,23 @@ public class TicketService {
      * 티켓 양도 신청하기
      */
     @Transactional
-    public void applyAssignment(Long ticketId){
+    public void applyAssignment(Long userId, Long ticketId){
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
 
+        Ticket ticket = ticketRepository.findById(ticketId)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_TICKET));
+
+        // 양도 티켓이 아닌 경우, -> 예외 처리
+        if (!ticket.getStatus().equals(ETicketStatus.TRANSFER)){
+            throw new CommonException(ErrorCode.INVALID_ASSIGN_TICKET);
+        }
+
+        userAssignTicketRepository.save(
+                UserAssignTicket.builder()
+                        .user(user)
+                        .ticket(ticket)
+                        .build()
+        );
     }
 }
