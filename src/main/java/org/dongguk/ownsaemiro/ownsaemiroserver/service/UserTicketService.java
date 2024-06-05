@@ -4,6 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dongguk.ownsaemiro.ownsaemiroserver.constants.Constants;
 import org.dongguk.ownsaemiro.ownsaemiroserver.domain.*;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.*;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.ETicketStatus;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.EUserTicketStatus;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.DetailOfTicketDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.MyTicketDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.MyTicketsDto;
@@ -133,6 +136,39 @@ public class UserTicketService {
                         .ticket(ticket)
                         .build()
         );
+    }
+
+    /**
+     * 사용자가 참여한 공연 목록
+     */
+    public ParticipatedEventsDto showParticipatedEvents(Long userId, Integer page, Integer size){
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
+
+        Page<UserTicket> userParticipatedEvents = userTicketRepository.findUserParticipatedEvent(user, EUserTicketStatus.AFTER_USE);
+
+        List<ParticipatedEventDto> participatedEventsDto = userParticipatedEvents.getContent().stream()
+                .map(userTicket -> {
+                    Event event = userTicket.getTicket().getEvent();
+
+                    String image = eventImageRepository.findByEvent(event)
+                            .map(Image::getUrl)
+                            .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_IMAGE));
+
+
+                    return ParticipatedEventDto.builder()
+                            .eventId(event.getId())
+                            .image(image)
+                            .name(event.getName())
+                            .duration(event.getDuration())
+                            .address(event.getAddress())
+                            .build();
+                }).toList();
+
+        return ParticipatedEventsDto.builder()
+                .pageInfo(PageInfo.convert(userParticipatedEvents, page))
+                .participatedEventsDto(participatedEventsDto)
+                .build();
 
     }
 }
