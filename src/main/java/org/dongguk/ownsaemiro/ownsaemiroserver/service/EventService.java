@@ -45,16 +45,6 @@ public class EventService {
     private final EventRequestRepository eventRequestRepository;
     private final UserLikedEventRepository userLikedEventRepository;
 
-    /* ================================================================= */
-    //                           사용자 양도 api                            //
-    /* ================================================================= */
-    /**
-     * 티켓 양도 신청하기
-     */
-    @Transactional
-    public void applyAssignment(Long ticketId){
-
-    }
 
     /* ================================================================= */
     //                           사용자 행사 api                            //
@@ -329,6 +319,11 @@ public class EventService {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_EVENT));
 
+        // 승인되지 않은 행사라면 -> 예외처리
+        if (!event.getIsApproved()){
+            throw new CommonException(ErrorCode.NOT_FOUND_EVENT);
+        }
+
         UserWallet userWallet = userWalletRepository.findById(user.getId())
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_WALLET));
 
@@ -346,11 +341,10 @@ public class EventService {
                 });
 
         // 사용자 구매 티켓 저장
-        UserTicket userTicket = userTicketRepository.save(
+        userTicketRepository.save(
                 UserTicket.builder()
                         .user(user)
                         .ticket(ticket)
-                        .activatedAt(buyingTicketDto.buyingDate())
                         .boughtAt(LocalDate.now())
                         .orderId(AuthUtil.makeOrderId())
                         .build()
@@ -359,8 +353,9 @@ public class EventService {
         // 사용자 지갑 포인트 차감
         userWallet.pay(event.getPrice());
 
-        // 티켓의 상태 변경
+        // 티켓의 상태 변경 and 티켓 입장 날짜 지정
         ticket.changeStatus(ETicketStatus.OCCUPIED);
+        ticket.chooseActivateDate(buyingTicketDto.buyingDate());
 
         // 사용자 지갑 이력 저장
         userWalletHistoryRepository.save(

@@ -15,6 +15,7 @@ public class Constants {
     public static String KAKAO_LOGIN_PATH = "https://kapi.kakao.com/v2/user/me";
     public static String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_+=<>?";
     public static String ORDER_ID = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    public static String DEFAULT_IMAGE_NAME = "ownsaemiro_default.png";
     public static String DEFAULT_IMAGE = "https://ownsaemiro-bucket.s3.ap-northeast-2.amazonaws.com/ownsaemiro_default.png";
     public static String ALL = "전체";
     public static String STR_CONNECTOR = " ~ ";

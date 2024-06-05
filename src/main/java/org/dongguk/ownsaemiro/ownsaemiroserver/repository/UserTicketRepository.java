@@ -14,7 +14,7 @@ import java.util.Optional;
 public interface UserTicketRepository extends JpaRepository<UserTicket, Long> {
 
     @Query("select ut from UserTicket ut where ut.user = :user and ut.status = :status")
-    Page<UserTicket> findUserParticipatedEvent(User user, EUserTicketStatus status);
+    Page<UserTicket> findUserParticipatedEvent(User user, EUserTicketStatus status, Pageable pageable);
 
     Optional<UserTicket> findByUserAndTicket(User user, Ticket ticket);
 

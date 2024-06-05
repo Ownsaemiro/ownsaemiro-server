@@ -3,8 +3,10 @@ package org.dongguk.ownsaemiro.ownsaemiroserver.controller;
 import lombok.RequiredArgsConstructor;
 import org.dongguk.ownsaemiro.ownsaemiroserver.annotation.UserId;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.global.ResponseDto;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.test.CreateTicketDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.DetailOfTicketDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.MyTicketsDto;
+import org.dongguk.ownsaemiro.ownsaemiroserver.service.TicketService;
 import org.dongguk.ownsaemiro.ownsaemiroserver.service.UserTicketService;
 import org.springframework.web.bind.annotation.*;
 
@@ -46,5 +48,15 @@ public class TicketController {
         userTicketService.cancelMyTicket(userId, ticketId);
 
         return ResponseDto.ok(null);
+    }
+
+    /**
+     * !!!!!!!!!!!  테스트용 티켓 생성   !!!!!!!!!!!
+     */
+    @PostMapping
+    public ResponseDto<?> createTicket(@RequestBody CreateTicketDto createTicketDto){
+        userTicketService.createTickets(createTicketDto);
+
+        return ResponseDto.created(null);
     }
 }
