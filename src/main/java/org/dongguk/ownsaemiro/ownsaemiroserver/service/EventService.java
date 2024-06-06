@@ -45,6 +45,71 @@ public class EventService {
     private final EventRequestRepository eventRequestRepository;
     private final UserLikedEventRepository userLikedEventRepository;
 
+    /* ================================================================= */
+    //                            홈 화면 api                              //
+    /* ================================================================= */
+    public PopularEventsDto showPopularEvents(){
+
+        List<Event> events = eventRepository.findPopularEvents();
+
+        List<PopularEventDto> popularEventsDto = events.stream()
+                .map(event -> {
+                    String image = eventImageRepository.findByEvent(event)
+                            .map(Image::getUrl)
+                            .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_IMAGE));
+
+                    return PopularEventDto.builder()
+                            .id(event.getId())
+                            .image(image)
+                            .name(event.getName())
+                            .duration(event.getDuration())
+                            .build();
+                }).toList();
+
+//        List<PopularEventDto> popularEventsDto = eventRepository.findPopularEvents(PageRequest.of(0,3)).stream()
+//                .map(event -> {
+//                    String image = eventImageRepository.findByEvent(event)
+//                            .map(Image::getUrl)
+//                            .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_IMAGE));
+//
+//                    return PopularEventDto.builder()
+//                            .id(event.getId())
+//                            .image(image)
+//                            .name(event.getName())
+//                            .duration(event.getDuration())
+//                            .build();
+//                }).toList();
+
+        return PopularEventsDto.builder()
+                .eventsDto(popularEventsDto)
+                .build();
+    }
+
+    public RecommendEventDtos showRecommendEvents() {
+
+        // 랜덤으로 5개의 이벤트를 추천
+        List<Event> events = eventRepository.findTop5ByRandomOrder();
+
+        List<RecommendEventDtos.RecommendEventDto> recommendEventDtos = events.stream()
+                .map(event -> {
+                    String image = eventImageRepository.findByEvent(event)
+                            .map(Image::getUrl)
+                            .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_IMAGE));
+
+                    return RecommendEventDtos.RecommendEventDto.builder()
+                            .id(event.getId())
+                            .title(event.getName())
+                            .image(image)
+                            .duration(event.getDuration())
+                            .address(event.getAddress())
+                            .build();
+                }).toList();
+
+        return RecommendEventDtos.builder()
+                .events(recommendEventDtos)
+                .build();
+    }
+
 
     /* ================================================================= */
     //                           사용자 행사 api                            //
@@ -93,11 +158,11 @@ public class EventService {
                             .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_IMAGE));
 
                     return UserLikedEventDto.builder()
-                            .likedId(userLikedEvent.getId())
                             .eventId(userLikedEvent.getEvent().getId())
                             .name(userLikedEvent.getEvent().getName())
                             .url(imageUrl)
                             .duration(userLikedEvent.getEvent().getDuration())
+                            .isLiked(Boolean.TRUE)
                             .build();
                 }).toList();
 

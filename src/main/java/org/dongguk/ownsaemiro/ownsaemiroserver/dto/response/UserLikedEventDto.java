@@ -5,8 +5,6 @@ import lombok.Builder;
 
 @Builder
 public record UserLikedEventDto(
-        @JsonProperty("liked_id")
-        Long likedId,
 
         @JsonProperty("event_id")
         Long eventId,
@@ -18,6 +16,9 @@ public record UserLikedEventDto(
         String name,
 
         @JsonProperty("duration")
-        String duration
+        String duration,
+
+        @JsonProperty("is_liked")
+        Boolean isLiked
 ) {
 }

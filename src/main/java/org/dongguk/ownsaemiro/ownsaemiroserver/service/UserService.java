@@ -8,10 +8,7 @@ import org.dongguk.ownsaemiro.ownsaemiroserver.domain.User;
 import org.dongguk.ownsaemiro.ownsaemiroserver.domain.UserImage;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.BanInfo;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.UpdateNicknameDto;
-import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.BanUserInfoDto;
-import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.PageInfo;
-import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.ShowBannedUsersDto;
-import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.UserProfileDto;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.*;
 import org.dongguk.ownsaemiro.ownsaemiroserver.exception.CommonException;
 import org.dongguk.ownsaemiro.ownsaemiroserver.exception.ErrorCode;
 import org.dongguk.ownsaemiro.ownsaemiroserver.repository.UserImageRepository;
@@ -83,10 +80,12 @@ public class UserService {
     /* ================================================================= */
     //                          사용자 api                                 //
     /* ================================================================= */
-    public String getNickname(Long userId){
+    public UserNicknameDto getNickname(Long userId){
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
-        return user.getNickname();
+        return UserNicknameDto.builder()
+                .nickname(user.getNickname())
+                .build();
     }
 
     @Transactional
@@ -121,4 +120,17 @@ public class UserService {
                 .build();
     }
 
+    public UserProfileImageDto getUserProfile(Long userId) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
+
+        String userImageUrl = userImageRepository.findByUser(user)
+                .map(Image::getUrl)
+                .orElse(Constants.DEFAULT_IMAGE);
+
+        return UserProfileImageDto.builder()
+                .profileImage(userImageUrl)
+                .build();
+    }
 }

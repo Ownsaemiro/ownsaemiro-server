@@ -17,7 +17,7 @@ public class Constants {
     public static String ORDER_ID = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     public static String DEFAULT_IMAGE_NAME = "ownsaemiro_default.png";
     public static String DEFAULT_IMAGE = "https://ownsaemiro-bucket.s3.ap-northeast-2.amazonaws.com/ownsaemiro_default.png";
-    public static String ALL = "전체";
+    public static String ALL = "ALL";
     public static String STR_CONNECTOR = " ~ ";
     public static String MINUTE = "분";
 

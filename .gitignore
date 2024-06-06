@@ -196,3 +196,25 @@ gradle-app.setting
 ### Gradle Patch ###
 # Java heap dump
 *.hprof
+
+# Created by https://www.toptal.com/developers/gitignore/api/intellij+all
+# Edit at https://www.toptal.com/developers/gitignore?templates=intellij+all
+
+### Intellij+all ###
+# Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio, WebStorm and Rider
+# Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
+
+### Intellij+all Patch ###
+# Ignore everything but code style settings and run configurations
+# that are supposed to be shared within teams.
+
+.idea/*
+
+!.idea/codeStyles
+!.idea/runConfigurations
+
+# End of https://www.toptal.com/developers/gitignore/api/intellij+all
+
+### Application yml
+src/main/resources/application-local.yml
+src/main/resources/application-dev.yml

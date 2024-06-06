@@ -28,8 +28,14 @@ public class UserController {
      */
     @GetMapping("/nickname")
     public ResponseDto<?> getNickname(@UserId Long userId){
-        String nickname = userService.getNickname(userId);
-        return ResponseDto.ok(nickname);
+        return ResponseDto.ok(userService.getNickname(userId));
+    }
+
+    @GetMapping("/profile-image")
+    public ResponseDto<?> getProfileImage(
+            @UserId Long userId
+    ) {
+        return ResponseDto.ok(userService.getUserProfile(userId));
     }
 
     /**
