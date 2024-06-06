@@ -32,7 +32,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserTicketService {
     private final UserRepository userRepository;
-    private final EventRepository eventRepository; // -> 테스트용 DI
     private final TicketRepository ticketRepository;
     private final EventImageRepository eventImageRepository;
     private final UserTicketRepository userTicketRepository;

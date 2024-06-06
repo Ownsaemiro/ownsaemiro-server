@@ -120,7 +120,7 @@ public class AdminEventService {
             // TODO: 스포츠와 콘서트의 경우에는 예측 모델 통과하기
 
             // 이벤트 관련 블록체인 정보 업데이트
-            BlockChainResponse response = restClientUtil.sendRequestToBlockChain(eventRequest.getSeat());
+            BlockChainResponse response = restClientUtil.sendRequestToPublishTickets(eventRequest.getSeat());
             if (!response.getSuccess()){
                 throw new CommonException(ErrorCode.INTERNAL_SERVER_ERROR);
             } else {

@@ -4,22 +4,20 @@ import net.minidev.json.JSONObject;
 import org.dongguk.ownsaemiro.ownsaemiroserver.constants.Constants;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.blockchain.BlockChainResponse;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Consumer;
 
 @Component
 public class RestClientUtil {
     @Value("${blockchain.publish}")
     private String publisherUrl;
+    @Value("${blockchain.remain}")
+    private String additionalUrl;
     private final RestClient restClient = RestClient.create();
 
     public JSONObject sendPostRequest(String url, JSONObject requestBody) {
@@ -33,7 +31,7 @@ public class RestClientUtil {
         return new JSONObject(response);
     }
 
-    public BlockChainResponse sendRequestToBlockChain(Integer seat) {
+    public BlockChainResponse sendRequestToPublishTickets(Integer seat) {
         Map<String, Integer> seatInfo = new HashMap<>();
         seatInfo.put("seat", seat);
 
@@ -41,6 +39,24 @@ public class RestClientUtil {
 
         return Objects.requireNonNull(restClient.post()
                 .uri(publisherUrl)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(requestBody.toJSONString())
+                .retrieve()
+                .toEntity(BlockChainResponse.class).getBody());
+
+    }
+
+    public BlockChainResponse sendRequestToAdditionalTickets(String contractAddress, Integer seat, Integer lastNumber) {
+        Map<String, Object> seatInfo = new HashMap<>();
+        seatInfo.put("contract_address", contractAddress);
+        seatInfo.put("seat", seat);
+        seatInfo.put("last_ticket_number", lastNumber);
+
+
+        JSONObject requestBody = new JSONObject(seatInfo);
+
+        return Objects.requireNonNull(restClient.post()
+                .uri(additionalUrl)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(requestBody.toJSONString())
                 .retrieve()
