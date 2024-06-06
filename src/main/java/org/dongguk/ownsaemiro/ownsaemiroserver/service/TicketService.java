@@ -166,7 +166,7 @@ public class TicketService {
                 }).toList();
 
         return MyTicketsWaitingDto.builder()
-                .pageInfo(PageInfo.convert(userWaiting,page+1))
+                .pageInfo(PageInfo.convert(userWaiting,page))
                 .myTicketsWaiting(myTicketsWaiting)
                 .build();
     }

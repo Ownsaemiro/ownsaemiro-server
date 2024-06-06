@@ -18,7 +18,7 @@ public record PageInfo(
         public static PageInfo convert(Page<?> lists, Integer page){
                 return PageInfo.builder()
                         .totalPage(lists.getTotalPages())
-                        .currentPage(page)
+                        .currentPage(page + 1)
                         .totalCnt(lists.getTotalElements())
                         .currentCnt(lists.getNumberOfElements())
                         .build();
