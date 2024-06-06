@@ -109,6 +109,7 @@ public class TicketService {
                 .phoneNumber(event.getUser().getPhoneNumber())
                 .description(event.getDescription())
                 .isLiked(userLikedEventRepository.existsByUserAndEvent(user, event))
+                .eventId(event.getId())
                 .build();
     }
 

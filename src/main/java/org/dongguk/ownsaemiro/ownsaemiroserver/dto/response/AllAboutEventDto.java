@@ -35,6 +35,9 @@ public record AllAboutEventDto(
         @JsonProperty("date")
         String activatedAt,
 
+        @JsonProperty("event_id")
+        Long eventId,
+
         @JsonProperty("is_liked")
         Boolean isLiked
 ) {
