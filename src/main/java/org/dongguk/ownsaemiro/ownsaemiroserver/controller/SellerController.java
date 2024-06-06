@@ -6,11 +6,9 @@ import org.dongguk.ownsaemiro.ownsaemiroserver.domain.Event;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.global.ResponseDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.ApplyEventDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.ChangeSellingEventStatusDto;
-import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.ChangeEventStatusDto;
-import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.EventRequestDto;
-import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.MyAppliesDto;
-import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.MyEventHistoriesDto;
-import org.dongguk.ownsaemiro.ownsaemiroserver.service.EventService;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.*;
+import org.dongguk.ownsaemiro.ownsaemiroserver.service.SellerEventService;
+import org.dongguk.ownsaemiro.ownsaemiroserver.service.UserService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,7 +18,18 @@ import java.io.IOException;
 @RequestMapping("/api/seller")
 @RequiredArgsConstructor
 public class SellerController {
-    private final EventService eventService;
+    private final UserService userService;
+    private final SellerEventService sellerEventService;
+
+    /**
+     * 판매자 닉네임 조회 api
+     */
+    @GetMapping("/nickname")
+    public ResponseDto<?> getSellerNickname(@UserId Long userId){
+        UserNicknameDto nickname = userService.getNickname(userId);
+
+        return ResponseDto.ok(nickname);
+    }
 
     /*  판매자 판매 이력 api  */
     /**
@@ -31,7 +40,7 @@ public class SellerController {
             @UserId Long userId,
             @RequestParam(value = "page", defaultValue = "0") Integer page,
             @RequestParam(value = "size", defaultValue = "10") Integer size ) {
-        MyEventHistoriesDto myEventHistoriesDto = eventService.showMyHistories(userId, page-1, size);
+        MyEventHistoriesDto myEventHistoriesDto = sellerEventService.showMyHistories(userId, page-1, size);
 
         return ResponseDto.ok(myEventHistoriesDto);
     }
@@ -43,7 +52,7 @@ public class SellerController {
     public ResponseDto<?> changeEventStatus(
             @UserId Long userId,
             @RequestBody ChangeSellingEventStatusDto changeSellingEventStatusDto){
-        ChangeEventStatusDto changeEventStatusDto = eventService.changeEventStatus(userId, changeSellingEventStatusDto);
+        ChangeEventStatusDto changeEventStatusDto = sellerEventService.changeEventStatus(userId, changeSellingEventStatusDto);
 
         return ResponseDto.ok(changeEventStatusDto);
     }
@@ -58,7 +67,7 @@ public class SellerController {
             @RequestParam(value = "page", defaultValue = "1") Integer page,
             @RequestParam(value = "size", defaultValue = "10") Integer size
     ) {
-        MyEventHistoriesDto myEventHistoriesDto = eventService.searchMyEvents(userId, name, page, size);
+        MyEventHistoriesDto myEventHistoriesDto = sellerEventService.searchMyEvents(userId, name, page, size);
 
         return ResponseDto.ok(myEventHistoriesDto);
     }
@@ -73,8 +82,8 @@ public class SellerController {
             @UserId Long userId,
             @RequestPart("image") MultipartFile image,
             @RequestPart("data") ApplyEventDto applyEventDto) throws IOException {
-        Event newEvent = eventService.saveEvent(userId, image, applyEventDto);
-        EventRequestDto eventRequestDto = eventService.saveEventRequest(newEvent);
+        Event newEvent = sellerEventService.saveEvent(userId, image, applyEventDto);
+        EventRequestDto eventRequestDto = sellerEventService.saveEventRequest(newEvent);
 
         return ResponseDto.ok(eventRequestDto);
     }
@@ -82,13 +91,12 @@ public class SellerController {
     /**
      * 판매자 판매 요청 목록보기
      */
-
     @GetMapping("/apply")
     public ResponseDto<?> showApplies(
             @UserId Long userId,
             @RequestParam(value = "page", defaultValue = "1") Integer page,
             @RequestParam(value = "size", defaultValue = "10") Integer size){
-        MyAppliesDto myAppliesDto = eventService.showMyApplies(userId, page-1, size);
+        MyAppliesDto myAppliesDto = sellerEventService.showMyApplies(userId, page-1, size);
 
         return ResponseDto.ok(myAppliesDto);
     }
@@ -103,7 +111,7 @@ public class SellerController {
             @RequestParam("status") String status,
             @RequestParam(value = "page", defaultValue = "1") Integer page,
             @RequestParam(value = "size", defaultValue = "10") Integer size){
-        MyAppliesDto searchMyApplies = eventService.searchMyApplies(userId, name, status, page - 1, size);
+        MyAppliesDto searchMyApplies = sellerEventService.searchMyApplies(userId, name, status, page - 1, size);
 
         return ResponseDto.ok(searchMyApplies);
     }
@@ -111,10 +119,9 @@ public class SellerController {
     /**
      * 판매자 판매 요청 취소하기
      */
-
     @DeleteMapping("/apply")
     public ResponseDto<?> cancelApply(@UserId Long userId, @RequestParam("request_id") Long eventRequestId){
-        eventService.cancelApply(userId, eventRequestId);
+        sellerEventService.cancelApply(userId, eventRequestId);
 
         return ResponseDto.ok(null);
     }

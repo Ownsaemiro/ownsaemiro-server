@@ -5,7 +5,6 @@ import org.dongguk.ownsaemiro.ownsaemiroserver.annotation.UserId;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.global.ResponseDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.AllAboutEventDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.AssignTicketsDto;
-import org.dongguk.ownsaemiro.ownsaemiroserver.service.EventService;
 import org.dongguk.ownsaemiro.ownsaemiroserver.service.TicketService;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/assignments")
 @RequiredArgsConstructor
 public class AssignmentController {
-    private final EventService eventService;
     private final TicketService ticketService;
 
     /**
