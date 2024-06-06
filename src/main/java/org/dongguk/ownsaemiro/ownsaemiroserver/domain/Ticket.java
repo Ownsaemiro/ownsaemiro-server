@@ -22,8 +22,8 @@ public class Ticket {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "hash", nullable = false, length = 512)
-    private String hash;
+//    @Column(name = "hash", nullable = false, length = 512)
+//    private String hash;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
@@ -31,6 +31,9 @@ public class Ticket {
 
     @Column(name = "activated_at")
     private LocalDate activatedAt;
+
+    @Column(name = "ticket_number")
+    private Integer ticketNumber;
 
     /*  티켓 연관관계 속성  */
     @ManyToOne
@@ -41,10 +44,10 @@ public class Ticket {
      * 테스트용 빌더
      */
     @Builder
-    public Ticket(String hash, ETicketStatus status, Event event) {
-        this.hash = hash;
+    public Ticket(Integer ticketNumber, ETicketStatus status, Event event) {
         this.status = status;
         this.event = event;
+        this.ticketNumber = ticketNumber;
     }
 
     public void chooseActivateDate(LocalDate activatedAt){
