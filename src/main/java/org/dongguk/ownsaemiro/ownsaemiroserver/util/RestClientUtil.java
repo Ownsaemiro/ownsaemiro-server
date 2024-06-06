@@ -2,6 +2,8 @@ package org.dongguk.ownsaemiro.ownsaemiroserver.util;
 
 import net.minidev.json.JSONObject;
 import org.dongguk.ownsaemiro.ownsaemiroserver.constants.Constants;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.blockchain.BlockChainResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -9,13 +11,15 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
 
 @Component
 public class RestClientUtil {
-
+    @Value("${blockchain.publish}")
+    private String publisherUrl;
     private final RestClient restClient = RestClient.create();
 
     public JSONObject sendPostRequest(String url, JSONObject requestBody) {
@@ -27,6 +31,21 @@ public class RestClientUtil {
                 .toEntity(Map.class).getBody());
 
         return new JSONObject(response);
+    }
+
+    public BlockChainResponse sendRequestToBlockChain(Integer seat) {
+        Map<String, Integer> seatInfo = new HashMap<>();
+        seatInfo.put("seat", seat);
+
+        JSONObject requestBody = new JSONObject(seatInfo);
+
+        return Objects.requireNonNull(restClient.post()
+                .uri(publisherUrl)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(requestBody.toJSONString())
+                .retrieve()
+                .toEntity(BlockChainResponse.class).getBody());
+
     }
 
     public Map<String, Object> sendAppKakaoLoginRequest(String url, String accessToken){

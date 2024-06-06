@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -153,6 +154,12 @@ public class UserEventService {
             throw new CommonException(ErrorCode.NOT_ENOUGH_POINT);
 
         // 구매 가능한 티켓 확인, 없다면 행사 매진처리 및 예외처리
+        Optional<Ticket> optionalTicket = ticketRepository.findFirstByEventAndStatus(event, ETicketStatus.BEFORE);
+        if (optionalTicket.isEmpty()){
+
+        }
+
+
         Ticket ticket = ticketRepository.findFirstByEventAndStatus(event, ETicketStatus.BEFORE)
                 .orElseThrow(() -> {
                     if (!event.getStatus().equals(EEventStatus.SOLDOUT))
