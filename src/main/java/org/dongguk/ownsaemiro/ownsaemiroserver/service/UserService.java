@@ -120,4 +120,17 @@ public class UserService {
                 .build();
     }
 
+    public UserProfileImageDto getUserProfile(Long userId) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
+
+        String userImageUrl = userImageRepository.findByUser(user)
+                .map(Image::getUrl)
+                .orElse(Constants.DEFAULT_IMAGE);
+
+        return UserProfileImageDto.builder()
+                .profileImage(userImageUrl)
+                .build();
+    }
 }

@@ -158,11 +158,11 @@ public class EventService {
                             .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_IMAGE));
 
                     return UserLikedEventDto.builder()
-                            .likedId(userLikedEvent.getId())
                             .eventId(userLikedEvent.getEvent().getId())
                             .name(userLikedEvent.getEvent().getName())
                             .url(imageUrl)
                             .duration(userLikedEvent.getEvent().getDuration())
+                            .isLiked(Boolean.TRUE)
                             .build();
                 }).toList();
 
