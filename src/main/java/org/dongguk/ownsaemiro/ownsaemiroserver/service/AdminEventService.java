@@ -5,14 +5,19 @@ import lombok.extern.slf4j.Slf4j;
 import org.dongguk.ownsaemiro.ownsaemiroserver.constants.Constants;
 import org.dongguk.ownsaemiro.ownsaemiroserver.domain.Event;
 import org.dongguk.ownsaemiro.ownsaemiroserver.domain.EventRequest;
+import org.dongguk.ownsaemiro.ownsaemiroserver.domain.Ticket;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.ChangeEventRequestStatusDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.*;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.blockchain.BlockChainResponse;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.EEventRequestStatus;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.ETicketStatus;
 import org.dongguk.ownsaemiro.ownsaemiroserver.exception.CommonException;
 import org.dongguk.ownsaemiro.ownsaemiroserver.exception.ErrorCode;
 import org.dongguk.ownsaemiro.ownsaemiroserver.repository.EventRepository;
 import org.dongguk.ownsaemiro.ownsaemiroserver.repository.EventRequestRepository;
+import org.dongguk.ownsaemiro.ownsaemiroserver.repository.TicketRepository;
 import org.dongguk.ownsaemiro.ownsaemiroserver.util.DateUtil;
+import org.dongguk.ownsaemiro.ownsaemiroserver.util.RestClientUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -25,9 +30,11 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class AdminEventService {
-
+    private final RestClientUtil restClientUtil;
+    private final TicketRepository ticketRepository;
     private final EventRepository eventRepository;
     private final EventRequestRepository eventRequestRepository;
+
     /* ================================================================= */
     //                          관리자 api                                 //
     /* ================================================================= */
@@ -107,7 +114,31 @@ public class AdminEventService {
         if (eEventRequestStatus.equals(EEventRequestStatus.COMPLETE)) {
             Event event = eventRepository.findById(changeEventRequestStatusDto.id())
                     .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_EVENT));
+            // 이벤트 승인완료 처리
             event.changeApproved(Boolean.TRUE);
+
+            // TODO: 스포츠와 콘서트의 경우에는 예측 모델 통과하기
+
+            // 이벤트 관련 블록체인 정보 업데이트
+            BlockChainResponse response = restClientUtil.sendRequestToPublishTickets(eventRequest.getSeat());
+            if (!response.getSuccess()){
+                throw new CommonException(ErrorCode.INTERNAL_SERVER_ERROR);
+            } else {
+                response.getData().getTickets().forEach(
+                        blockChainTicket -> {
+                            ticketRepository.save(
+                                    Ticket.builder()
+                                            .event(event)
+                                            .ticketNumber(blockChainTicket.getTicketNumber())
+                                            .status(ETicketStatus.BEFORE)
+                                            .build()
+                            );
+                        }
+                );
+
+                event.updateBlockChainInfo(response.getData().getEventHash(), response.getData().getContractAddress());
+            }
+
         }
 
         EEventRequestStatus status = eventRequest.updateStatus(eEventRequestStatus);

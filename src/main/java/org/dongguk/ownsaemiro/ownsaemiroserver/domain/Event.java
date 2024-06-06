@@ -40,6 +40,12 @@ public class Event {
     @Column(name = "seat", nullable = false)
     private Integer seat;
 
+    @Column(name = "event_hash")
+    private String eventHash;
+
+    @Column(name = "contract_address")
+    private String contractAddress;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "category", nullable = false)
     private ECategory category;
@@ -92,6 +98,14 @@ public class Event {
      */
     public void changeApproved(Boolean isApproved){
         this.isApproved = isApproved;
+    }
+
+    /**
+     * 행사 승인완료시, 블록체인 관련 정보 업데이트
+     */
+    public void updateBlockChainInfo(String eventHash, String contractAddress){
+        this.eventHash = eventHash;
+        this.contractAddress = contractAddress;
     }
 
 }

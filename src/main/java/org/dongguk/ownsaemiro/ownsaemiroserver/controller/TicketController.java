@@ -66,13 +66,4 @@ public class TicketController {
         return ResponseDto.ok(myTicketsWaitingDto);
     }
 
-    /**
-     * !!!!!!!!!!!  테스트용 티켓 생성   !!!!!!!!!!!
-     */
-    @PostMapping
-    public ResponseDto<?> createTicket(@RequestBody CreateTicketDto createTicketDto){
-        userTicketService.createTickets(createTicketDto);
-
-        return ResponseDto.created(null);
-    }
 }

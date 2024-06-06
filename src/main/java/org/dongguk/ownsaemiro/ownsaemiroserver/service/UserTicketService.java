@@ -32,7 +32,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserTicketService {
     private final UserRepository userRepository;
-    private final EventRepository eventRepository; // -> 테스트용 DI
     private final TicketRepository ticketRepository;
     private final EventImageRepository eventImageRepository;
     private final UserTicketRepository userTicketRepository;
@@ -101,7 +100,6 @@ public class UserTicketService {
                 .phoneNumber(event.getUser().getPhoneNumber())
                 .orderId(orderId)
                 .buyerId(user.getId())
-                .ticketHash(ticket.getHash())
                 .build();
     }
 
@@ -179,23 +177,4 @@ public class UserTicketService {
 
     }
 
-    /**
-     * !!!!!!!!!!!  테스트용 티켓 생성   !!!!!!!!!!!
-     */
-    @Transactional
-    public void createTickets(CreateTicketDto createTicketDto){
-        Event event = eventRepository.findById(createTicketDto.eventId())
-                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_EVENT));
-
-        // 이벤트 당 10개의 임시 티켓 발행
-        for(int i=0; i<10; i++){
-            ticketRepository.save(
-                    Ticket.builder()
-                            .hash(AuthUtil.generateHash())
-                            .event(event)
-                            .status(ETicketStatus.BEFORE)
-                            .build()
-            );
-        }
-    }
 }

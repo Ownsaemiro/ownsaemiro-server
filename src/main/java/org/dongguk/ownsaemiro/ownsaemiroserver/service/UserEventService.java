@@ -6,12 +6,14 @@ import org.dongguk.ownsaemiro.ownsaemiroserver.domain.*;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.BuyingTicketDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.WriteReviewOfEvent;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.*;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.blockchain.BlockChainResponse;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.EEventStatus;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.ETicketStatus;
 import org.dongguk.ownsaemiro.ownsaemiroserver.exception.CommonException;
 import org.dongguk.ownsaemiro.ownsaemiroserver.exception.ErrorCode;
 import org.dongguk.ownsaemiro.ownsaemiroserver.repository.*;
 import org.dongguk.ownsaemiro.ownsaemiroserver.util.AuthUtil;
+import org.dongguk.ownsaemiro.ownsaemiroserver.util.RestClientUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -19,11 +21,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserEventService {
+    private final RestClientUtil restClientUtil;
     private final UserRepository userRepository;
     private final EventRepository eventRepository;
     private final TicketRepository ticketRepository;
@@ -153,13 +157,43 @@ public class UserEventService {
             throw new CommonException(ErrorCode.NOT_ENOUGH_POINT);
 
         // 구매 가능한 티켓 확인, 없다면 행사 매진처리 및 예외처리
-        Ticket ticket = ticketRepository.findFirstByEventAndStatus(event, ETicketStatus.BEFORE)
-                .orElseThrow(() -> {
-                    if (!event.getStatus().equals(EEventStatus.SOLDOUT))
-                        event.changeStatus(EEventStatus.SOLDOUT);
+        if (!ticketRepository.existsByEventAndStatus(event, ETicketStatus.BEFORE)){
+             Integer alreadyPublished = Math.toIntExact(ticketRepository.countByEvent(event));
+             // 추가 발행이 가능한 경우
+             if (alreadyPublished < event.getSeat()){
+                 BlockChainResponse response = restClientUtil.sendRequestToAdditionalTickets(
+                         event.getContractAddress(),
+                         event.getSeat(),
+                         alreadyPublished
+                 );
 
-                    return new CommonException(ErrorCode.SOLDOUT_EVENT);
-                });
+                 // 블록체인 서버와 통신이 실패한 경우
+                 if (!response.getSuccess()){
+                     throw new CommonException(ErrorCode.INTERNAL_SERVER_ERROR);
+                 } else {
+                     // 블록체인 서버와 통신 성공, 티켓 추가 생성
+                     response.getData().getTickets().forEach(
+                             blockChainTicket -> {
+                                 ticketRepository.save(
+                                         Ticket.builder()
+                                                 .event(event)
+                                                 .ticketNumber(blockChainTicket.getTicketNumber())
+                                                 .status(ETicketStatus.BEFORE)
+                                                 .build()
+                                 );
+                             }
+                     );
+                 }
+             }
+             // 더 이상 추가 티켓 발행이 안되는 경우
+             else {
+                 throw new CommonException(ErrorCode.SOLDOUT_EVENT);
+             }
+        }
+
+        // 구매 가능한 티켓 조회
+        Ticket ticket = ticketRepository.findFirstByEventAndStatus(event, ETicketStatus.BEFORE)
+                .orElseThrow(() -> new CommonException(ErrorCode.SOLDOUT_EVENT));
 
         // 사용자 구매 티켓 저장
         userTicketRepository.save(

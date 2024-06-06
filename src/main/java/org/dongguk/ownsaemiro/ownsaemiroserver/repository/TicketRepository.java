@@ -14,6 +14,11 @@ import java.util.Optional;
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
 
     /**
+     * 발행된 티켓의 개수 파악
+     */
+    Long countByEvent(Event event);
+
+    /**
      * 구매가 가능한 티켓의 개수 파악
      */
     @Query("select count(t) from Ticket t " +
@@ -39,4 +44,6 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
      * 특정 행사에 대해 양도가 가능한 티켓 조회
      */
     Optional<Ticket> findFirstByEventAndStatus(Event event, ETicketStatus status);
+
+    Boolean existsByEventAndStatus(Event event, ETicketStatus status);
 }
