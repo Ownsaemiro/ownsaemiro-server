@@ -31,6 +31,9 @@ public class UserController {
         return ResponseDto.ok(userService.getNickname(userId));
     }
 
+    /**
+     * 사용자 프로필 이미지 조회 api
+     */
     @GetMapping("/profile-image")
     public ResponseDto<?> getProfileImage(
             @UserId Long userId
