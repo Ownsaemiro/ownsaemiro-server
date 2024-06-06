@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.dongguk.ownsaemiro.ownsaemiroserver.annotation.UserId;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.global.ResponseDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.BuyingTicketDto;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.LikeEventDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.WriteReviewOfEvent;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.*;
 import org.dongguk.ownsaemiro.ownsaemiroserver.service.EventService;
@@ -15,9 +16,9 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class EventController {
     private final EventService eventService;
-    @PostMapping("{eventId}/like")
-    public ResponseDto<?> saveUserLikedEvent(@UserId Long userId, @PathVariable Long eventId){
-        LikedEventDto likedEventDto = eventService.userLikeEvent(userId, eventId);
+    @PostMapping("/likes")
+    public ResponseDto<?> saveUserLikedEvent(@UserId Long userId, @RequestBody LikeEventDto likeEventDto){
+        LikedEventDto likedEventDto = eventService.userLikeEvent(userId, likeEventDto.id());
 
         return ResponseDto.created(likedEventDto);
     }
@@ -33,7 +34,7 @@ public class EventController {
         return ResponseDto.ok(userLikedEventsDto);
     }
 
-    @DeleteMapping("{eventId}/like")
+    @DeleteMapping("{eventId}/likes")
     public ResponseDto<?> deleteUserLikedEvent(@UserId Long userId, @PathVariable Long eventId){
         UnlikedEventDto unlikedEventDto = eventService.userDontLikeEvent(userId, eventId);
 
