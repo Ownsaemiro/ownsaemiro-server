@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class EventController {
     private final EventService eventService;
-    @PostMapping("/like")
+    @PostMapping("/likes")
     public ResponseDto<?> saveUserLikedEvent(@UserId Long userId, @RequestBody LikeEventDto likeEventDto){
         LikedEventDto likedEventDto = eventService.userLikeEvent(userId, likeEventDto.id());
 
@@ -34,7 +34,7 @@ public class EventController {
         return ResponseDto.ok(userLikedEventsDto);
     }
 
-    @DeleteMapping("{eventId}/like")
+    @DeleteMapping("{eventId}/likes")
     public ResponseDto<?> deleteUserLikedEvent(@UserId Long userId, @PathVariable Long eventId){
         UnlikedEventDto unlikedEventDto = eventService.userDontLikeEvent(userId, eventId);
 
