@@ -75,6 +75,20 @@ public class EventController {
     }
 
     /**
+     * 행사에 대한 리뷰 목록 조회 api
+     */
+    @GetMapping("/{eventId}/reviews")
+    public ResponseDto<?> showReviewsOfEvent(
+            @PathVariable Long eventId,
+            @RequestParam(value = "page", defaultValue = "1") Integer page,
+            @RequestParam(value = "size", defaultValue = "10") Integer size
+    ) {
+        AllReviewsOfEventDto allReviewsOfEventDto = eventService.showAllReviewsOfEvent(eventId, page - 1, size);
+
+        return ResponseDto.ok(allReviewsOfEventDto);
+    }
+
+    /**
      * 인기 있는 행사
      */
     @GetMapping("/popular")

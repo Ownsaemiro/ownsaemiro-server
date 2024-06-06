@@ -31,6 +31,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class EventService {
+    private final ImageRepository imageRepository;
     private final UserRepository userRepository;
     private final EventRepository eventRepository;
     private final TicketRepository ticketRepository;
@@ -179,8 +180,6 @@ public class EventService {
                 .build();
     }
 
-
-
     /**
      * 행사 상세 정보 보기 - review
      */
@@ -221,6 +220,40 @@ public class EventService {
                 .runningTime(event.getRunningTime() + Constants.MINUTE)
                 .rating(event.getRating())
                 .address(event.getAddress())
+                .build();
+    }
+
+    /**
+     * 행사 리뷰 목록 불러오기
+     */
+    public AllReviewsOfEventDto showAllReviewsOfEvent(Long eventId, Integer page, Integer size){
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_EVENT));
+
+        Page<EventReview> reviewsOfEvent = eventReviewRepository.findAllByEvent(
+                event,
+                PageRequest.of(page, size, Sort.by("createdAt").descending())
+        );
+
+        List<ReviewOfEventDto> reviewOfEventsDto = reviewsOfEvent.getContent().stream()
+                .map(eventReview -> {
+                    User user = eventReview.getUser();
+
+                    String image = userImageRepository.findByUser(user)
+                            .map(Image::getUrl)
+                            .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_IMAGE));
+
+                    return ReviewOfEventDto.builder()
+                            .id(user.getId())
+                            .nickname(user.getNickname())
+                            .image(image)
+                            .content(eventReview.getContent())
+                            .build();
+                }).toList();
+
+        return AllReviewsOfEventDto.builder()
+                .pageInfo(PageInfo.convert(reviewsOfEvent, page))
+                .reviewsDto(reviewOfEventsDto)
                 .build();
     }
 
