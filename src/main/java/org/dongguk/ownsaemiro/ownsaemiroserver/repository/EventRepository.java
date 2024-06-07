@@ -16,6 +16,15 @@ import java.util.Optional;
 
 
 public interface EventRepository extends JpaRepository<Event, Long> {
+    /* ================================================================= */
+    //                         행사 관련 scheduler                         //
+    /* ================================================================= */
+
+    /**
+     *  행사 상태 변경
+     */
+    @Query("select e from Event e where e.isApproved = true and e.status = :status")
+    List<Event> findAllByStatus(EEventStatus status);
 
     /* ================================================================= */
     //                          홈 api 관련 쿼리                            //
