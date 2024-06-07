@@ -5,6 +5,7 @@ import org.dongguk.ownsaemiro.ownsaemiroserver.annotation.UserId;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.global.ResponseDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.AllAboutEventDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.AssignTicketsDto;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.TicketIdDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.service.TicketService;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,9 +42,9 @@ public class AssignmentController {
     /**
      * 양도 신청하기 api
      */
-    @PutMapping("/tickets/{ticketId}")
-    public ResponseDto<?> applyAssignment(@UserId Long userId, @PathVariable Long ticketId){
-        ticketService.applyAssignment(userId, ticketId);
+    @PutMapping("/tickets")
+    public ResponseDto<?> applyAssignment(@UserId Long userId, @RequestBody TicketIdDto ticketIdDto){
+        ticketService.applyAssignment(userId, ticketIdDto.ticketId());
 
         return ResponseDto.created(null);
     }
