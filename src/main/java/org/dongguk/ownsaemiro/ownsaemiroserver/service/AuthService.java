@@ -99,7 +99,7 @@ public class AuthService {
      * oauth 회원가입 및 로그인
      */
     @Transactional
-    public void signUpOauth(HttpServletResponse response, OauthSignUpDto oauthSignUpDto) throws IOException {
+    public JwtTokenDto signUpOauth(OauthSignUpDto oauthSignUpDto) throws IOException {
         // 사용자 확인 -> 있으면 반환, 없으면 사용자 & 사용자 지갑 생성 후 반환
         User user = userRepository.findBySerialId(oauthSignUpDto.serialId())
                         .orElseGet(() -> {
@@ -129,10 +129,7 @@ public class AuthService {
                             return newUser;
                         });
         // 토큰 발행
-        JwtTokenDto jwtTokenDto = jwtUtil.generateTokens(user.getId(), user.getRole());
-
-        // 토큰 포함한 결과 리턴
-        AuthenticationResponse.makeOauthSuccessResponse(response, jwtTokenDto);
+        return jwtUtil.generateTokens(user.getId(), user.getRole());
     }
 
     /**

@@ -9,6 +9,7 @@ import org.dongguk.ownsaemiro.ownsaemiroserver.domain.Ticket;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.ChangeEventRequestStatusDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.*;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.blockchain.BlockChainResponse;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.ECategory;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.EEventRequestStatus;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.EEventStatus;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.ETicketStatus;
@@ -26,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -115,10 +117,6 @@ public class AdminService {
 
         EEventRequestStatus eEventRequestStatus = EEventRequestStatus.toEnum(changeEventRequestStatusDto.status());
 
-        // 잘못된 인자 값이 들어온 경우
-        if (eEventRequestStatus == null)
-            throw new CommonException(ErrorCode.INVALID_PARAMETER_FORMAT);
-
         // 승인완료시, event에도 approved 적용
         if (eEventRequestStatus.equals(EEventRequestStatus.COMPLETE)) {
             Event event = eventRepository.findById(changeEventRequestStatusDto.id())
@@ -128,9 +126,14 @@ public class AdminService {
             event.changeStatus(EEventStatus.SELLING);
 
             // TODO: 스포츠와 콘서트의 경우에는 예측 모델 통과하기
+            Integer seat = event.getSeat();
+            if (event.getCategory().equals(ECategory.SPORT)){
+                seat = (Integer) restClientUtil.sendRequestToPredictSport(Constants.createSportsRequest(event.getName())).getAsNumber("spectator");
+            }
+
 
             // 이벤트 관련 블록체인 정보 업데이트
-            BlockChainResponse response = restClientUtil.sendRequestToPublishTickets(eventRequest.getSeat());
+            BlockChainResponse response = restClientUtil.sendRequestToPublishTickets(seat);
             if (!response.getSuccess()){
                 throw new CommonException(ErrorCode.INTERNAL_SERVER_ERROR);
             } else {
