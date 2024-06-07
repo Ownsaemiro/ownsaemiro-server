@@ -156,6 +156,18 @@ public class EventService {
     }
 
     /**
+     * 행사 상세 정보 보기 - 남은 좌석 개수
+     */
+    public RemainingSeatDto showRemainingSeat(Long eventId){
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_EVENT));
+
+        return RemainingSeatDto.builder()
+                .remainingSeat(Math.toIntExact(event.getSeat() - ticketRepository.countByEvent(event) + ticketRepository.countAvailableTickets(event)))
+                .build();
+    }
+
+    /**
      * 행사 상세 정보 보기 - info
      */
     public DetailInfoOfEventDto showDetailInfoOfEvent(Long userId, Long eventId){
@@ -181,7 +193,6 @@ public class EventService {
                 .price(event.getPrice())
                 .duration(event.getDuration())
                 .isLiked(userLikedEventRepository.existsByUserAndEvent(user, event))
-                .remainingSeats(ticketRepository.countAvailableTickets(event))
                 .build();
     }
 

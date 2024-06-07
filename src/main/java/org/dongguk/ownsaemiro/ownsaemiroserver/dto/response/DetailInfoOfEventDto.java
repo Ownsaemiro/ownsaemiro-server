@@ -36,9 +36,6 @@ public record DetailInfoOfEventDto(
         String duration,
 
         @JsonProperty("is_liked")
-        Boolean isLiked,
-
-        @JsonProperty("remaining_seats")
-        Long remainingSeats
+        Boolean isLiked
 ) {
 }
