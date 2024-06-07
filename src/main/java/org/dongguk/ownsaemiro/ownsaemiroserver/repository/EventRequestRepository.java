@@ -17,13 +17,17 @@ public interface EventRequestRepository extends JpaRepository<EventRequest, Long
     //                         관리자 api 관련 쿼리                          //
     /* ================================================================= */
 
+    // 상태 검색
+    @Query("select er from EventRequest er join er.event e where er.state = :status order by er.createdAt desc")
+    Page<EventRequest> findAllAppliesByStatus(EEventRequestStatus status, Pageable pageable);
+
     // 행사명 검색
     @Query("select er from EventRequest er join er.event e where e.name like %:name% order by er.createdAt desc")
-    Page<EventRequest> searchAllByName(String name, Pageable pageable);
+    Page<EventRequest> findAllAppliesByName(String name, Pageable pageable);
 
     // 행사명 & 상태 검색
     @Query("select er from EventRequest er join er.event e where e.name like %:name% and er.state = :status order by er.createdAt desc")
-    Page<EventRequest> searchAllByNameAndState(String name, EEventRequestStatus status, Pageable pageable);
+    Page<EventRequest> findAllAppliesByNameAndState(String name, EEventRequestStatus status, Pageable pageable);
 
     /* ================================================================= */
     //                         판매자 api 관련 쿼리                          //
