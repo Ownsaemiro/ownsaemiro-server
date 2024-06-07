@@ -3,6 +3,8 @@ package org.dongguk.ownsaemiro.ownsaemiroserver.util;
 import net.minidev.json.JSONObject;
 import org.dongguk.ownsaemiro.ownsaemiroserver.constants.Constants;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.blockchain.BlockChainResponse;
+import org.dongguk.ownsaemiro.ownsaemiroserver.exception.CommonException;
+import org.dongguk.ownsaemiro.ownsaemiroserver.exception.ErrorCode;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -18,11 +20,41 @@ public class RestClientUtil {
     private String publisherUrl;
     @Value("${blockchain.remain}")
     private String additionalUrl;
+    @Value("${prediction.sports}")
+    private String sportUrl;
+    @Value("${prediction.concerts}")
+    private String concertUrl;
     private final RestClient restClient = RestClient.create();
 
     public JSONObject sendPostRequest(String url, JSONObject requestBody) {
         Map<String,Object> response = Objects.requireNonNull(restClient.post()
                 .uri(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(requestBody.toJSONString())
+                .retrieve()
+                .toEntity(Map.class).getBody());
+
+        return new JSONObject(response);
+    }
+
+    public JSONObject sendRequestToPredictSport(Map<String, String> request){
+        JSONObject requestBody = new JSONObject(request);
+
+        Map<String, String> response = Objects.requireNonNull(restClient.post()
+                .uri(sportUrl)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(requestBody.toJSONString())
+                .retrieve()
+                .toEntity(Map.class).getBody());
+
+        return new JSONObject(response);
+    }
+
+    public JSONObject sendRequestToPredictConcert(Map<String, String> request){
+        JSONObject requestBody = new JSONObject(request);
+
+        Map<String, String> response = Objects.requireNonNull(restClient.post()
+                .uri(sportUrl)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(requestBody.toJSONString())
                 .retrieve()
@@ -91,4 +123,6 @@ public class RestClientUtil {
                 .toEntity(Map.class).getBody());
         return new JSONObject(response);
     }
+
+
 }

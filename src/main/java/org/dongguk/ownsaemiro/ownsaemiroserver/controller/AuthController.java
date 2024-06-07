@@ -7,6 +7,7 @@ import org.dongguk.ownsaemiro.ownsaemiroserver.dto.global.ResponseDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.AuthSignUpDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.OauthSignUpDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.AvailableSerialIdDto;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.JwtTokenDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.ServiceSerialIdDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.service.AuthService;
 import org.springframework.web.bind.annotation.*;
@@ -42,8 +43,10 @@ public class AuthController {
      * 사용자 회원가입 및 로그인 (oauth2)
      */
     @PostMapping("/api/oauth/sign-up")
-    public void signUpOauth(HttpServletResponse response, @RequestBody OauthSignUpDto oauthSignUpDto) throws IOException {
-        authService.signUpOauth(response, oauthSignUpDto);
+    public ResponseDto<?> signUpOauth(@RequestBody OauthSignUpDto oauthSignUpDto) throws IOException {
+        JwtTokenDto jwtTokenDto = authService.signUpOauth(oauthSignUpDto);
+
+        return ResponseDto.ok(jwtTokenDto);
     }
 
     /**
