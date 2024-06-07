@@ -80,9 +80,6 @@ public class UserTicketService {
         Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_TICKET));
 
-        String orderId = userTicketRepository.findOrderIdByUserAndTicket(user, ticket)
-                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER_TICKET));
-
         String image = eventImageRepository.findByEvent(ticket.getEvent())
                 .map(Image::getUrl)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_IMAGE));
@@ -99,8 +96,8 @@ public class UserTicketService {
                 .address(event.getAddress())
                 .duration(event.getDuration())
                 .phoneNumber(event.getUser().getPhoneNumber())
-                .orderId(orderId)
                 .buyerId(user.getId())
+                .eventHash(event.getEventHash())
                 .build();
     }
 
