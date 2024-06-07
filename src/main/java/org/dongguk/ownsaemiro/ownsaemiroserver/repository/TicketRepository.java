@@ -25,6 +25,7 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
             "where t.status = org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.ETicketStatus.BEFORE " +
             "and t.event =:event" )
     Long countAvailableTickets(Event event);
+
     /**
      * 양도 가능한 티켓 조회 -> 전체 조회
      */

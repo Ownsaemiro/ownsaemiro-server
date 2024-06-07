@@ -45,6 +45,12 @@ public class EventController {
     /**
      * 행사 정보 상세 보기
      */
+    @GetMapping("{eventId}/remain")
+    public ResponseDto<?> showRemainingSeat(@PathVariable Long eventId){
+        RemainingSeatDto remainingSeatDto = eventService.showRemainingSeat(eventId);
+
+        return ResponseDto.ok(remainingSeatDto);
+    }
 
     @GetMapping("{eventId}/info")
     public ResponseDto<?> showDetailInfoOfEvent(@UserId Long userId, @PathVariable Long eventId){

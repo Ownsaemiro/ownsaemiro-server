@@ -35,6 +35,7 @@ import java.util.List;
 public class EventService {
     private final UserRepository userRepository;
     private final EventRepository eventRepository;
+    private final TicketRepository ticketRepository;
     private final UserImageRepository userImageRepository;
     private final EventImageRepository eventImageRepository;
     private final EventReviewRepository eventReviewRepository;
@@ -151,6 +152,18 @@ public class EventService {
         return EventsDto.builder()
                 .pageInfo(PageInfo.convert(events, page))
                 .eventsDto(eventsDto)
+                .build();
+    }
+
+    /**
+     * 행사 상세 정보 보기 - 남은 좌석 개수
+     */
+    public RemainingSeatDto showRemainingSeat(Long eventId){
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_EVENT));
+
+        return RemainingSeatDto.builder()
+                .remainingSeat(Math.toIntExact(event.getSeat() - ticketRepository.countByEvent(event) + ticketRepository.countAvailableTickets(event)))
                 .build();
     }
 
