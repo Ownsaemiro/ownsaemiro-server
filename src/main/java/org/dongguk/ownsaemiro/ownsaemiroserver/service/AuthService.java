@@ -46,12 +46,13 @@ public class AuthService {
     /**
      * 카카오 시리얼 아이디 조회
      */
-    public ServiceSerialIdDto signUpKakao(String accessToken) {
+    public ServiceSerialIdDto getKakaoSerialId(String accessToken) {
         // 카카오 서버에서 사용자 정보 가져오기
-        Map<String, Object> kakaoResponse = restClientUtil.sendAppKakaoLoginRequest(Constants.KAKAO_LOGIN_PATH, accessToken);
+        String kakaoSerialId = String.valueOf(restClientUtil.sendAppKakaoLoginRequest(Constants.KAKAO_LOGIN_PATH, accessToken).get("id"));
 
         return ServiceSerialIdDto.builder()
-                .serialId(String.valueOf(kakaoResponse.get("id")))
+                .serialId(kakaoSerialId)
+                .isExisted(userRepository.existsBySerialId(kakaoSerialId))
                 .build();
     }
 
@@ -60,10 +61,11 @@ public class AuthService {
      */
     public ServiceSerialIdDto getNaverSerialId(String accessToken) throws IOException {
         // 네이버 서버에서 사용자 정보 가져오기
-        Map<String, Object> naverResponse = restClientUtil.sendAppNaverLoginRequest(Constants.NAVER_LOGIN_PATH, accessToken);
+        String naverSerialId = String.valueOf(restClientUtil.sendAppNaverLoginRequest(Constants.NAVER_LOGIN_PATH, accessToken).get("id"));
 
         return ServiceSerialIdDto.builder()
-                .serialId(String.valueOf(naverResponse.get("id")))
+                .serialId(naverSerialId)
+                .isExisted(userRepository.existsBySerialId(naverSerialId))
                 .build();
     }
 

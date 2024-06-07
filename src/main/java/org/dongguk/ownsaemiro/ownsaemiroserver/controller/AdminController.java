@@ -6,7 +6,7 @@ import org.dongguk.ownsaemiro.ownsaemiroserver.dto.global.ResponseDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.BanInfo;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.ChangeEventRequestStatusDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.*;
-import org.dongguk.ownsaemiro.ownsaemiroserver.service.AdminEventService;
+import org.dongguk.ownsaemiro.ownsaemiroserver.service.AdminService;
 import org.dongguk.ownsaemiro.ownsaemiroserver.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AdminController {
     private final UserService userService;
-    private final AdminEventService adminEventService;
+    private final AdminService adminService;
 
     /**
      * 관리자 닉네임 조회 api
@@ -61,7 +61,7 @@ public class AdminController {
             @RequestParam(value = "page", defaultValue = "1") Integer page,
             @RequestParam(value = "size", defaultValue = "10") Integer size
     ){
-        AdminApplyEventDto adminApplyEventDto = adminEventService.searchOrShowAppliesOfSeller(name, state, page-1, size);
+        AdminApplyEventDto adminApplyEventDto = adminService.searchOrShowAppliesOfSeller(name, state, page-1, size);
 
         return ResponseDto.ok(adminApplyEventDto);
     }
@@ -71,7 +71,7 @@ public class AdminController {
      */
     @GetMapping("/register/detail")
     public ResponseDto<?> showDetailOfApply(@RequestParam("event_id") Long eventRequestId){
-        DetailOfEventRequestDto detailOfEventRequestDto = adminEventService.showDetailOfEventRequest(eventRequestId);
+        DetailOfEventRequestDto detailOfEventRequestDto = adminService.showDetailOfEventRequest(eventRequestId);
 
         return ResponseDto.ok(detailOfEventRequestDto);
     }
@@ -81,7 +81,7 @@ public class AdminController {
      */
     @PatchMapping("/register")
     public ResponseDto<?> changeEventRequestStatus(@RequestBody ChangeEventRequestStatusDto changeEventRequestStatusDto){
-        ChangedEventRequestStatusDto changedEventRequestStatusDto = adminEventService.changeEventRequestState(changeEventRequestStatusDto);
+        ChangedEventRequestStatusDto changedEventRequestStatusDto = adminService.changeEventRequestState(changeEventRequestStatusDto);
 
         return ResponseDto.ok(changedEventRequestStatusDto);
     }

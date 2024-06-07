@@ -30,7 +30,7 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class AdminEventService {
+public class AdminService {
     private final RestClientUtil restClientUtil;
     private final TicketRepository ticketRepository;
     private final EventRepository eventRepository;

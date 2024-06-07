@@ -6,6 +6,9 @@ import lombok.Builder;
 @Builder
 public record ServiceSerialIdDto(
         @JsonProperty("serial_id")
-        String serialId
+        String serialId,
+
+        @JsonProperty("is_existed")
+        Boolean isExisted
 ) {
 }
