@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dongguk.ownsaemiro.ownsaemiroserver.constants.Constants;
 import org.dongguk.ownsaemiro.ownsaemiroserver.domain.*;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.ValidateTicketDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.test.CreateTicketDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.*;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.ETicketStatus;
@@ -79,9 +80,6 @@ public class UserTicketService {
         Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_TICKET));
 
-        String orderId = userTicketRepository.findOrderIdByUserAndTicket(user, ticket)
-                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER_TICKET));
-
         String image = eventImageRepository.findByEvent(ticket.getEvent())
                 .map(Image::getUrl)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_IMAGE));
@@ -98,8 +96,8 @@ public class UserTicketService {
                 .address(event.getAddress())
                 .duration(event.getDuration())
                 .phoneNumber(event.getUser().getPhoneNumber())
-                .orderId(orderId)
                 .buyerId(user.getId())
+                .eventHash(event.getEventHash())
                 .build();
     }
 
@@ -175,6 +173,25 @@ public class UserTicketService {
                 .participatedEventsDto(participatedEventsDto)
                 .build();
 
+    }
+
+    /**
+     * 티켓 검증하기
+     */
+    public void validateTicket(ValidateTicketDto validateTicketDto){
+        User user = userRepository.findById(validateTicketDto.userId())
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
+
+        Ticket ticket = ticketRepository.findById(validateTicketDto.ticketId())
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_TICKET));
+
+        UserTicket userTicket = userTicketRepository.findByUserAndTicket(user, ticket)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER_TICKET));
+
+        if (!userTicket.getUser().getDeviceId().equals(validateTicketDto.deviceId())
+         || !userTicket.getTicket().getEvent().getEventHash().equals(validateTicketDto.eventHash())) {
+            throw new CommonException(ErrorCode.INVALID_TICKET_OWNER);
+        }
     }
 
 }

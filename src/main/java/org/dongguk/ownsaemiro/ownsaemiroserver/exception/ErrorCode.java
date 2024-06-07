@@ -20,6 +20,7 @@ public enum ErrorCode {
     SOLDOUT_EVENT(40009, HttpStatus.BAD_REQUEST, "매진된 행사입니다."),
     NOT_ENOUGH_POINT(40010, HttpStatus.BAD_REQUEST, "포인트가 부족합니다."),
     INVALID_ASSIGN_TICKET(40011, HttpStatus.BAD_REQUEST, "양도 티켓이 아닙니다"),
+    INVALID_TICKET_OWNER(40012, HttpStatus.BAD_REQUEST, "일치하지 않는 사용자입니디. 입장이 불가능합니다."),
 
     //401
     INVALID_HEADER_VALUE(40100, HttpStatus.UNAUTHORIZED, "올바르지 않은 헤더값입니다."),

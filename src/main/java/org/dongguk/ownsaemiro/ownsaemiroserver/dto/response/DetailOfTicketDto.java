@@ -38,7 +38,7 @@ public record DetailOfTicketDto(
         @JsonProperty("buyer_id")
         Long buyerId,
 
-        @JsonProperty("ticket_hash")
-        String ticketHash
+        @JsonProperty("event_hash")
+        String eventHash
 ) {
 }
