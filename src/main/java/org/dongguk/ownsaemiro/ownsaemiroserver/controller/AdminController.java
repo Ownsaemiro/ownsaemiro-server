@@ -5,9 +5,11 @@ import org.dongguk.ownsaemiro.ownsaemiroserver.annotation.UserId;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.global.ResponseDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.BanInfo;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.ChangeEventRequestStatusDto;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.ValidateTicketDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.*;
 import org.dongguk.ownsaemiro.ownsaemiroserver.service.AdminService;
 import org.dongguk.ownsaemiro.ownsaemiroserver.service.UserService;
+import org.dongguk.ownsaemiro.ownsaemiroserver.service.UserTicketService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 public class AdminController {
     private final UserService userService;
     private final AdminService adminService;
+    private final UserTicketService userTicketService;
 
     /**
      * 관리자 닉네임 조회 api
@@ -84,6 +87,16 @@ public class AdminController {
         ChangedEventRequestStatusDto changedEventRequestStatusDto = adminService.changeEventRequestState(changeEventRequestStatusDto);
 
         return ResponseDto.ok(changedEventRequestStatusDto);
+    }
+
+    /**
+     * 이벤트 입장 -> 티켓 검증하기
+     */
+    @PostMapping("/check-ticket")
+    public ResponseDto<?> validateTicket(@RequestBody ValidateTicketDto validateTicketDto){
+        userTicketService.validateTicket(validateTicketDto);
+
+        return ResponseDto.ok(null);
     }
 
 }
