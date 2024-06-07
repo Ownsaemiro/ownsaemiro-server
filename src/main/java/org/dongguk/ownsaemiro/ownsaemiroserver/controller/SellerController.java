@@ -7,7 +7,7 @@ import org.dongguk.ownsaemiro.ownsaemiroserver.dto.global.ResponseDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.ApplyEventDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.ChangeSellingEventStatusDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.*;
-import org.dongguk.ownsaemiro.ownsaemiroserver.service.SellerEventService;
+import org.dongguk.ownsaemiro.ownsaemiroserver.service.SellerService;
 import org.dongguk.ownsaemiro.ownsaemiroserver.service.UserService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,7 +19,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class SellerController {
     private final UserService userService;
-    private final SellerEventService sellerEventService;
+    private final SellerService sellerService;
 
     /**
      * 판매자 닉네임 조회 api
@@ -43,7 +43,7 @@ public class SellerController {
             @RequestParam(value = "page", defaultValue = "1") Integer page,
             @RequestParam(value = "size", defaultValue = "10") Integer size
     ) {
-        MyEventHistoriesDto myEventHistoriesDto = sellerEventService.searchOrShowMyEvents(userId, name, filter, page-1, size);
+        MyEventHistoriesDto myEventHistoriesDto = sellerService.searchOrShowMyEvents(userId, name, filter, page-1, size);
 
         return ResponseDto.ok(myEventHistoriesDto);
     }
@@ -55,7 +55,7 @@ public class SellerController {
     public ResponseDto<?> changeEventStatus(
             @UserId Long userId,
             @RequestBody ChangeSellingEventStatusDto changeSellingEventStatusDto){
-        ChangeEventStatusDto changeEventStatusDto = sellerEventService.changeEventStatus(userId, changeSellingEventStatusDto);
+        ChangeEventStatusDto changeEventStatusDto = sellerService.changeEventStatus(userId, changeSellingEventStatusDto);
 
         return ResponseDto.ok(changeEventStatusDto);
     }
@@ -70,8 +70,8 @@ public class SellerController {
             @UserId Long userId,
             @RequestPart("image") MultipartFile image,
             @RequestPart("data") ApplyEventDto applyEventDto) throws IOException {
-        Event newEvent = sellerEventService.saveEvent(userId, image, applyEventDto);
-        EventRequestDto eventRequestDto = sellerEventService.saveEventRequest(newEvent);
+        Event newEvent = sellerService.saveEvent(userId, image, applyEventDto);
+        EventRequestDto eventRequestDto = sellerService.saveEventRequest(newEvent);
 
         return ResponseDto.ok(eventRequestDto);
     }
@@ -86,7 +86,7 @@ public class SellerController {
             @RequestParam(value = "status", required = false) String status,
             @RequestParam(value = "page", defaultValue = "1") Integer page,
             @RequestParam(value = "size", defaultValue = "10") Integer size){
-        MyAppliesDto myAppliesDto = sellerEventService.searchOrShowMyEventApplies(userId, name, status,page-1, size);
+        MyAppliesDto myAppliesDto = sellerService.searchOrShowMyEventApplies(userId, name, status,page-1, size);
 
         return ResponseDto.ok(myAppliesDto);
     }
@@ -96,7 +96,7 @@ public class SellerController {
      */
     @DeleteMapping("/apply")
     public ResponseDto<?> cancelApply(@UserId Long userId, @RequestParam("request_id") Long eventRequestId){
-        sellerEventService.cancelApply(userId, eventRequestId);
+        sellerService.cancelApply(userId, eventRequestId);
 
         return ResponseDto.ok(null);
     }

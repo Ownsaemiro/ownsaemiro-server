@@ -22,7 +22,6 @@ import org.dongguk.ownsaemiro.ownsaemiroserver.repository.UserRepository;
 import org.dongguk.ownsaemiro.ownsaemiroserver.util.DateUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,7 +34,7 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class SellerEventService {
+public class SellerService {
     private final S3Service s3Service;
     private final UserRepository userRepository;
     private final EventRepository eventRepository;
@@ -106,12 +105,9 @@ public class SellerEventService {
             }
         }
 
-        List<EventHistoryDto> eventHistoriesDto = extractFromEventHistory(myApprovedHistories);
-
-
         return MyEventHistoriesDto.builder()
                 .pageInfo(PageInfo.convert(myApprovedHistories, page))
-                .eventHistoriesDto(eventHistoriesDto)
+                .eventHistoriesDto(extractFromEventHistory(myApprovedHistories))
                 .build();
     }
 
