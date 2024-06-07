@@ -35,7 +35,6 @@ import java.util.List;
 public class EventService {
     private final UserRepository userRepository;
     private final EventRepository eventRepository;
-    private final TicketRepository ticketRepository;
     private final UserImageRepository userImageRepository;
     private final EventImageRepository eventImageRepository;
     private final EventReviewRepository eventReviewRepository;
@@ -181,7 +180,6 @@ public class EventService {
                 .price(event.getPrice())
                 .duration(event.getDuration())
                 .isLiked(userLikedEventRepository.existsByUserAndEvent(user, event))
-                .remainingSeats(ticketRepository.countAvailableTickets(event))
                 .build();
     }
 
