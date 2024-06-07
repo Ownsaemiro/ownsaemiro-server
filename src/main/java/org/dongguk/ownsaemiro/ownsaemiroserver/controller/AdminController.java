@@ -52,14 +52,16 @@ public class AdminController {
 
     /*  관리자 판매 요청 관련 api  */
     /**
-     * 관리자 행사 등록 요청 목록 api
+     * 관리자 행사 등록 요청 목록 + 검색 api
      */
     @GetMapping("/register")
     public ResponseDto<?> showAppliesOfSeller(
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "state", required = false) String state,
             @RequestParam(value = "page", defaultValue = "1") Integer page,
             @RequestParam(value = "size", defaultValue = "10") Integer size
     ){
-        AdminApplyEventDto adminApplyEventDto = adminEventService.showAppliesOfSeller(page-1, size);
+        AdminApplyEventDto adminApplyEventDto = adminEventService.searchOrShowAppliesOfSeller(name, state, page-1, size);
 
         return ResponseDto.ok(adminApplyEventDto);
     }
@@ -72,21 +74,6 @@ public class AdminController {
         DetailOfEventRequestDto detailOfEventRequestDto = adminEventService.showDetailOfEventRequest(eventRequestId);
 
         return ResponseDto.ok(detailOfEventRequestDto);
-    }
-
-    /**
-     * 관리자 요청 행사 검색 api
-     */
-    @GetMapping("/register/search")
-    public ResponseDto<?> searchEventRequest(
-            @RequestParam("name") String name,
-            @RequestParam("state") String state,
-            @RequestParam(value = "page", defaultValue = "1") Integer page,
-            @RequestParam(value = "size", defaultValue = "10") Integer size
-    ) {
-        AdminApplyEventDto adminApplyEventDto = adminEventService.searchEventRequest(name, state, page-1, size);
-
-        return ResponseDto.ok(adminApplyEventDto);
     }
 
     /**

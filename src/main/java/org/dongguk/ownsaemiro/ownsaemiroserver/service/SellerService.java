@@ -22,7 +22,6 @@ import org.dongguk.ownsaemiro.ownsaemiroserver.repository.UserRepository;
 import org.dongguk.ownsaemiro.ownsaemiroserver.util.DateUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,7 +34,7 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class SellerEventService {
+public class SellerService {
     private final S3Service s3Service;
     private final UserRepository userRepository;
     private final EventRepository eventRepository;
@@ -45,61 +44,72 @@ public class SellerEventService {
     /* ================================================================= */
     //                          판매자 api                                 //
     /* ================================================================= */
+
     /**
-     * 판매 이력 조회
+     * 판매자 판매 이력 목록 조회 + 검색 조건
      */
-    public MyEventHistoriesDto showMyHistories(Long userId, Integer page, Integer size) {
+    public MyEventHistoriesDto searchOrShowMyEvents(Long userId, String name, String strStatus, Integer page, Integer size){
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
+        Page<EventRepository.EventHistory> myApprovedHistories;
+        if (name == null && strStatus == null){
+            // 검색 조건이 없는 일반적인 목록 조회인 경우
+            myApprovedHistories = eventRepository.findAllMyApprovedHistories(
+                    user,
+                    PageRequest.of(page, size, Sort.by("createdAt").descending())
+            );
 
-        Page<EventRepository.EventHistory> myApprovedHistories = eventRepository.findAllMyApprovedHistories(
-                user,
-                PageRequest.of(page, size, Sort.by("createdAt").descending())
-        );
+        } else if (name == null && strStatus != null){
+            if (strStatus.equals(Constants.ALL)){
+                // 모든 상태에 대해서 조회인 경우
+                myApprovedHistories = eventRepository.findAllMyApprovedHistories(
+                        user,
+                        PageRequest.of(page, size, Sort.by("createdAt").descending())
+                );
+            } else {
+                // 특정 상태에 대한 조회인 경우
+                EEventStatus eEventStatus = EEventStatus.toEnum(strStatus);
+                myApprovedHistories = eventRepository.findAllMyApprovedHistoriesByStatus(
+                        user,
+                        eEventStatus,
+                        PageRequest.of(page, size, Sort.by("createdAt").descending())
+                );
+            }
 
-        List<EventHistoryDto> eventHistoriesDto = extracted(myApprovedHistories);
+        } else if (name != null && strStatus == null){
+            // 판매 이력 검색어만 넘어온 경우
+            myApprovedHistories = eventRepository.findAllMyApprovedHistoriesByName(
+                    user,
+                    name,
+                    PageRequest.of(page, size, Sort.by("createdAt").descending())
+            );
+
+        } else {
+            // 검색어와 strStatus 모두 넘어온 경우
+            if (strStatus.equals(Constants.ALL)){
+                // 모든 상태 + 검색어에 대해서 조회인 경우
+                myApprovedHistories = eventRepository.findAllMyApprovedHistoriesByName(
+                        user,
+                        name,
+                        PageRequest.of(page, size, Sort.by("createdAt").descending())
+                );
+            } else {
+                // 특정 상태 + 검색어에 대한 조회인 경우
+                EEventStatus eEventStatus = EEventStatus.toEnum(strStatus);
+                myApprovedHistories = eventRepository.findAllMyApprovedHistoriesByNameAndStatus(
+                        user,
+                        name,
+                        eEventStatus,
+                        PageRequest.of(page, size, Sort.by("createdAt").descending())
+                );
+            }
+        }
 
         return MyEventHistoriesDto.builder()
                 .pageInfo(PageInfo.convert(myApprovedHistories, page))
-                .eventHistoriesDto(eventHistoriesDto)
+                .eventHistoriesDto(extractFromEventHistory(myApprovedHistories))
                 .build();
     }
-    /**
-     * 판매자 판매 행사 검색
-     */
-    public MyEventHistoriesDto searchMyEvents(Long userId, String name, Integer page, Integer size){
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
-
-        Page<EventRepository.EventHistory> myEvents = eventRepository.searchAllByUserAndName(
-                user,
-                name,
-                PageRequest.of(page, size, Sort.by("createdAt").descending())
-        );
-
-        List<EventHistoryDto> eventHistoriesDto = extracted(myEvents);
-
-        return MyEventHistoriesDto.builder()
-                .pageInfo(PageInfo.convert(myEvents, page))
-                .eventHistoriesDto(eventHistoriesDto)
-                .build();
-
-    }
-
-    private static List<EventHistoryDto> extracted(Page<EventRepository.EventHistory> myEvents) {
-        return myEvents.getContent().stream()
-                .map(eventHistory -> EventHistoryDto.builder()
-                        .id(eventHistory.getEvent().getId())
-                        .name(eventHistory.getEvent().getName())
-                        .seat(eventHistory.getEvent().getSeat())
-                        .applyDate(DateUtil.convertDate(eventHistory.getCreatedAt()))
-                        .hostNickname(eventHistory.getEvent().getUser().getNickname())
-                        .status(eventHistory.getEvent().getStatus().getState())
-                        .duration(eventHistory.getEvent().getDuration())
-                        .build()
-                ).toList();
-    }
-
 
     /**
      * 판매자 판매 행사 상태 변경
@@ -194,56 +204,69 @@ public class SellerEventService {
     }
 
     /**
-     * 나의 행사 신청 목록 확인하기
+     * 판매자 판매 요청 목록 조회 + 검색 조건
      */
-    public MyAppliesDto showMyApplies(Long userId, Integer page, Integer size){
+    public MyAppliesDto searchOrShowMyEventApplies(Long userId, String name, String strStatus, Integer page, Integer size){
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
 
-        Page<EventRequest> myApplies = eventRequestRepository.findAllByUser(
-                user,
-                PageRequest.of(page, size, Sort.by("createdAt").descending())
-        );
-
-        List<EventRequestDto> eventRequestsDto = getEventRequestsDto(myApplies);
-
-        return MyAppliesDto.builder()
-                .pageInfo(PageInfo.convert(myApplies, page))
-                .eventApplies(eventRequestsDto)
-                .build();
-    }
-
-    /**
-     * 나의 행사 신청 목록 검색하기
-     */
-
-    public MyAppliesDto searchMyApplies(Long userId, String search, String state, Integer page, Integer size){
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
-
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        Page<EventRequest> mySearchResult;
-
-        EEventRequestStatus status = EEventRequestStatus.toEnum(state);
-        if (status != null) {
-            // 검색 상태 조건이 전체인 경우
-            if (state.equals(Constants.ALL))
-                mySearchResult = eventRequestRepository.searchAllByUserAndState(user, status, search, pageable);
-                // 검색 상태 조건이 올바르지 않은 경우
-            else
-                throw new CommonException(ErrorCode.INVALID_PARAMETER_FORMAT);
+        Page<EventRequest> myEventRequests;
+        if (name == null && strStatus == null){
+            // 일반 목록 조회
+            myEventRequests = eventRequestRepository.findAllByUser(
+                    user,
+                    PageRequest.of(page, size, Sort.by("createdAt").descending())
+            );
+        } else if (name == null && strStatus != null){
+            // 상태조건으로만 조회
+            if (strStatus.equals(Constants.ALL)){
+                // 모든 조건 조회인 경우
+                myEventRequests = eventRequestRepository.findAllByUser(
+                        user,
+                        PageRequest.of(page, size, Sort.by("createdAt").descending())
+                );
+            } else {
+                EEventRequestStatus eEventRequestStatus = EEventRequestStatus.toEnum(strStatus);
+                myEventRequests = eventRequestRepository.findAllMyEventRequestsByStatus(
+                        user,
+                        eEventRequestStatus,
+                        PageRequest.of(page, size, Sort.by("createdAt").descending())
+                );
+            }
+        } else if (name != null && strStatus == null){
+            // 행사 이름으로만 조회
+            myEventRequests = eventRequestRepository.findAllMyEventRequestsByName(
+                    user,
+                    name,
+                    PageRequest.of(page, size, Sort.by("createdAt").descending())
+            );
         } else {
-            // 검색 상태 조건이 승인대기, 승인거절, 승인완료 인 경우
-            mySearchResult = eventRequestRepository.searchAllByUser(user, search, pageable);
+            // 행사 이름과 조건으로 조회
+            if (strStatus.equals(Constants.ALL)){
+                // 검색어 + 모든 조건 조회인 경우
+                myEventRequests = eventRequestRepository.findAllMyEventRequestsByName(
+                        user,
+                        name,
+                        PageRequest.of(page, size, Sort.by("createdAt").descending())
+                );
+            } else {
+                // 검색어 + 특정 조건 조회인 경우
+                EEventRequestStatus eEventRequestStatus = EEventRequestStatus.toEnum(strStatus);
+                myEventRequests = eventRequestRepository.findAllMyEventRequestsByNameAndStatus(
+                        user,
+                        eEventRequestStatus,
+                        name,
+                        PageRequest.of(page, size, Sort.by("createdAt").descending())
+                );
+            }
         }
 
-        List<EventRequestDto> eventRequestsDto = getEventRequestsDto(mySearchResult);
-
         return MyAppliesDto.builder()
-                .pageInfo(PageInfo.convert(mySearchResult, page))
-                .eventApplies(eventRequestsDto)
+                .pageInfo(PageInfo.convert(myEventRequests, page))
+                .eventApplies(extractFromEventRequest(myEventRequests))
                 .build();
     }
+
 
     /**
      * 이벤트 요청 삭제 (이벤트도 삭제: cascade)
@@ -265,9 +288,9 @@ public class SellerEventService {
     /**
      * 페이지네이션 결과 dto로 변환하는 함수
      */
-    private static List<EventRequestDto> getEventRequestsDto(Page<EventRequest> mySearchResult) {
+    private static List<EventRequestDto> extractFromEventRequest(Page<EventRequest> mySearchResult) {
 
-        List<EventRequestDto> eventRequestsDto = mySearchResult.getContent().stream()
+        return mySearchResult.getContent().stream()
                 .map(eventRequest -> EventRequestDto.builder()
                         .id(eventRequest.getId())
                         .name(eventRequest.getEvent().getName())
@@ -277,7 +300,19 @@ public class SellerEventService {
                         .state(eventRequest.getState().getStatus())
                         .build()
                 ).toList();
-        return eventRequestsDto;
     }
 
+    private static List<EventHistoryDto> extractFromEventHistory(Page<EventRepository.EventHistory> myEvents) {
+        return myEvents.getContent().stream()
+                .map(eventHistory -> EventHistoryDto.builder()
+                        .id(eventHistory.getEvent().getId())
+                        .name(eventHistory.getEvent().getName())
+                        .seat(eventHistory.getEvent().getSeat())
+                        .applyDate(DateUtil.convertDate(eventHistory.getCreatedAt()))
+                        .hostNickname(eventHistory.getEvent().getUser().getNickname())
+                        .status(eventHistory.getEvent().getStatus().getState())
+                        .duration(eventHistory.getEvent().getDuration())
+                        .build()
+                ).toList();
+    }
 }

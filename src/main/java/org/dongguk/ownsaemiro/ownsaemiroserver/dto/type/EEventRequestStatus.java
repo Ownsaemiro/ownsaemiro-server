@@ -2,6 +2,8 @@ package org.dongguk.ownsaemiro.ownsaemiroserver.dto.type;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.dongguk.ownsaemiro.ownsaemiroserver.exception.CommonException;
+import org.dongguk.ownsaemiro.ownsaemiroserver.exception.ErrorCode;
 
 @Getter
 @RequiredArgsConstructor
@@ -16,6 +18,6 @@ public enum EEventRequestStatus {
             if (eStatus.status.equals(status))
                 return eStatus;
         }
-        return null;
+        throw new CommonException(ErrorCode.INVALID_PARAMETER_FORMAT);
     }
 }

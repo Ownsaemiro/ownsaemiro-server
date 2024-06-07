@@ -2,17 +2,13 @@ package org.dongguk.ownsaemiro.ownsaemiroserver.repository;
 
 import org.dongguk.ownsaemiro.ownsaemiroserver.domain.Event;
 import org.dongguk.ownsaemiro.ownsaemiroserver.domain.User;
-import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.EventHistoryDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.ECategory;
-import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.EEventRequestStatus;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.EEventStatus;
-import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.ERole;
-import org.springframework.cglib.core.Local;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -48,8 +44,8 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     @Query("select e from Event e where e.category = :category and e.status = :status and e.isApproved = true")
     Page<Event> findAllByStatusAndCategory(EEventStatus status, ECategory category, Pageable pageable);
 
-    @Query("select e from Event e where e.name like %:name% and e.isApproved = true")
-    Page<Event> searchAllByName(String name, Pageable pageable);
+    @Query(value = "select * from events e where e.is_approved = true and match(e.name, e.description) against(:name in boolean mode)", nativeQuery = true)
+    Page<Event> searchAllByName(@Param("name") String name, Pageable pageable);
 
 
     /* ================================================================= */
@@ -60,9 +56,18 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     @Query("select e as event, er.createdAt as createdAt from Event e join EventRequest er on e.id = er.event.id where e.user = :user and e.isApproved = true")
     Page<EventHistory> findAllMyApprovedHistories(User user, Pageable pageable);
 
-    // 판매자 행사 이력 검색
+    // 판매자 행사 이력 이름으로 검색
     @Query("select e as event, er.createdAt as createdAt from Event e join EventRequest er on e.id = er.event.id where e.user = :user and e.name like %:name% and e.isApproved = true")
-    Page<EventHistory> searchAllByUserAndName(User user, String name, Pageable pageable);
+    Page<EventHistory> findAllMyApprovedHistoriesByName(User user, String name, Pageable pageable);
+
+    // 판매자 행사 이력 상태로 검색
+    @Query("select e as event, er.createdAt as createdAt from Event e join EventRequest er on e.id = er.event.id where e.user = :user and e.status =:status and e.isApproved = true")
+    Page<EventHistory> findAllMyApprovedHistoriesByStatus(User user, EEventStatus status, Pageable pageable);
+
+    // 판매자 행사 이력 이름과 상태로 검색
+    @Query("select e as event, er.createdAt as createdAt from Event e join EventRequest er on e.id = er.event.id where e.user = :user and e.name like %:name% and e.status =:status and e.isApproved = true")
+    Page<EventHistory> findAllMyApprovedHistoriesByNameAndStatus(User user, String name, EEventStatus status, Pageable pageable);
+
 
     interface EventHistory {
         Event getEvent();

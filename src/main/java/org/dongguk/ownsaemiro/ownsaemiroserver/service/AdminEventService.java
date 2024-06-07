@@ -42,12 +42,48 @@ public class AdminEventService {
     /**
      * 관리자가 보는 판매자들의 판매 요청 목록
      */
-    public AdminApplyEventDto showAppliesOfSeller(Integer page, Integer size){
-        Page<EventRequest> appliesOfSeller = eventRequestRepository.findAll(PageRequest.of(page, size, Sort.by("createdAt").descending()));
+    public AdminApplyEventDto searchOrShowAppliesOfSeller(String name, String strState, Integer page, Integer size){
+        Page<EventRequest> appliesOfSeller;
+        if (name == null && strState == null){
+            // 일반 목록 조회
+            appliesOfSeller = eventRequestRepository.findAll(PageRequest.of(page, size, Sort.by("createdAt").descending()));
+        } else if (name == null && strState != null) {
+            if (strState.equals(Constants.ALL)){
+                // 전체 조건인 경우
+                appliesOfSeller = eventRequestRepository.findAll(PageRequest.of(page, size, Sort.by("createdAt").descending()));
+            } else {
+                // 특정 조건 검색인 경우
+                appliesOfSeller = eventRequestRepository.findAllAppliesByStatus(
+                        EEventRequestStatus.toEnum(strState),
+                        PageRequest.of(page, size, Sort.by("createdAt").descending())
+                );
+            }
+        } else if (name != null && strState == null){
+            // 이름으로 조회
+            appliesOfSeller = eventRequestRepository.findAllAppliesByName(
+                    name,
+                    PageRequest.of(page, size, Sort.by("createdAt").descending())
+            );
+        } else {
+            if (strState.equals(Constants.ALL)){
+                // 이름 + 전체 조건인 경우
+                appliesOfSeller = eventRequestRepository.findAllAppliesByName(
+                        name,
+                        PageRequest.of(page, size, Sort.by("createdAt").descending())
+                );
+            } else {
+                // 이름 + 특정 조건 검색인 경우
+                appliesOfSeller = eventRequestRepository.findAllAppliesByNameAndState(
+                        name,
+                        EEventRequestStatus.toEnum(strState),
+                        PageRequest.of(page, size, Sort.by("createdAt").descending())
+                );
+            }
+        }
 
         return AdminApplyEventDto.builder()
                 .pageInfo(PageInfo.convert(appliesOfSeller, page))
-                .eventRequestsDto(getEventRequestsDto(appliesOfSeller))
+                .eventRequestsDto(extract(appliesOfSeller))
                 .build();
     }
 
@@ -68,34 +104,6 @@ public class AdminEventService {
                 .build();
     }
 
-    /**
-     * 관리자의 판매자 요청 검색
-     */
-    public AdminApplyEventDto searchEventRequest(String name, String state, Integer page, Integer size){
-        EEventRequestStatus eEventRequestStatus = EEventRequestStatus.toEnum(state);
-        Page<EventRequest> eventRequestsDto;
-
-        // 전체 상태 없이 전체 조회인 경우
-        if (eEventRequestStatus == null){
-            if (!state.equals(Constants.ALL))
-                throw new CommonException(ErrorCode.INVALID_PARAMETER_FORMAT);
-            eventRequestsDto = eventRequestRepository.searchAllByName(
-                    name,
-                    PageRequest.of(page, size, Sort.by("createdAt").descending())
-            );
-        } else {
-            eventRequestsDto = eventRequestRepository.searchAllByNameAndState(
-                    name,
-                    eEventRequestStatus,
-                    PageRequest.of(page, size, Sort.by("createdAt").descending())
-            );
-        }
-
-        return AdminApplyEventDto.builder()
-                .pageInfo(PageInfo.convert(eventRequestsDto, page))
-                .eventRequestsDto(getEventRequestsDto(eventRequestsDto))
-                .build();
-    }
     /**
      * 관리자 행사 승인 여부 결정
      */
@@ -149,7 +157,10 @@ public class AdminEventService {
                 .build();
     }
 
-    private static List<EventRequestDto> getEventRequestsDto(Page<EventRequest> mySearchResult) {
+    /**
+     * 페이지네이션 추출 함수
+     */
+    private static List<EventRequestDto> extract(Page<EventRequest> mySearchResult) {
 
         List<EventRequestDto> eventRequestsDto = mySearchResult.getContent().stream()
                 .map(eventRequest -> EventRequestDto.builder()
