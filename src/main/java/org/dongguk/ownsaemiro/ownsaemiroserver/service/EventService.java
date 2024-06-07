@@ -24,14 +24,15 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.text.DateFormat;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class EventService {
-    private final ImageRepository imageRepository;
     private final UserRepository userRepository;
     private final EventRepository eventRepository;
     private final TicketRepository ticketRepository;
@@ -39,6 +40,22 @@ public class EventService {
     private final EventImageRepository eventImageRepository;
     private final EventReviewRepository eventReviewRepository;
     private final UserLikedEventRepository userLikedEventRepository;
+
+    /* ================================================================= */
+    //                         행사 관련 scheduler                         //
+    /* ================================================================= */
+    @Transactional
+    public void updateEventState(){
+        // 진행 -> 종료
+        LocalDate now = LocalDate.now();
+        eventRepository.findAllByStatus(EEventStatus.SELLING)
+                .forEach(event -> {
+                    LocalDate endDate = LocalDate.parse(event.getDuration().split(Constants.STR_CONNECTOR)[1], DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                    if (now.isAfter(endDate)){
+                        event.changeStatus(EEventStatus.COMPLETE);
+                    }
+                });
+    }
 
     /* ================================================================= */
     //                            홈 화면 api                              //
