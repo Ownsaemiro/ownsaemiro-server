@@ -2,6 +2,7 @@ package org.dongguk.ownsaemiro.ownsaemiroserver.controller;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.global.ResponseDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.AuthSignUpDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.OauthSignUpDto;
@@ -11,7 +12,7 @@ import org.dongguk.ownsaemiro.ownsaemiroserver.service.AuthService;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class AuthController {
@@ -22,7 +23,7 @@ public class AuthController {
      */
     @GetMapping("/oauth/login/kakao")
     public ResponseDto<?> signUpKakao(@RequestParam("access_token") String accessToken){
-        ServiceSerialIdDto kakaoSerialIdDto = authService.signUpKakao(accessToken);
+        ServiceSerialIdDto kakaoSerialIdDto = authService.getKakaoSerialId(accessToken);
 
         return ResponseDto.ok(kakaoSerialIdDto);
     }
