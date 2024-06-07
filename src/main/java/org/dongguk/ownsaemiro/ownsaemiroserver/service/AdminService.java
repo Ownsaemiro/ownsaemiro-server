@@ -129,8 +129,9 @@ public class AdminService {
             Integer seat = event.getSeat();
             if (event.getCategory().equals(ECategory.SPORT)){
                 seat = (Integer) restClientUtil.sendRequestToPredictSport(Constants.createSportsRequest(event.getName())).getAsNumber("spectator");
+            } else if (event.getCategory().equals(ECategory.CONCERT)) {
+                seat = (Integer) restClientUtil.sendRequestToPredictConcert(Constants.createConcertRequest()).getAsNumber("ticket");
             }
-
 
             // 이벤트 관련 블록체인 정보 업데이트
             BlockChainResponse response = restClientUtil.sendRequestToPublishTickets(seat);

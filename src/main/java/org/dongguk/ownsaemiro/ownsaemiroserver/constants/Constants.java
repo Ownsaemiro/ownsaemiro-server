@@ -60,7 +60,7 @@ public class Constants {
             "/api/admin/banned"
     );
 
-    public static List<String> REGIONS = List.of(
+    public static List<String> REGIONS_SPORT = List.of(
             "Busan",
             "Suwon",
             "Ulsan",
@@ -103,6 +103,39 @@ public class Constants {
             "Chungju",
             "Geoje"
     );
+
+    public static List<String> REGION_CONCERT = List.of(
+            "seuol",
+            "gyeonggi",
+            "incheon",
+            "busan",
+            "daegu",
+            "gwangju",
+            "daejeon",
+            "ulsan",
+            "sejong",
+            "gyeongnam",
+            "gyeongbuk",
+            "jeonnam",
+            "jeonbuk",
+            "chungnam",
+            "chungbuk",
+            "gangwon",
+            "jeju"
+    );
+
+    public static List<String> GENRE = List.of(
+            "play",
+            "musical",
+            "classic",
+            "traditional",
+            "popular music",
+            "dance",
+            "popular dance",
+            "circus/magic",
+            "etc"
+    );
+
 
     public static List<String> ORGANIZATION = List.of(
             "KBO",
@@ -174,12 +207,11 @@ public class Constants {
         String home = teams[0];
         String away = teams[1];
 
-        // 무작위로 추가 정보 생성
         Random random = new Random();
         String weekday = WEEKDAYS.get(random.nextInt(WEEKDAYS.size()));
         String weather = WEATHER.get(random.nextInt(WEATHER.size()));
         double degree = TEMPERATURES.get(random.nextInt(TEMPERATURES.size()));
-        String region = REGIONS.get(random.nextInt(REGIONS.size()));
+        String region = REGIONS_SPORT.get(random.nextInt(REGIONS_SPORT.size()));
 
         // 요청 맵 생성
         Map<String, String> request = new HashMap<>();
@@ -190,6 +222,20 @@ public class Constants {
         request.put("weather", weather);
         request.put("degree", String.valueOf(degree));
         request.put("region", region);
+
+        return request;
+    }
+
+    public static Map<String, String> createConcertRequest(){
+        Random random = new Random();
+        String weekday = WEEKDAYS.get(random.nextInt(WEEKDAYS.size()));
+        String genre = GENRE.get(random.nextInt(GENRE.size()));
+        String region = REGION_CONCERT.get(random.nextInt(REGION_CONCERT.size()));
+
+        Map<String, String> request = new HashMap<>();
+        request.put("weekday", weekday);
+        request.put("region", region);
+        request.put("genre", genre);
 
         return request;
     }
