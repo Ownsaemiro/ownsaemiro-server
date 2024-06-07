@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.dongguk.ownsaemiro.ownsaemiroserver.constants.Constants;
 import org.dongguk.ownsaemiro.ownsaemiroserver.domain.*;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.*;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.EAssignStatus;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.ECategory;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.ETicketStatus;
 import org.dongguk.ownsaemiro.ownsaemiroserver.exception.CommonException;
@@ -31,6 +32,36 @@ public class TicketService {
     private final EventImageRepository eventImageRepository;
     private final UserLikedEventRepository userLikedEventRepository;
     private final UserAssignTicketRepository userAssignTicketRepository;
+
+    /* ================================================================= */
+    //                         양도 관련 scheduler                         //
+    /* ================================================================= */
+
+    /**
+     * 양도 대기 목록에서 랜덤하게 하나씩 뽑아서 양도 받는 사람을 결정
+     */
+    @Transactional
+    public Boolean assignTickets(){
+        List<UserAssignTicket> randomUserAssignTicket = userAssignTicketRepository.findRandomUserAssignTicket();
+        if (randomUserAssignTicket.size() == 0){
+            log.info("양도가 가능한 티켓이 없습니다.");
+            return Boolean.FALSE;
+        } else {
+            log.info("양도가 가능한 티켓이 존재합니다.");
+            randomUserAssignTicket.forEach(userAssignTicket -> userAssignTicket.updateStatus(EAssignStatus.SUCCESS));
+            log.info("양도 완료");
+            return Boolean.TRUE;
+        }
+    }
+
+    /**
+     * 양도에 실패한 userAssignTicket 상태 변경
+     */
+    @Transactional
+    public void failToAssignTicket(){
+        userAssignTicketRepository.findFailToAssignTicket()
+                .forEach(userAssignTicket -> userAssignTicket.updateStatus(EAssignStatus.FAIL));
+    }
 
     /* ================================================================= */
     //                           사용자 양도 api                            //

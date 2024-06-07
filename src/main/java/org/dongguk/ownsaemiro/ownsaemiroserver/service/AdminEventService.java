@@ -10,6 +10,7 @@ import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.ChangeEventRequestSta
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.*;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.blockchain.BlockChainResponse;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.EEventRequestStatus;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.EEventStatus;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.ETicketStatus;
 import org.dongguk.ownsaemiro.ownsaemiroserver.exception.CommonException;
 import org.dongguk.ownsaemiro.ownsaemiroserver.exception.ErrorCode;
@@ -124,6 +125,7 @@ public class AdminEventService {
                     .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_EVENT));
             // 이벤트 승인완료 처리
             event.changeApproved(Boolean.TRUE);
+            event.changeStatus(EEventStatus.SELLING);
 
             // TODO: 스포츠와 콘서트의 경우에는 예측 모델 통과하기
 

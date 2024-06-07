@@ -42,4 +42,8 @@ public class UserAssignTicket {
         this.createdAt = createdAt;
         this.status = EAssignStatus.WAITING;
     }
+
+    public void updateStatus(EAssignStatus status){
+        this.status = status;
+    }
 }
