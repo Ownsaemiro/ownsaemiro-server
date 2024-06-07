@@ -21,7 +21,7 @@ public class AuthController {
     /**
      * 카카오 일반 사용자 로그인(회원가입 포함)
      */
-    @GetMapping("/oauth/login/kakao")
+    @GetMapping("/api/oauth/login/kakao")
     public ResponseDto<?> signUpKakao(@RequestParam("access_token") String accessToken){
         ServiceSerialIdDto kakaoSerialIdDto = authService.getKakaoSerialId(accessToken);
 
@@ -31,7 +31,7 @@ public class AuthController {
     /**
      * 네이버 일반 사용자 시리얼 아이디 조회
      */
-    @GetMapping("/oauth/login/naver")
+    @GetMapping("/api/oauth/login/naver")
     public ResponseDto<?> getNaverSerialId(@RequestParam("access_token") String accessToken) throws IOException {
         ServiceSerialIdDto naverSerialId = authService.getNaverSerialId(accessToken);
 
