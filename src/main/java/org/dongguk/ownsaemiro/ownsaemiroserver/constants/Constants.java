@@ -25,8 +25,8 @@ public class Constants {
             "/api/auth/sign-up",
             "/api/auth/sign-in",
             "/api/auth/check",
-            "/oauth/login/naver",
-            "/oauth/login/kakao",
+            "/api/oauth/login/naver",
+            "/api/oauth/login/kakao",
             "/api/oauth/sign-up"
     );
 
