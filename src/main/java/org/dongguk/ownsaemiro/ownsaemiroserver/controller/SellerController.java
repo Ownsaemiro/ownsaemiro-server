@@ -33,14 +33,17 @@ public class SellerController {
 
     /*  판매자 판매 이력 api  */
     /**
-     * 판매자 판매 이력 조회
+     * 판매자 판매 행사 목록 조회 + 검색
      */
     @GetMapping("/histories")
-    public ResponseDto<?> showSellerHistories(
+    public ResponseDto<?> searchMyEvent(
             @UserId Long userId,
-            @RequestParam(value = "page", defaultValue = "0") Integer page,
-            @RequestParam(value = "size", defaultValue = "10") Integer size ) {
-        MyEventHistoriesDto myEventHistoriesDto = sellerEventService.showMyHistories(userId, page-1, size);
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "status", required = false) String filter,
+            @RequestParam(value = "page", defaultValue = "1") Integer page,
+            @RequestParam(value = "size", defaultValue = "10") Integer size
+    ) {
+        MyEventHistoriesDto myEventHistoriesDto = sellerEventService.searchOrShowMyEvents(userId, name, filter, page-1, size);
 
         return ResponseDto.ok(myEventHistoriesDto);
     }
@@ -55,21 +58,6 @@ public class SellerController {
         ChangeEventStatusDto changeEventStatusDto = sellerEventService.changeEventStatus(userId, changeSellingEventStatusDto);
 
         return ResponseDto.ok(changeEventStatusDto);
-    }
-
-    /**
-     * 판매자 판매 행사 검색
-     */
-    @GetMapping("/histories/search")
-    public ResponseDto<?> searchMyEvent(
-            @UserId Long userId,
-            @RequestParam("name") String name,
-            @RequestParam(value = "page", defaultValue = "1") Integer page,
-            @RequestParam(value = "size", defaultValue = "10") Integer size
-    ) {
-        MyEventHistoriesDto myEventHistoriesDto = sellerEventService.searchMyEvents(userId, name, page, size);
-
-        return ResponseDto.ok(myEventHistoriesDto);
     }
 
 

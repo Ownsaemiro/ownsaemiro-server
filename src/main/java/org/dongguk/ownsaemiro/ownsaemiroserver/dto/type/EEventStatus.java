@@ -23,4 +23,12 @@ public enum EEventStatus {
         }
         throw new CommonException(ErrorCode.INVALID_PARAMETER_FORMAT);
     }
+
+    public static EEventStatus filterCondition(String strStatus){
+        for (EEventStatus eStatus : EEventStatus.values()){
+            if (eStatus.getState().equals(strStatus))
+                return eStatus;
+        }
+        return null;
+    }
 }

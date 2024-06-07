@@ -45,45 +45,74 @@ public class SellerEventService {
     /* ================================================================= */
     //                          판매자 api                                 //
     /* ================================================================= */
+
     /**
-     * 판매 이력 조회
+     * 판매자 판매 이력 목록 조회 + 검색 조건
      */
-    public MyEventHistoriesDto showMyHistories(Long userId, Integer page, Integer size) {
+    public MyEventHistoriesDto searchOrShowMyEvents(Long userId, String name, String strStatus, Integer page, Integer size){
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
+        Page<EventRepository.EventHistory> myApprovedHistories;
+        if (name == null && strStatus == null){
+            // 검색 조건이 없는 일반적인 목록 조회인 경우
+            myApprovedHistories = eventRepository.findAllMyApprovedHistories(
+                    user,
+                    PageRequest.of(page, size, Sort.by("createdAt").descending())
+            );
 
-        Page<EventRepository.EventHistory> myApprovedHistories = eventRepository.findAllMyApprovedHistories(
-                user,
-                PageRequest.of(page, size, Sort.by("createdAt").descending())
-        );
+        } else if (name == null && strStatus != null){
+            if (strStatus.equals(Constants.ALL)){
+                // 모든 상태에 대해서 조회인 경우
+                myApprovedHistories = eventRepository.findAllMyApprovedHistories(
+                        user,
+                        PageRequest.of(page, size, Sort.by("createdAt").descending())
+                );
+            } else {
+                // 특정 상태에 대한 조회인 경우
+                EEventStatus eEventStatus = EEventStatus.toEnum(strStatus);
+                myApprovedHistories = eventRepository.findAllMyApprovedHistoriesByStatus(
+                        user,
+                        eEventStatus,
+                        PageRequest.of(page, size, Sort.by("createdAt").descending())
+                );
+            }
+
+        } else if (name != null && strStatus == null){
+            // 판매 이력 검색어만 넘어온 경우
+            myApprovedHistories = eventRepository.findAllMyApprovedHistoriesByName(
+                    user,
+                    name,
+                    PageRequest.of(page, size, Sort.by("createdAt").descending())
+            );
+
+        } else {
+            // 검색어와 strStatus 모두 넘어온 경우
+            if (strStatus.equals(Constants.ALL)){
+                // 모든 상태 + 검색어에 대해서 조회인 경우
+                myApprovedHistories = eventRepository.findAllMyApprovedHistoriesByName(
+                        user,
+                        name,
+                        PageRequest.of(page, size, Sort.by("createdAt").descending())
+                );
+            } else {
+                // 특정 상태 + 검색어에 대한 조회인 경우
+                EEventStatus eEventStatus = EEventStatus.toEnum(strStatus);
+                myApprovedHistories = eventRepository.findAllMyApprovedHistoriesByNameAndStatus(
+                        user,
+                        name,
+                        eEventStatus,
+                        PageRequest.of(page, size, Sort.by("createdAt").descending())
+                );
+            }
+        }
 
         List<EventHistoryDto> eventHistoriesDto = extracted(myApprovedHistories);
+
 
         return MyEventHistoriesDto.builder()
                 .pageInfo(PageInfo.convert(myApprovedHistories, page))
                 .eventHistoriesDto(eventHistoriesDto)
                 .build();
-    }
-    /**
-     * 판매자 판매 행사 검색
-     */
-    public MyEventHistoriesDto searchMyEvents(Long userId, String name, Integer page, Integer size){
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
-
-        Page<EventRepository.EventHistory> myEvents = eventRepository.searchAllByUserAndName(
-                user,
-                name,
-                PageRequest.of(page, size, Sort.by("createdAt").descending())
-        );
-
-        List<EventHistoryDto> eventHistoriesDto = extracted(myEvents);
-
-        return MyEventHistoriesDto.builder()
-                .pageInfo(PageInfo.convert(myEvents, page))
-                .eventHistoriesDto(eventHistoriesDto)
-                .build();
-
     }
 
     private static List<EventHistoryDto> extracted(Page<EventRepository.EventHistory> myEvents) {
