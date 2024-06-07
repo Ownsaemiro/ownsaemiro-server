@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -43,8 +44,8 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     @Query("select e from Event e where e.category = :category and e.status = :status and e.isApproved = true")
     Page<Event> findAllByStatusAndCategory(EEventStatus status, ECategory category, Pageable pageable);
 
-    @Query("select e from Event e where e.name like %:name% and e.isApproved = true")
-    Page<Event> searchAllByName(String name, Pageable pageable);
+    @Query(value = "select * from events e where e.is_approved = true and match(e.name, e.description) against(:name in boolean mode)", nativeQuery = true)
+    Page<Event> searchAllByName(@Param("name") String name, Pageable pageable);
 
 
     /* ================================================================= */
