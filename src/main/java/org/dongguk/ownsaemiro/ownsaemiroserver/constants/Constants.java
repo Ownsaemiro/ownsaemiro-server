@@ -40,7 +40,8 @@ public class Constants {
             "/api/auth/check",
             "/api/oauth/login/naver",
             "/api/oauth/login/kakao",
-            "/api/oauth/sign-up"
+            "/api/oauth/sign-up",
+            "/api/admin/check-ticket"
     );
 
     public static List<String> NEED_USER_ROLE = List.of(
