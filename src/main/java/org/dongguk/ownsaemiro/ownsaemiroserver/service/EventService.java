@@ -4,27 +4,18 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dongguk.ownsaemiro.ownsaemiroserver.constants.Constants;
 import org.dongguk.ownsaemiro.ownsaemiroserver.domain.*;
-import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.*;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.*;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.ECategory;
-import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.EEventRequestStatus;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.EEventStatus;
-import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.ETicketStatus;
 import org.dongguk.ownsaemiro.ownsaemiroserver.exception.CommonException;
 import org.dongguk.ownsaemiro.ownsaemiroserver.exception.ErrorCode;
 import org.dongguk.ownsaemiro.ownsaemiroserver.repository.*;
-import org.dongguk.ownsaemiro.ownsaemiroserver.util.AuthUtil;
-import org.dongguk.ownsaemiro.ownsaemiroserver.util.DateUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.text.DateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -46,15 +37,30 @@ public class EventService {
     /* ================================================================= */
     @Transactional
     public void updateEventState(){
-        // 진행 -> 종료
+
         LocalDate now = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        // 진행 -> 종료
         eventRepository.findAllByStatus(EEventStatus.SELLING)
                 .forEach(event -> {
-                    LocalDate endDate = LocalDate.parse(event.getDuration().split(Constants.STR_CONNECTOR)[1], DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                    LocalDate endDate = LocalDate.parse(event.getDuration().split(Constants.STR_CONNECTOR)[1], formatter);
                     if (now.isAfter(endDate)){
                         event.changeStatus(EEventStatus.COMPLETE);
                     }
                 });
+        log.info("종료된 행사, 종료 완료");
+
+        // 판매 전 -> 판매 중
+        eventRepository.findAllByStatus(EEventStatus.BEFORE)
+                .forEach(event -> {
+                    LocalDate startDate = LocalDate.parse(event.getDuration().split(Constants.STR_CONNECTOR)[0], formatter);
+                    if (now.isEqual(startDate.minusDays(3))){
+                        event.changeStatus(EEventStatus.SELLING);
+                    }
+
+                });
+        log.info("3일 뒤 시작인 행사 판매 시작 상태 변경 완료");
     }
 
     /* ================================================================= */

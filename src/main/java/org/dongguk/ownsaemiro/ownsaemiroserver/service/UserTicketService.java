@@ -91,7 +91,7 @@ public class UserTicketService {
         Event event = ticket.getEvent();
 
         return DetailOfTicketDto.builder()
-                .eventId(event.getId())
+                .ticketId(ticket.getId())
                 .image(image)
                 .name(event.getName())
                 .category(event.getCategory().getCategory())
