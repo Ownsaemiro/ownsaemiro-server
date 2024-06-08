@@ -14,10 +14,15 @@ public record ParticipatedEventDto(
         @JsonProperty("title")
         String name,
 
-        @JsonProperty("address")
-        String address,
+        @JsonProperty("activated_at")
+        String activatedAt,
 
-        @JsonProperty("duration")
-        String duration
+        @JsonProperty("bought_at")
+        String boughtAt,
+
+        @JsonProperty("order_id")
+        String orderId
+
+
 ) {
 }
