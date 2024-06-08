@@ -244,7 +244,7 @@ public class UserEventService {
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_EVENT));
 
         eventReviewRepository.save(
-                EventReview.create(user, event, writeReviewOfEvent)
+                EventReview.create(user, event, writeReviewOfEvent.content())
         );
     }
 
