@@ -6,7 +6,7 @@ import lombok.Builder;
 @Builder
 public record DetailOfTicketDto(
         @JsonProperty("id")
-        Long eventId,
+        Long ticketId,
 
         @JsonProperty("image")
         String image,
