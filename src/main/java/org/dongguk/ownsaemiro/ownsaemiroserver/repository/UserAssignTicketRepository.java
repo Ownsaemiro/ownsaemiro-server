@@ -1,5 +1,6 @@
 package org.dongguk.ownsaemiro.ownsaemiroserver.repository;
 
+import org.dongguk.ownsaemiro.ownsaemiroserver.domain.Ticket;
 import org.dongguk.ownsaemiro.ownsaemiroserver.domain.User;
 import org.dongguk.ownsaemiro.ownsaemiroserver.domain.UserAssignTicket;
 import org.springframework.data.domain.Page;
@@ -10,6 +11,8 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface UserAssignTicketRepository extends JpaRepository<UserAssignTicket, Long> {
+
+    Boolean existsByUserAndTicket(User user, Ticket ticket);
 
     @Query(value = "SELECT ut.* FROM ( " +
             "    SELECT " +
