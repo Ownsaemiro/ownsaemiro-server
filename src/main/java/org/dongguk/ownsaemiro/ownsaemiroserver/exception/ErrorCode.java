@@ -53,8 +53,10 @@ public enum ErrorCode {
     //500
     INTERNAL_SERVER_ERROR(50000, HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류입니다"),
     INTERNAL_DATA_ERROR(50001, HttpStatus.INTERNAL_SERVER_ERROR, "데이터 처리 중 오류가 발생하였습니다."),
-
     EXTERNAL_SERVER_ERROR(50002, HttpStatus.INTERNAL_SERVER_ERROR, "외부 서버 오류입니다"),
+    FIREBASE_JSON_EMPTY(50003, HttpStatus.INTERNAL_SERVER_ERROR, "Firebase JSON이 필요합니다."),
+
+    FCM_FAIL(50004, HttpStatus.INTERNAL_SERVER_ERROR, "FCM 전송에 실패했습니다."),
 
     ;
     private final Integer code;
