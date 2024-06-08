@@ -192,10 +192,17 @@ public class UserTicketService {
         UserTicket userTicket = userTicketRepository.findByUserAndTicket(user, ticket)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER_TICKET));
 
+        // 사용자 정보와 티켓 정보 불일치 -> 입장 불가
         if (!userTicket.getUser().getDeviceId().equals(validateTicketDto.deviceId())
          || !userTicket.getTicket().getEvent().getEventHash().equals(validateTicketDto.eventHash())) {
             throw new CommonException(ErrorCode.INVALID_TICKET_OWNER);
         }
+
+        // 이미 입장한 사용권 -> 입장 불가
+        if (userTicket.getStatus().equals(EUserTicketStatus.AFTER_USE)){
+            throw new CommonException(ErrorCode.ALREADY_USED_TICKET);
+        }
+
         // 사용자 입장시, 참여로 변경
         userTicket.changeStatus(EUserTicketStatus.AFTER_USE);
     }
