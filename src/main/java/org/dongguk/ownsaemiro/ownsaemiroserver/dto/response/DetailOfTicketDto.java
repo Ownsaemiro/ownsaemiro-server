@@ -35,6 +35,9 @@ public record DetailOfTicketDto(
         @JsonProperty("transaction_number")
         String orderId,
 
+        @JsonProperty("activate_date")
+        String activateDate,
+
         @JsonProperty("buyer_id")
         Long buyerId,
 

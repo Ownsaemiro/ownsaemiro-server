@@ -27,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -80,6 +81,9 @@ public class UserTicketService {
         Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_TICKET));
 
+        UserTicket userTicket = userTicketRepository.findByUserAndTicket(user, ticket)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER_TICKET));
+
         String image = eventImageRepository.findByEvent(ticket.getEvent())
                 .map(Image::getUrl)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_IMAGE));
@@ -93,7 +97,9 @@ public class UserTicketService {
                 .category(event.getCategory().getCategory())
                 .runningTime(event.getRunningTime() + Constants.MINUTE)
                 .rating(event.getRating())
+                .orderId(userTicket.getOrderId())
                 .address(event.getAddress())
+                .activateDate(DateUtil.convertDate(ticket.getActivatedAt()))
                 .duration(event.getDuration())
                 .phoneNumber(event.getUser().getPhoneNumber())
                 .buyerId(user.getId())
