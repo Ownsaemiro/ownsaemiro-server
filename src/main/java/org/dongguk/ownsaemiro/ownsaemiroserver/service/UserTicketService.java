@@ -199,6 +199,8 @@ public class UserTicketService {
          || !userTicket.getTicket().getEvent().getEventHash().equals(validateTicketDto.eventHash())) {
             throw new CommonException(ErrorCode.INVALID_TICKET_OWNER);
         }
+        // 사용자 입장시, 참여로 변경
+        userTicket.changeStatus(EUserTicketStatus.AFTER_USE);
     }
 
 }
