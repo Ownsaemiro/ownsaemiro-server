@@ -27,6 +27,7 @@ import static ch.qos.logback.classic.spi.ThrowableProxyVO.build;
 @Service
 @RequiredArgsConstructor
 public class TicketService {
+//    private final FCMService fcmService;
     private final UserRepository userRepository;
     private final TicketRepository ticketRepository;
     private final EventImageRepository eventImageRepository;
@@ -48,7 +49,17 @@ public class TicketService {
             return Boolean.FALSE;
         } else {
             log.info("양도가 가능한 티켓이 존재합니다.");
-            randomUserAssignTicket.forEach(userAssignTicket -> userAssignTicket.updateStatus(EAssignStatus.SUCCESS));
+            randomUserAssignTicket.forEach(userAssignTicket -> {
+                // 양도 성공 상태로 변경
+                userAssignTicket.updateStatus(EAssignStatus.SUCCESS);
+
+//                // 사용자에게 양도 성공 알림 보내기
+//                fcmService.sendNotification(
+//                        userAssignTicket.getUser().getFcmToken(),
+//                        Constants.ASSIGN_TICKET_COMPLETE_TITLE,
+//                        Constants.ASSIGN_TICKET_COMPLETE_CONTENT
+//                );
+            });
             log.info("양도 완료");
             return Boolean.TRUE;
         }
@@ -60,7 +71,17 @@ public class TicketService {
     @Transactional
     public void failToAssignTicket(){
         userAssignTicketRepository.findFailToAssignTicket()
-                .forEach(userAssignTicket -> userAssignTicket.updateStatus(EAssignStatus.FAIL));
+                .forEach(userAssignTicket -> {
+                    // 양도 실패로 상태 변경
+                    userAssignTicket.updateStatus(EAssignStatus.FAIL);
+
+//                    // 양도 실패에 대한 알림 발송
+//                    fcmService.sendNotification(
+//                            userAssignTicket.getUser().getFcmToken(),
+//                            Constants.ASSIGN_TICKET_FAIL_TITLE,
+//                            Constants.ASSIGN_TICKET_FAIL_CONTENT
+//                    );
+                });
     }
 
     /* ================================================================= */
