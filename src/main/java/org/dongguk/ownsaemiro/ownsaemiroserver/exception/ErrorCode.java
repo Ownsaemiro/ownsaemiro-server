@@ -54,6 +54,8 @@ public enum ErrorCode {
     INTERNAL_SERVER_ERROR(50000, HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류입니다"),
     INTERNAL_DATA_ERROR(50001, HttpStatus.INTERNAL_SERVER_ERROR, "데이터 처리 중 오류가 발생하였습니다."),
 
+    EXTERNAL_SERVER_ERROR(50002, HttpStatus.INTERNAL_SERVER_ERROR, "외부 서버 오류입니다"),
+
     ;
     private final Integer code;
     private final HttpStatus httpStatus;
