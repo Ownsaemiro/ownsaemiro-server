@@ -125,7 +125,7 @@ public class AdminService {
             event.changeApproved(Boolean.TRUE);
             event.changeStatus(EEventStatus.SELLING);
 
-            // TODO: 스포츠와 콘서트의 경우에는 예측 모델 통과하기
+            // 스포츠와 콘서트의 경우에는 AI 모델을 통한 티켓 예상 판매수 받아오기
             Integer seat = event.getSeat();
             if (event.getCategory().equals(ECategory.SPORT)){
                 seat = (Integer) restClientUtil.sendRequestToPredictSport(Constants.createSportsRequest(event.getName())).getAsNumber("spectator");
@@ -136,7 +136,7 @@ public class AdminService {
             // 이벤트 관련 블록체인 정보 업데이트
             BlockChainResponse response = restClientUtil.sendRequestToPublishTickets(seat);
             if (!response.getSuccess()){
-                throw new CommonException(ErrorCode.INTERNAL_SERVER_ERROR);
+                throw new CommonException(ErrorCode.EXTERNAL_SERVER_ERROR);
             } else {
                 response.getData().getTickets().forEach(
                         blockChainTicket -> {

@@ -169,7 +169,7 @@ public class UserEventService {
 
                  // 블록체인 서버와 통신이 실패한 경우
                  if (!response.getSuccess()){
-                     throw new CommonException(ErrorCode.INTERNAL_SERVER_ERROR);
+                     throw new CommonException(ErrorCode.EXTERNAL_SERVER_ERROR);
                  } else {
                      // 블록체인 서버와 통신 성공, 티켓 추가 생성
                      response.getData().getTickets().forEach(
