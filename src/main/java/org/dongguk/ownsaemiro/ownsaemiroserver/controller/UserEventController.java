@@ -7,9 +7,11 @@ import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.BuyingTicketDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.LikeEventDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.WriteReviewOfEvent;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.LikedEventDto;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.ParticipatedEventsDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.UnlikedEventDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.UserLikedEventsDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.service.UserEventService;
+import org.dongguk.ownsaemiro.ownsaemiroserver.service.UserTicketService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class UserEventController {
     private final UserEventService userEventService;
+    private final UserTicketService userTicketService;
 
     /**
      * 사용자 행사 좋아요 하기
@@ -79,6 +82,20 @@ public class UserEventController {
         userEventService.writeReviewOfEvent(userId, eventId, writeReviewOfEvent);
 
         return ResponseDto.ok(null);
+    }
+
+    /**
+     * 사용자가 참여한 행사 목록 api
+     */
+    @GetMapping("/events/participate")
+    public ResponseDto<?> showParticipatedEvents(
+            @UserId Long userId,
+            @RequestParam(value = "page", defaultValue = "1") Integer page,
+            @RequestParam(value = "size", defaultValue = "10") Integer size
+    ) {
+        ParticipatedEventsDto participatedEventsDto = userTicketService.showParticipatedEvents(userId, page - 1, size);
+
+        return ResponseDto.ok(participatedEventsDto);
     }
 
 }

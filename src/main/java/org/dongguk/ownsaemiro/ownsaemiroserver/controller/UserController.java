@@ -21,7 +21,6 @@ import java.io.IOException;
 public class UserController {
     private final UserService userService;
     private final UserWalletService userWalletService;
-    private final UserTicketService userTicketService;
 
     /**
      * 사용자 닉네임 조회 api
@@ -74,17 +73,5 @@ public class UserController {
 
         return ResponseDto.ok(myPointDto);
     }
-    /**
-     * 사용자가 참여한 행사 목록 api
-     */
-    @GetMapping("/events/participate")
-    public ResponseDto<?> showParticipatedEvents(
-        @UserId Long userId,
-        @RequestParam(value = "page", defaultValue = "1") Integer page,
-        @RequestParam(value = "size", defaultValue = "10") Integer size
-    ) {
-        ParticipatedEventsDto participatedEventsDto = userTicketService.showParticipatedEvents(userId, page - 1, size);
 
-        return ResponseDto.ok(participatedEventsDto);
-    }
 }

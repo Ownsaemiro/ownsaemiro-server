@@ -21,8 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 
-import static ch.qos.logback.classic.spi.ThrowableProxyVO.build;
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
