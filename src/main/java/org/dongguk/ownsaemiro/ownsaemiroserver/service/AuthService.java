@@ -1,6 +1,5 @@
 package org.dongguk.ownsaemiro.ownsaemiroserver.service;
 
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dongguk.ownsaemiro.ownsaemiroserver.constants.Constants;
@@ -17,7 +16,6 @@ import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.ERole;
 import org.dongguk.ownsaemiro.ownsaemiroserver.repository.UserImageRepository;
 import org.dongguk.ownsaemiro.ownsaemiroserver.repository.UserRepository;
 import org.dongguk.ownsaemiro.ownsaemiroserver.repository.UserWalletRepository;
-import org.dongguk.ownsaemiro.ownsaemiroserver.security.info.AuthenticationResponse;
 import org.dongguk.ownsaemiro.ownsaemiroserver.util.AuthUtil;
 import org.dongguk.ownsaemiro.ownsaemiroserver.util.JwtUtil;
 import org.dongguk.ownsaemiro.ownsaemiroserver.util.RestClientUtil;
@@ -27,8 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.Map;
-import java.util.UUID;
 
 @Slf4j
 @Service
@@ -99,13 +95,15 @@ public class AuthService {
      * oauth 회원가입 및 로그인
      */
     @Transactional
-    public JwtTokenDto signUpOauth(OauthSignUpDto oauthSignUpDto) throws IOException {
+    public JwtTokenDto signUpOauth(OauthSignUpDto oauthSignUpDto){
         // 사용자 확인 -> 있으면 반환, 없으면 사용자 & 사용자 지갑 생성 후 반환
         User user = userRepository.findBySerialId(oauthSignUpDto.serialId())
                         .orElseGet(() -> {
                             User newUser = userRepository.save(User.signUp(
                                     oauthSignUpDto,
                                     passwordEncoder.encode(AuthUtil.makePassword()),
+                                    //passwordEncoder.encode(oauthSignUpDto.fcmToken()), -> fcm token encoding 시, null 들어오면 500 에러 발생해서 일단 raw한 값으로 저장
+                                    oauthSignUpDto.fcmToken(),
                                     EProvider.toEnum(oauthSignUpDto.provider()),
                                     ERole.USER
                             ));
