@@ -169,8 +169,9 @@ public class UserTicketService {
                             .eventId(event.getId())
                             .image(image)
                             .name(event.getName())
-                            .duration(event.getDuration())
-                            .address(event.getAddress())
+                            .activatedAt(DateUtil.convertDate(userTicket.getTicket().getActivatedAt()))
+                            .boughtAt(DateUtil.convertDate(userTicket.getBoughtAt()))
+                            .orderId(userTicket.getOrderId())
                             .build();
                 }).toList();
 
