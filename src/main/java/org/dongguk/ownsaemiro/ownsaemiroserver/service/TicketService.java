@@ -179,6 +179,11 @@ public class TicketService {
             throw new CommonException(ErrorCode.INVALID_ASSIGN_TICKET);
         }
 
+        // 같은 티켓에 같은 사용자가 두 번 이상 양도 신청 불가능 -> 예외처리
+        if (userAssignTicketRepository.existsByUserAndTicket(user, ticket)){
+            throw new CommonException(ErrorCode.INVALID_APPLY_ASSIGN_TWICE);
+        }
+
         userAssignTicketRepository.save(
                 UserAssignTicket.builder()
                         .user(user)
