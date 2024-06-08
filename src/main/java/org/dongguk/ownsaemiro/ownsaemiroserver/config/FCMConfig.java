@@ -19,7 +19,7 @@ public class FCMConfig {
     @PostConstruct
     public void init() {
         try {
-            InputStream aboutFirebaseFile = new ClassPathResource("firebase.json").getInputStream();
+            InputStream aboutFirebaseFile = new ClassPathResource("ownsaemiro-fcm.json").getInputStream();
             FirebaseOptions options = FirebaseOptions
                     .builder()
                     .setCredentials(GoogleCredentials.fromStream(aboutFirebaseFile))

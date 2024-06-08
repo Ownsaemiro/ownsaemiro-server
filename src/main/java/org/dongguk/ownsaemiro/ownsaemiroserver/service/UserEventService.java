@@ -7,7 +7,6 @@ import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.BuyingTicketDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.WriteReviewOfEvent;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.*;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.blockchain.BlockChainResponse;
-import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.EEventStatus;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.ETicketStatus;
 import org.dongguk.ownsaemiro.ownsaemiroserver.exception.CommonException;
 import org.dongguk.ownsaemiro.ownsaemiroserver.exception.ErrorCode;
