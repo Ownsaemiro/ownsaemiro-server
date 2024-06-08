@@ -123,7 +123,6 @@ public class AdminService {
                     .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_EVENT));
             // 이벤트 승인완료 처리
             event.changeApproved(Boolean.TRUE);
-            event.changeStatus(EEventStatus.SELLING);
 
             // 스포츠와 콘서트의 경우에는 AI 모델을 통한 티켓 예상 판매수 받아오기
             Integer seat = event.getSeat();
