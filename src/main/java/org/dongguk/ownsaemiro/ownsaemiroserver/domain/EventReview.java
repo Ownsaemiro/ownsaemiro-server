@@ -20,8 +20,6 @@ public class EventReview {
     private Long id;
 
     /*  행사 리뷰 속성  */
-    @Column(name = "title", nullable = false, length = 100)
-    private String title;
 
     @Column(name = "content", nullable = false, length = 3000)
     private String content;
@@ -38,18 +36,16 @@ public class EventReview {
     @JoinColumn(name = "event_id", nullable = false)
     private Event event;
     @Builder
-    public EventReview(String title, String content, User user, Event event) {
-        this.title = title;
+    public EventReview(String content, User user, Event event) {
         this.content = content;
         this.createdAt = LocalDate.now();
         this.user = user;
         this.event = event;
     }
 
-    public static EventReview create(User user, Event event, WriteReviewOfEvent writeReviewOfEvent){
+    public static EventReview create(User user, Event event, String content){
         return EventReview.builder()
-                .title(writeReviewOfEvent.title())
-                .content(writeReviewOfEvent.content())
+                .content(content)
                 .user(user)
                 .event(event)
                 .build();
