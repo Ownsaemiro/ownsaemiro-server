@@ -7,6 +7,7 @@ import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.test.CreateTicketDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.DetailOfTicketDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.MyTicketsDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.MyTicketsWaitingDto;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.TicketIdDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.service.TicketService;
 import org.dongguk.ownsaemiro.ownsaemiroserver.service.UserTicketService;
 import org.springframework.web.bind.annotation.*;
@@ -45,9 +46,9 @@ public class TicketController {
     /**
      * 사용자 공연 예매 취소 및 양도하기
      */
-    @PatchMapping("{ticketId}")
-    public ResponseDto<?> cancelMyTicket(@UserId Long userId, @PathVariable Long ticketId){
-        userTicketService.cancelMyTicket(userId, ticketId);
+    @PatchMapping
+    public ResponseDto<?> cancelMyTicket(@UserId Long userId, @RequestBody TicketIdDto ticketIdDto){
+        userTicketService.cancelMyTicket(userId, ticketIdDto.ticketId());
 
         return ResponseDto.ok(null);
     }
