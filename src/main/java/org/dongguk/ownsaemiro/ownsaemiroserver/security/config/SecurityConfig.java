@@ -45,11 +45,9 @@ public class SecurityConfig {
                         request
                                 .requestMatchers("/login").permitAll()
                                 .requestMatchers(Constants.NO_NEED_AUTH.toArray(String[]::new)).permitAll()
-                                //.requestMatchers(Constants.NEED_USER_ROLE.toArray(String[]::new)).hasRole("USER")
+                                .requestMatchers(Constants.NEED_USER_ROLE.toArray(String[]::new)).hasRole("USER")
                                 .requestMatchers(Constants.NEED_SELLER_ROLE.toArray(String[]::new)).hasRole("SELLER")
                                 .requestMatchers(Constants.NEED_ADMIN_ROLE.toArray(String[]::new)).hasRole("ADMIN")
-                                //.requestMatchers("/api/admin/**").hasRole("ADMIN")
-                                //.requestMatchers("/api/users/**").hasAnyRole("USER", "ADMIN")
                                 .anyRequest().authenticated()
                 )
                 .formLogin(login -> login
