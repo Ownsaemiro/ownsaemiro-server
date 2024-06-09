@@ -130,6 +130,7 @@ public class AdminService {
             } else if (event.getCategory().equals(ECategory.CONCERT)) {
                 seat = (Integer) restClientUtil.sendRequestToPredictConcert(Constants.createConcertRequest()).getAsNumber("ticket");
             }
+            seat = (seat > 100) ? 100 : seat;
 
             // 이벤트 관련 블록체인 정보 업데이트
             BlockChainResponse response = restClientUtil.sendRequestToPublishTickets(seat);

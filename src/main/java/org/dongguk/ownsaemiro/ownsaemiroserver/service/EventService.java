@@ -69,6 +69,9 @@ public class EventService {
     public PopularEventsDto showPopularEvents(){
 
         List<Event> events = eventRepository.findPopularEvents();
+        if (events.size() < 3) {
+            events = eventRepository.findTop3ByRandomOrder();
+        }
 
         List<PopularEventDto> popularEventsDto = events.stream()
                 .map(event -> {
