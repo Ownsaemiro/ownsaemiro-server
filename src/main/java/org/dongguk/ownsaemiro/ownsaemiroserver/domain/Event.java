@@ -6,9 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.ECategory;
-import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.EEventRequestStatus;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.EEventStatus;
-import org.springframework.transaction.annotation.Transactional;
 
 @Entity
 @Getter
@@ -22,7 +20,7 @@ public class Event {
 
     /*  행사 정보 속성  */
 
-    @Column(name = "name", nullable = false, length = 30)
+    @Column(name = "name", nullable = false, length = 100)
     private String name;
 
     @Column(name = "description", nullable = false, length = 3000)

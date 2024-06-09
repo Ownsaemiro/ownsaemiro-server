@@ -7,7 +7,6 @@ import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.OauthSignUpDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.EProvider;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.ERole;
 import org.hibernate.annotations.DynamicUpdate;
-import org.springframework.transaction.annotation.Transactional;
 
 @Entity
 @Getter
