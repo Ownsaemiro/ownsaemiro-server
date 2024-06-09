@@ -40,6 +40,9 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "order by count(ul.id) desc limit 3")
     List<Event> findPopularEvents();
 
+    @Query("select e from Event e where e.isApproved = true order by rand() limit 3")
+    List<Event> findTop3ByRandomOrder();
+
     @Query("select e from Event e where e.isApproved = true order by rand() limit 5")
     List<Event> findTop5ByRandomOrder();
 
