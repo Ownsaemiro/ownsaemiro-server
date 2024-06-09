@@ -214,6 +214,7 @@ public class TicketService {
                             .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_IMAGE));
 
                     return MyTicketWaitingDto.builder()
+                            .ticketId(userAssignTicket.getTicket().getId())
                             .name(event.getName())
                             .image(image)
                             .status(userAssignTicket.getStatus().getStatus())
