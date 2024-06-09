@@ -5,6 +5,8 @@ import lombok.Builder;
 
 @Builder
 public record MyTicketWaitingDto(
+        @JsonProperty("id")
+        Long ticketId,
         @JsonProperty("image")
         String image,
 

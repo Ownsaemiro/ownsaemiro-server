@@ -50,11 +50,11 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     //                         사용자 api 관련 쿼리                          //
     /* ================================================================= */
     Optional<Event> findByIdAndIsApproved(Long id, Boolean isApproved);
-    @Query("select e from Event e where e.status = :status and e.isApproved = true")
-    Page<Event> findAllByStatus(EEventStatus status, Pageable pageable);
+    @Query("select e from Event e where e.isApproved = true")
+    Page<Event> findAllWithPaging(Pageable pageable);
 
-    @Query("select e from Event e where e.category = :category and e.status = :status and e.isApproved = true")
-    Page<Event> findAllByStatusAndCategory(EEventStatus status, ECategory category, Pageable pageable);
+    @Query("select e from Event e where e.category = :category and  e.isApproved = true")
+    Page<Event> findAllByCategory(ECategory category, Pageable pageable);
 
     @Query(value = "select * from events e where e.is_approved = true and match(e.name, e.description) against(:name in boolean mode)", nativeQuery = true)
     Page<Event> searchAllByName(@Param("name") String name, Pageable pageable);
