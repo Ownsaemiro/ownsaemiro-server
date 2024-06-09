@@ -54,7 +54,7 @@ public class RestClientUtil {
         JSONObject requestBody = new JSONObject(request);
 
         Map<String, String> response = Objects.requireNonNull(restClient.post()
-                .uri(sportUrl)
+                .uri(concertUrl)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(requestBody.toJSONString())
                 .retrieve()

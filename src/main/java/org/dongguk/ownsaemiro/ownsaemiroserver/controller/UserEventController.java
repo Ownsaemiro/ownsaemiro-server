@@ -6,10 +6,7 @@ import org.dongguk.ownsaemiro.ownsaemiroserver.dto.global.ResponseDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.BuyingTicketDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.LikeEventDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.WriteReviewOfEvent;
-import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.LikedEventDto;
-import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.ParticipatedEventsDto;
-import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.UnlikedEventDto;
-import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.UserLikedEventsDto;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.*;
 import org.dongguk.ownsaemiro.ownsaemiroserver.service.UserEventService;
 import org.dongguk.ownsaemiro.ownsaemiroserver.service.UserTicketService;
 import org.springframework.web.bind.annotation.*;
@@ -68,6 +65,16 @@ public class UserEventController {
 
         return ResponseDto.ok(null);
 
+    }
+
+    /**
+     * 양도 수령하기
+     */
+    @PatchMapping("/purchasing")
+    public ResponseDto<?> purchasingAssignTicket(@UserId Long userId, @RequestBody TicketIdDto ticketIdDto){
+        userEventService.purchasingAssignTicket(userId, ticketIdDto);
+
+        return ResponseDto.ok(null);
     }
 
     /**

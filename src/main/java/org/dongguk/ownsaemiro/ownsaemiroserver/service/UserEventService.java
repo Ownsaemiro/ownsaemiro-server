@@ -7,6 +7,7 @@ import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.BuyingTicketDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.WriteReviewOfEvent;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.*;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.blockchain.BlockChainResponse;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.EAssignStatus;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.ETicketStatus;
 import org.dongguk.ownsaemiro.ownsaemiroserver.exception.CommonException;
 import org.dongguk.ownsaemiro.ownsaemiroserver.exception.ErrorCode;
@@ -36,7 +37,9 @@ public class UserEventService {
     private final EventReviewRepository eventReviewRepository;
     private final TicketHistoryRepository ticketHistoryRepository;
     private final UserLikedEventRepository userLikedEventRepository;
+    private final UserAssignTicketRepository userAssignTicketRepository;
     private final UserWalletHistoryRepository userWalletHistoryRepository;
+
 
     /* ================================================================= */
     //                           사용자 행사 api                            //
@@ -229,6 +232,71 @@ public class UserEventService {
                         .build()
         );
 
+    }
+
+    /**
+     * 양도 신청 성공한 티켓 사용자가 구매하기
+     */
+    @Transactional
+    public void purchasingAssignTicket(Long userId, TicketIdDto ticketIdDto) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
+
+        Ticket ticket = ticketRepository.findById(ticketIdDto.ticketId())
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_TICKET));
+
+        UserAssignTicket userAssignTicket = userAssignTicketRepository.findByUserAndTicket(user, ticket)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_ASSIGN_TICKET));
+
+        // 당첨되지 않은 티켓 -> 예외 처리
+        if (!userAssignTicket.getStatus().equals(EAssignStatus.SUCCESS)) {
+            throw new CommonException(ErrorCode.INVALID_ASSIGN_TICKET);
+        }
+
+        UserWallet userWallet = userWalletRepository.findById(user.getId())
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_WALLET));
+
+        // 행사 객체 가져오기
+        Event event = ticket.getEvent();
+
+        // 사용자 포인트 충분한지 확인 -> 예외처리
+        if (userWallet.getPoint() < event.getPrice()){
+            throw new CommonException(ErrorCode.NOT_ENOUGH_POINT);
+        }
+
+        // 사용자 구매 티켓 저장
+        userTicketRepository.save(
+                UserTicket.builder()
+                        .user(user)
+                        .ticket(ticket)
+                        .boughtAt(LocalDate.now())
+                        .orderId(AuthUtil.makeOrderId())
+                        .build()
+        );
+
+        // 사용자 지갑 포인트 차감
+        userWallet.pay(event.getPrice());
+
+        // 티켓의 상태 변경 and 티켓 입장 날짜 지정
+        ticket.changeStatus(ETicketStatus.OCCUPIED);
+
+        // 사용자 지갑 이력 저장
+        userWalletHistoryRepository.save(
+                UserWalletHistory.builder()
+                        .amount(-1 * event.getPrice())
+                        .userWallet(userWallet)
+                        .createdAt(LocalDate.now())
+                        .build()
+        );
+
+        // 티켓 구매 이력 저장
+        ticketHistoryRepository.save(
+                TicketHistory.builder()
+                        .ticket(ticket)
+                        .status(ETicketStatus.OCCUPIED)
+                        .createdAt(LocalDate.now())
+                        .build()
+        );
     }
 
     /**

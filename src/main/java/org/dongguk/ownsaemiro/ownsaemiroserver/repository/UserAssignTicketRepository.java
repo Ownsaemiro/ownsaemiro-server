@@ -9,10 +9,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserAssignTicketRepository extends JpaRepository<UserAssignTicket, Long> {
 
     Boolean existsByUserAndTicket(User user, Ticket ticket);
+
+    Optional<UserAssignTicket> findByUserAndTicket(User user, Ticket ticket);
 
     @Query(value = "SELECT ut.* FROM ( " +
             "    SELECT " +
@@ -26,8 +29,6 @@ public interface UserAssignTicketRepository extends JpaRepository<UserAssignTick
             "WHERE " +
             "    rn = 1", nativeQuery = true)
     List<UserAssignTicket> findRandomUserAssignTicket();
-
-
 
     @Query("select ut from UserAssignTicket ut where ut.status = org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.EAssignStatus.WAITING")
     List<UserAssignTicket> findFailToAssignTicket();
