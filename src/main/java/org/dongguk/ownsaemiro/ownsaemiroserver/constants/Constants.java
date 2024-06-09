@@ -47,8 +47,32 @@ public class Constants {
     public static List<String> NEED_USER_ROLE = List.of(
             "/api/events",
             "/api/events/search",
-            "/api/events/{eventId}/like",
-            "/api/events/likes"
+            "/api/events/likes",
+            "/api/events/popular",
+            "/api/events/recommends",
+            "/api/events/{eventId}/remain",
+            "/api/events/{eventId}/info",
+            "/api/events/{eventId}/brief",
+            "/api/events/{eventId}/top-review",
+            "/api/events/{eventId}/seller",
+            "/api/events/{eventId}/reviews",
+            "/api/events/like",
+            "/api/events/{eventId}/likes",
+            "/api/events/{eventId}",
+            "/api/assignments/tickets",
+            "/api/assignment/tickets/{ticketId}",
+            "/api/users/nickname",
+            "/api/users/profile-image",
+            "/api/users/wallets",
+            "/api/users",
+            "/api/users/events/likes",
+            "/api/tickets/purchasing",
+            "/api/tickets/purchasing/{ticketId}",
+            "/api/tickets",
+            "/api/tickets/{ticketId}",
+            "/api/users/events/participate",
+            "/api/tickets/assignment"
+
     );
 
     public static List<String> NEED_SELLER_ROLE = List.of(
