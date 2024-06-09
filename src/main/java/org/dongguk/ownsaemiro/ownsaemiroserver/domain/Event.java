@@ -22,7 +22,7 @@ public class Event {
 
     /*  행사 정보 속성  */
 
-    @Column(name = "name", nullable = false, length = 30)
+    @Column(name = "name", nullable = false, length = 100)
     private String name;
 
     @Column(name = "description", nullable = false, length = 3000)
