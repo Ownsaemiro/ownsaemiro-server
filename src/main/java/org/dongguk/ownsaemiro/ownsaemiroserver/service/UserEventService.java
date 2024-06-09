@@ -297,6 +297,9 @@ public class UserEventService {
                         .createdAt(LocalDate.now())
                         .build()
         );
+
+        // 사용자 양도 대기 목록에서 삭제
+        userAssignTicketRepository.delete(userAssignTicket);
     }
 
     /**
