@@ -126,17 +126,16 @@ public class EventService {
     /**
      * 사용자 행사 목록 조회
      */
-    public EventsDto showEvents(String strStatus, String strCategory, Integer page, Integer size){
+    public EventsDto showEvents(String strCategory, Integer page, Integer size){
         ECategory category = ECategory.filterCondition(strCategory);
-        EEventStatus status = EEventStatus.toEnum(strStatus);
 
         Page<Event> events;
         if (Constants.ALL.equals(strCategory)) {
             // 전체 검색
-            events = eventRepository.findAllByStatus(status, PageRequest.of(page, size));
+            events = eventRepository.findAllWithPaging(PageRequest.of(page, size));
         } else if (category != null) {
             // 카테고리별 검색
-            events = eventRepository.findAllByStatusAndCategory(status, category, PageRequest.of(page, size));
+            events = eventRepository.findAllByCategory(category, PageRequest.of(page, size));
         } else {
             // 잘못된 인자값
             throw new CommonException(ErrorCode.INVALID_PARAMETER_FORMAT);

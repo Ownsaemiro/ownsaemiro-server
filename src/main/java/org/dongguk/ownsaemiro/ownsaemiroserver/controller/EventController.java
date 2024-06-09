@@ -32,12 +32,11 @@ public class EventController {
      */
     @GetMapping
     public ResponseDto<?> showEvents(
-            @RequestParam("status") String status,
-            @RequestParam("filter") String process,
+            @RequestParam(value = "filter", required = false) String process,
             @RequestParam(value = "page", defaultValue = "1") Integer page,
             @RequestParam(value = "size", defaultValue = "10") Integer size
     ) {
-        EventsDto eventsDto = eventService.showEvents(status, process, page-1, size);
+        EventsDto eventsDto = eventService.showEvents(process, page-1, size);
 
         return ResponseDto.ok(eventsDto);
     }
