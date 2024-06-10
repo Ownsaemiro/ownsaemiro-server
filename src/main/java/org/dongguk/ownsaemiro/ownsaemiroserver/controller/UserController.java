@@ -3,7 +3,6 @@ package org.dongguk.ownsaemiro.ownsaemiroserver.controller;
 import lombok.RequiredArgsConstructor;
 import org.dongguk.ownsaemiro.ownsaemiroserver.annotation.UserId;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.global.ResponseDto;
-import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.UpdateNicknameDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.*;
 import org.dongguk.ownsaemiro.ownsaemiroserver.service.NotificationService;
 import org.dongguk.ownsaemiro.ownsaemiroserver.service.UserService;
@@ -46,9 +45,9 @@ public class UserController {
     public ResponseDto<?> updateProfile(
             @UserId Long userId,
             @RequestPart(value = "image", required = false) MultipartFile image,
-            @RequestPart("message") UpdateNicknameDto updateNicknameDto) throws IOException {
+            @RequestPart("nickname") String newNickname) throws IOException {
 
-        UserProfileDto userProfileDto = userService.updateProfile(userId, image, updateNicknameDto);
+        UserProfileDto userProfileDto = userService.updateProfile(userId, image, newNickname);
 
         return ResponseDto.ok(userProfileDto);
     }
