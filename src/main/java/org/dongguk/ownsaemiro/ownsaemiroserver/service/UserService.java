@@ -133,4 +133,15 @@ public class UserService {
                 .profileImage(userImageUrl)
                 .build();
     }
+
+    /**
+     * 사용자 FCM Token 저장
+     */
+    @Transactional
+    public void saveFCMToken(Long userId, FCMTokenDto fcmTokenDto){
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
+
+        user.saveFCMToken(fcmTokenDto.fcmToken());
+    }
 }

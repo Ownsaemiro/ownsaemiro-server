@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.dongguk.ownsaemiro.ownsaemiroserver.annotation.UserId;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.global.ResponseDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.UpdateNicknameDto;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.FCMTokenDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.MyPointDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.ParticipatedEventsDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.UserProfileDto;
@@ -74,4 +75,13 @@ public class UserController {
         return ResponseDto.ok(myPointDto);
     }
 
+    /**
+     * 사용자 FCM Token 저장하기
+     */
+    @PutMapping("/fcm-token")
+    public ResponseDto<?> saveFCMTokenOfUser(@UserId Long userId, @RequestBody FCMTokenDto fcmTokenDto){
+        userService.saveFCMToken(userId, fcmTokenDto);
+
+        return ResponseDto.ok(null);
+    }
 }

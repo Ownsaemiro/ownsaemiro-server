@@ -108,4 +108,8 @@ public class User {
         this.isBanned = Boolean.TRUE;
         return true;
     }
+
+    public void saveFCMToken(String fcmToken){
+        this.fcmToken = fcmToken;
+    }
 }
