@@ -40,10 +40,11 @@ public class TicketService {
     /**
      * 양도 대기 목록에서 랜덤하게 하나씩 뽑아서 양도 받는 사람을 결정
      */
-    public void assignTickets(){
+    public Boolean assignTickets(){
         List<UserAssignTicket> randomUserAssignTicket = userAssignTicketRepository.findRandomUserAssignTicket();
         if (randomUserAssignTicket.size() == 0){
             log.info("양도가 가능한 티켓이 없습니다.");
+            return Boolean.FALSE;
         } else {
             log.info("양도가 가능한 티켓이 존재합니다.");
             sendMessage(
@@ -53,6 +54,7 @@ public class TicketService {
                     Boolean.TRUE
             );
             log.info("양도 완료");
+            return Boolean.TRUE;
         }
     }
 
@@ -79,6 +81,7 @@ public class TicketService {
                 userAssignTicket.updateStatus(EAssignStatus.SUCCESS);
             else
                 userAssignTicket.updateStatus(EAssignStatus.FAIL);
+
 
             String name = userAssignTicket.getTicket().getEvent().getName();
 
