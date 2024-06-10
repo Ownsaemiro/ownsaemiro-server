@@ -102,8 +102,6 @@ public class AuthService {
                             User newUser = userRepository.save(User.signUp(
                                     oauthSignUpDto,
                                     passwordEncoder.encode(AuthUtil.makePassword()),
-                                    //passwordEncoder.encode(oauthSignUpDto.fcmToken()), -> fcm token encoding 시, null 들어오면 500 에러 발생해서 일단 raw한 값으로 저장
-                                    oauthSignUpDto.fcmToken(),
                                     EProvider.toEnum(oauthSignUpDto.provider()),
                                     ERole.USER
                             ));

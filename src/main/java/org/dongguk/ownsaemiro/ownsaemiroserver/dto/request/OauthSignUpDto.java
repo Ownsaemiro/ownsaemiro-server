@@ -9,9 +9,6 @@ public record OauthSignUpDto(
         @JsonProperty("device_id")
         String deviceId,
 
-        @JsonProperty("fcm_token")
-        String fcmToken,
-
         @JsonProperty("name")
         String name,
 
