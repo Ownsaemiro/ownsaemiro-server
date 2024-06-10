@@ -101,9 +101,9 @@ public class UserController {
     /**
      * 사용자 알림 삭제하기(사용자 읽음)
      */
-    @DeleteMapping("/notifications")
-    public ResponseDto<?> deleteNotification(@RequestBody NotificationIdDto notificationIdDto){
-        notificationService.deleteNotification(notificationIdDto);
+    @DeleteMapping("/notifications/{notificationId}")
+    public ResponseDto<?> deleteNotification(@PathVariable Long notificationId){
+        notificationService.deleteNotification(notificationId);
 
         return ResponseDto.ok(null);
     }
