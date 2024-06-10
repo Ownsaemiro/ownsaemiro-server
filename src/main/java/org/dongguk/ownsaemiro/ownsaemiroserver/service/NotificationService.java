@@ -4,7 +4,6 @@ package org.dongguk.ownsaemiro.ownsaemiroserver.service;
 import lombok.RequiredArgsConstructor;
 import org.dongguk.ownsaemiro.ownsaemiroserver.domain.Notification;
 import org.dongguk.ownsaemiro.ownsaemiroserver.domain.User;
-import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.NotificationIdDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.NotificationDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.NotificationsDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.PageInfo;
@@ -56,8 +55,8 @@ public class NotificationService {
      * 사용자 알림 삭제 (사용자 알림 읽음처리)
      */
     @Transactional
-    public void deleteNotification(NotificationIdDto notificationIdDto){
-        Notification notification = notificationRepository.findById(notificationIdDto.notificationId())
+    public void deleteNotification(Long notificationId){
+        Notification notification = notificationRepository.findById(notificationId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_NOTIFICATION));
 
         notificationRepository.delete(notification);

@@ -3,12 +3,10 @@ package org.dongguk.ownsaemiro.ownsaemiroserver.controller;
 import lombok.RequiredArgsConstructor;
 import org.dongguk.ownsaemiro.ownsaemiroserver.annotation.UserId;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.global.ResponseDto;
-import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.NotificationIdDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.UpdateNicknameDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.*;
 import org.dongguk.ownsaemiro.ownsaemiroserver.service.NotificationService;
 import org.dongguk.ownsaemiro.ownsaemiroserver.service.UserService;
-import org.dongguk.ownsaemiro.ownsaemiroserver.service.UserTicketService;
 import org.dongguk.ownsaemiro.ownsaemiroserver.service.UserWalletService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -101,9 +99,9 @@ public class UserController {
     /**
      * 사용자 알림 삭제하기(사용자 읽음)
      */
-    @DeleteMapping("/notifications")
-    public ResponseDto<?> deleteNotification(@RequestBody NotificationIdDto notificationIdDto){
-        notificationService.deleteNotification(notificationIdDto);
+    @DeleteMapping("/notifications/{notificationId}")
+    public ResponseDto<?> deleteNotification(@PathVariable Long notificationId){
+        notificationService.deleteNotification(notificationId);
 
         return ResponseDto.ok(null);
     }

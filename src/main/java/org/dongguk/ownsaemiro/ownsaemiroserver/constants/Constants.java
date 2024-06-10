@@ -73,7 +73,9 @@ public class Constants {
             "/api/tickets/{ticketId}",
             "/api/users/events/participate",
             "/api/tickets/assignment",
-            "/api/users/fcm-token"
+            "/api/users/fcm-token",
+            "/api/users/notifications",
+            "/api/users/notifications/{notificationId}"
 
     );
 
