@@ -7,7 +7,6 @@ import org.dongguk.ownsaemiro.ownsaemiroserver.domain.Image;
 import org.dongguk.ownsaemiro.ownsaemiroserver.domain.User;
 import org.dongguk.ownsaemiro.ownsaemiroserver.domain.UserImage;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.BanInfo;
-import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.UpdateNicknameDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.*;
 import org.dongguk.ownsaemiro.ownsaemiroserver.exception.CommonException;
 import org.dongguk.ownsaemiro.ownsaemiroserver.exception.ErrorCode;
