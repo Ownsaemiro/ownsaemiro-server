@@ -4,7 +4,6 @@ package org.dongguk.ownsaemiro.ownsaemiroserver.service;
 import lombok.RequiredArgsConstructor;
 import org.dongguk.ownsaemiro.ownsaemiroserver.domain.Notification;
 import org.dongguk.ownsaemiro.ownsaemiroserver.domain.User;
-import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.NotificationIdDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.NotificationDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.NotificationsDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.PageInfo;
