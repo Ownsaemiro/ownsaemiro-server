@@ -40,70 +40,71 @@ public class TicketService {
     /**
      * 양도 대기 목록에서 랜덤하게 하나씩 뽑아서 양도 받는 사람을 결정
      */
-    @Transactional
-    public Boolean assignTickets(){
+    public void assignTickets(){
         List<UserAssignTicket> randomUserAssignTicket = userAssignTicketRepository.findRandomUserAssignTicket();
         if (randomUserAssignTicket.size() == 0){
             log.info("양도가 가능한 티켓이 없습니다.");
-            return Boolean.FALSE;
         } else {
             log.info("양도가 가능한 티켓이 존재합니다.");
-            randomUserAssignTicket.forEach(userAssignTicket -> {
-                // 양도 성공 상태로 변경
-                userAssignTicket.updateStatus(EAssignStatus.SUCCESS);
-
-                String name = userAssignTicket.getTicket().getEvent().getName();
-
-                // 사용자에게 양도 성공 알림 보내기
-                fcmService.sendNotification(
-                        userAssignTicket.getUser().getFcmToken(),
-                        Constants.ASSIGN_TICKET_COMPLETE_TITLE,
-                         name + Constants.ASSIGN_TICKET_COMPLETE_CONTENT
-                );
-
-                // 알림 객체 저장하기
-                notificationRepository.save(
-                        Notification.builder()
-                                .user(userAssignTicket.getUser())
-                                .title(Constants.ASSIGN_TICKET_COMPLETE_TITLE)
-                                .content(name + Constants.ASSIGN_TICKET_COMPLETE_CONTENT)
-                                .build()
-                );
-            });
+            sendMessage(
+                    randomUserAssignTicket,
+                    Constants.ASSIGN_TICKET_COMPLETE_TITLE,
+                    Constants.ASSIGN_TICKET_COMPLETE_CONTENT,
+                    Boolean.TRUE
+            );
             log.info("양도 완료");
-            return Boolean.TRUE;
         }
     }
 
     /**
      * 양도에 실패한 userAssignTicket 상태 변경
      */
-    @Transactional
     public void failToAssignTicket(){
-        userAssignTicketRepository.findFailToAssignTicket()
-                .forEach(userAssignTicket -> {
-                    // 양도 실패로 상태 변경
-                    userAssignTicket.updateStatus(EAssignStatus.FAIL);
-
-                    String name = userAssignTicket.getTicket().getEvent().getName();
-
-                    // 양도 실패에 대한 알림 발송
-                    fcmService.sendNotification(
-                            userAssignTicket.getUser().getFcmToken(),
-                            Constants.ASSIGN_TICKET_FAIL_TITLE,
-                            name + Constants.ASSIGN_TICKET_FAIL_CONTENT
-                    );
-
-                    // 알림 객체 저장하기
-                    notificationRepository.save(
-                            Notification.builder()
-                                    .user(userAssignTicket.getUser())
-                                    .title(Constants.ASSIGN_TICKET_FAIL_TITLE)
-                                    .content(name + Constants.ASSIGN_TICKET_FAIL_CONTENT)
-                                    .build()
-                    );
-                });
+        sendMessage(
+                userAssignTicketRepository.findFailToAssignTicket(),
+                Constants.ASSIGN_TICKET_FAIL_TITLE,
+                Constants.ASSIGN_TICKET_FAIL_CONTENT,
+                Boolean.FALSE
+        );
     }
+
+    /**
+     * FCM 알림 전송, 알림 객체 저장 로직
+     */
+    @Transactional
+    public void sendMessage(List<UserAssignTicket> userAssignTickets, String title, String content, Boolean success){
+        userAssignTickets.forEach(userAssignTicket -> {
+            // 양도 성공 상태로 변경
+            if (success)
+                userAssignTicket.updateStatus(EAssignStatus.SUCCESS);
+            else
+                userAssignTicket.updateStatus(EAssignStatus.FAIL);
+
+            String name = userAssignTicket.getTicket().getEvent().getName();
+
+            // 사용자에게 양도 성공 알림 보내기
+            try {
+                fcmService.sendNotification(
+                        userAssignTicket.getUser().getFcmToken(),
+                        title,
+                        name + content
+                );
+            } catch (Exception e) {
+                log.error("알림 전송에 실패했습니다 회원 닉네임: {}", userAssignTicket.getUser().getNickname());
+            }
+
+            // 알림 객체 저장하기
+            notificationRepository.save(
+                    Notification.builder()
+                            .user(userAssignTicket.getUser())
+                            .title(title)
+                            .content(name + content)
+                            .build()
+            );
+        });
+    }
+
+
 
     /* ================================================================= */
     //                           사용자 양도 api                            //

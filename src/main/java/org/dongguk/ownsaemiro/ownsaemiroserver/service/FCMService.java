@@ -43,7 +43,8 @@ public class FCMService {
             log.info("Successfully sent message: {}", response);
         } catch (Exception e) {
             e.printStackTrace();
-            throw new CommonException(ErrorCode.FCM_FAIL);
+            log.info("fail to sent message");
+            //throw new CommonException(ErrorCode.FCM_FAIL);
         }
     }
 }

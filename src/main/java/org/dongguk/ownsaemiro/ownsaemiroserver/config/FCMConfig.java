@@ -7,14 +7,15 @@ import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.dongguk.ownsaemiro.ownsaemiroserver.exception.CommonException;
 import org.dongguk.ownsaemiro.ownsaemiroserver.exception.ErrorCode;
-import org.springframework.beans.factory.annotation.Configurable;
+
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 
 import java.io.IOException;
 import java.io.InputStream;
 
 @Slf4j
-@Configurable
+@Configuration
 public class FCMConfig {
     @PostConstruct
     public void init() {
