@@ -89,7 +89,7 @@ public class UserService {
     }
 
     @Transactional
-    public UserProfileDto updateProfile(Long userId, MultipartFile newImage, UpdateNicknameDto updateNicknameDto) throws IOException {
+    public UserProfileDto updateProfile(Long userId, MultipartFile newImage, String newNickname) throws IOException {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
 
@@ -107,7 +107,7 @@ public class UserService {
         }
 
         // 닉네임 변경하기
-        String nickname = user.updateNickname(updateNicknameDto.nickname());
+        String nickname = user.updateNickname(newNickname);
 
         // 사용자 이미지 경로 가져오기
         String userImageUrl = userImageRepository.findByUser(user)
