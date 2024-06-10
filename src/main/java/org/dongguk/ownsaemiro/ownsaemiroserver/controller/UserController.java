@@ -3,10 +3,10 @@ package org.dongguk.ownsaemiro.ownsaemiroserver.controller;
 import lombok.RequiredArgsConstructor;
 import org.dongguk.ownsaemiro.ownsaemiroserver.annotation.UserId;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.global.ResponseDto;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.NotificationIdDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.UpdateNicknameDto;
-import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.MyPointDto;
-import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.ParticipatedEventsDto;
-import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.UserProfileDto;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.*;
+import org.dongguk.ownsaemiro.ownsaemiroserver.service.NotificationService;
 import org.dongguk.ownsaemiro.ownsaemiroserver.service.UserService;
 import org.dongguk.ownsaemiro.ownsaemiroserver.service.UserTicketService;
 import org.dongguk.ownsaemiro.ownsaemiroserver.service.UserWalletService;
@@ -21,6 +21,7 @@ import java.io.IOException;
 public class UserController {
     private final UserService userService;
     private final UserWalletService userWalletService;
+    private final NotificationService notificationService;
 
     /**
      * 사용자 닉네임 조회 api
@@ -74,4 +75,36 @@ public class UserController {
         return ResponseDto.ok(myPointDto);
     }
 
+    /**
+     * 사용자 FCM Token 저장하기
+     */
+    @PutMapping("/fcm-token")
+    public ResponseDto<?> saveFCMTokenOfUser(@UserId Long userId, @RequestBody FCMTokenDto fcmTokenDto){
+        userService.saveFCMToken(userId, fcmTokenDto);
+
+        return ResponseDto.ok(null);
+    }
+
+    /**
+     * 사용자 알림 목록 조회하기
+     */
+    @GetMapping("/notifications")
+    public ResponseDto<?> showNotificationsOfUser(
+            @UserId Long userId,
+            @RequestParam(value = "page", defaultValue = "1") Integer page,
+            @RequestParam(value = "size", defaultValue = "10") Integer size){
+        NotificationsDto notificationsDto = notificationService.showNotificationsOfUser(userId, page-1, size);
+
+        return ResponseDto.ok(notificationsDto);
+    }
+
+    /**
+     * 사용자 알림 삭제하기(사용자 읽음)
+     */
+    @DeleteMapping("/notifications")
+    public ResponseDto<?> deleteNotification(@RequestBody NotificationIdDto notificationIdDto){
+        notificationService.deleteNotification(notificationIdDto);
+
+        return ResponseDto.ok(null);
+    }
 }

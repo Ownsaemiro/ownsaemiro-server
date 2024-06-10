@@ -56,10 +56,9 @@ public class User {
     private Boolean isBanned;
 
     @Builder
-    public User(String serialId, String deviceId, String password, String fcmToken, ERole role, EProvider provider) {
+    public User(String serialId, String deviceId, String password, ERole role, EProvider provider) {
         this.serialId = serialId;
         this.deviceId = deviceId;
-        this.fcmToken = fcmToken;
         this.password = password;
         this.role = role;
         this.provider = provider;
@@ -78,11 +77,10 @@ public class User {
     }
 
     // oauth 회원가입: 사용자 생성
-    public static User signUp(OauthSignUpDto oauthSignUpDto, String encodedPassword, String encodedFCMToken, EProvider provider, ERole role){
+    public static User signUp(OauthSignUpDto oauthSignUpDto, String encodedPassword, EProvider provider, ERole role){
         User newUser = User.builder()
                 .serialId(oauthSignUpDto.serialId())
                 .deviceId(oauthSignUpDto.deviceId())
-                .fcmToken(encodedFCMToken)
                 .password(encodedPassword)
                 .provider(provider)
                 .role(role)
@@ -109,5 +107,9 @@ public class User {
     public Boolean ban(){
         this.isBanned = Boolean.TRUE;
         return true;
+    }
+
+    public void saveFCMToken(String fcmToken){
+        this.fcmToken = fcmToken;
     }
 }

@@ -30,8 +30,9 @@ public class Constants {
     public static String STR_SPORT_TEAM_PARSER = " VS ";
     public static String ASSIGN_TICKET_COMPLETE_TITLE = "티켓 양도 성공!";
     public static String ASSIGN_TICKET_FAIL_TITLE = "티켓 양도 실패";
-    public static String ASSIGN_TICKET_COMPLETE_CONTENT = "신청한 양도에 대해 당첨되셨습니다!, 구매내역에서 구매를 마무리해주세요~";
-    public static String ASSIGN_TICKET_FAIL_CONTENT = "티켓 양도에 실패하셨습니다.. 다음 기회를 노려주세요!";
+    public static String ASSIGN_TICKET_COMPLETE_CONTENT = "양도에 대해 당첨되셨습니다!, 구매내역에서 구매를 마무리해주세요~";
+    public static String ASSIGN_TICKET_FAIL_CONTENT = "양도에 실패하셨습니다.. 다음 기회를 노려주세요!";
+    public static String NOTIFICATION_DEFAULT_SOUND = "default";
 
 
     public static List<String> NO_NEED_AUTH = List.of(
@@ -71,7 +72,8 @@ public class Constants {
             "/api/tickets",
             "/api/tickets/{ticketId}",
             "/api/users/events/participate",
-            "/api/tickets/assignment"
+            "/api/tickets/assignment",
+            "/api/users/fcm-token"
 
     );
 
