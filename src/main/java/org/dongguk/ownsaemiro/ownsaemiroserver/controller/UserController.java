@@ -4,10 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.dongguk.ownsaemiro.ownsaemiroserver.annotation.UserId;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.global.ResponseDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.UpdateNicknameDto;
-import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.FCMTokenDto;
-import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.MyPointDto;
-import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.ParticipatedEventsDto;
-import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.UserProfileDto;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.*;
+import org.dongguk.ownsaemiro.ownsaemiroserver.service.NotificationService;
 import org.dongguk.ownsaemiro.ownsaemiroserver.service.UserService;
 import org.dongguk.ownsaemiro.ownsaemiroserver.service.UserTicketService;
 import org.dongguk.ownsaemiro.ownsaemiroserver.service.UserWalletService;
@@ -22,6 +20,7 @@ import java.io.IOException;
 public class UserController {
     private final UserService userService;
     private final UserWalletService userWalletService;
+    private final NotificationService notificationService;
 
     /**
      * 사용자 닉네임 조회 api
@@ -83,5 +82,18 @@ public class UserController {
         userService.saveFCMToken(userId, fcmTokenDto);
 
         return ResponseDto.ok(null);
+    }
+
+    /**
+     * 사용자 알림 목록 조회하기
+     */
+    @GetMapping("/notifications")
+    public ResponseDto<?> showNotificationsOfUser(
+            @UserId Long userId,
+            @RequestParam(value = "page", defaultValue = "1") Integer page,
+            @RequestParam(value = "size", defaultValue = "10") Integer size){
+        NotificationsDto notificationsDto = notificationService.showNotificationsOfUser(userId, page-1, size);
+
+        return ResponseDto.ok(notificationsDto);
     }
 }

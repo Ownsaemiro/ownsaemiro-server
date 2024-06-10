@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @Table(name = "notifications")
@@ -24,6 +26,9 @@ public class Notification {
     @Column(name = "body")
     private String content;
 
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
     /*  연관 관계 속성  */
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -34,5 +39,6 @@ public class Notification {
         this.title = title;
         this.content = content;
         this.user = user;
+        this.createdAt = LocalDateTime.now();
     }
 }
