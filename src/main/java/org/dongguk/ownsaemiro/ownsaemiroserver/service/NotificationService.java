@@ -4,6 +4,7 @@ package org.dongguk.ownsaemiro.ownsaemiroserver.service;
 import lombok.RequiredArgsConstructor;
 import org.dongguk.ownsaemiro.ownsaemiroserver.domain.Notification;
 import org.dongguk.ownsaemiro.ownsaemiroserver.domain.User;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.NotificationIdDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.NotificationDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.NotificationsDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.PageInfo;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -24,6 +26,9 @@ public class NotificationService {
     private final UserRepository userRepository;
     private final NotificationRepository notificationRepository;
 
+    /**
+     * 사용자 알림 목록 조회
+     */
     public NotificationsDto showNotificationsOfUser(Long userId, Integer page, Integer size){
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
@@ -45,5 +50,16 @@ public class NotificationService {
                 .pageInfo(PageInfo.convert(notifications, page))
                 .notificationsDto(notificationsDto)
                 .build();
+    }
+
+    /**
+     * 사용자 알림 삭제 (사용자 알림 읽음처리)
+     */
+    @Transactional
+    public void deleteNotification(NotificationIdDto notificationIdDto){
+        Notification notification = notificationRepository.findById(notificationIdDto.notificationId())
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_NOTIFICATION));
+
+        notificationRepository.delete(notification);
     }
 }

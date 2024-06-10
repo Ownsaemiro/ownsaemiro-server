@@ -3,6 +3,7 @@ package org.dongguk.ownsaemiro.ownsaemiroserver.controller;
 import lombok.RequiredArgsConstructor;
 import org.dongguk.ownsaemiro.ownsaemiroserver.annotation.UserId;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.global.ResponseDto;
+import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.NotificationIdDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.request.UpdateNicknameDto;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.response.*;
 import org.dongguk.ownsaemiro.ownsaemiroserver.service.NotificationService;
@@ -95,5 +96,15 @@ public class UserController {
         NotificationsDto notificationsDto = notificationService.showNotificationsOfUser(userId, page-1, size);
 
         return ResponseDto.ok(notificationsDto);
+    }
+
+    /**
+     * 사용자 알림 삭제하기(사용자 읽음)
+     */
+    @DeleteMapping("/notifications")
+    public ResponseDto<?> deleteNotification(@RequestBody NotificationIdDto notificationIdDto){
+        notificationService.deleteNotification(notificationIdDto);
+
+        return ResponseDto.ok(null);
     }
 }
