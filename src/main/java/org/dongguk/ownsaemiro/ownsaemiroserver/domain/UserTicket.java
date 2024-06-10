@@ -6,11 +6,13 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.EUserTicketStatus;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.time.LocalDate;
 
 @Entity
 @Getter
+@DynamicUpdate
 @Table(name = "user_tickets")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 
