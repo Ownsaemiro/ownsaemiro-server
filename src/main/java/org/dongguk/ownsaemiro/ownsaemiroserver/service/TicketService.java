@@ -25,10 +25,11 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class TicketService {
-//    private final FCMService fcmService;
+    private final FCMService fcmService;
     private final UserRepository userRepository;
     private final TicketRepository ticketRepository;
     private final EventImageRepository eventImageRepository;
+    private final NotificationRepository notificationRepository;
     private final UserLikedEventRepository userLikedEventRepository;
     private final UserAssignTicketRepository userAssignTicketRepository;
 
@@ -51,12 +52,23 @@ public class TicketService {
                 // 양도 성공 상태로 변경
                 userAssignTicket.updateStatus(EAssignStatus.SUCCESS);
 
-//                // 사용자에게 양도 성공 알림 보내기
-//                fcmService.sendNotification(
-//                        userAssignTicket.getUser().getFcmToken(),
-//                        Constants.ASSIGN_TICKET_COMPLETE_TITLE,
-//                        Constants.ASSIGN_TICKET_COMPLETE_CONTENT
-//                );
+                String name = userAssignTicket.getTicket().getEvent().getName();
+
+                // 사용자에게 양도 성공 알림 보내기
+                fcmService.sendNotification(
+                        userAssignTicket.getUser().getFcmToken(),
+                        Constants.ASSIGN_TICKET_COMPLETE_TITLE,
+                         name + Constants.ASSIGN_TICKET_COMPLETE_CONTENT
+                );
+
+                // 알림 객체 저장하기
+                notificationRepository.save(
+                        Notification.builder()
+                                .user(userAssignTicket.getUser())
+                                .title(Constants.ASSIGN_TICKET_COMPLETE_TITLE)
+                                .content(name + Constants.ASSIGN_TICKET_COMPLETE_CONTENT)
+                                .build()
+                );
             });
             log.info("양도 완료");
             return Boolean.TRUE;
@@ -73,12 +85,23 @@ public class TicketService {
                     // 양도 실패로 상태 변경
                     userAssignTicket.updateStatus(EAssignStatus.FAIL);
 
-//                    // 양도 실패에 대한 알림 발송
-//                    fcmService.sendNotification(
-//                            userAssignTicket.getUser().getFcmToken(),
-//                            Constants.ASSIGN_TICKET_FAIL_TITLE,
-//                            Constants.ASSIGN_TICKET_FAIL_CONTENT
-//                    );
+                    String name = userAssignTicket.getTicket().getEvent().getName();
+
+                    // 양도 실패에 대한 알림 발송
+                    fcmService.sendNotification(
+                            userAssignTicket.getUser().getFcmToken(),
+                            Constants.ASSIGN_TICKET_FAIL_TITLE,
+                            name + Constants.ASSIGN_TICKET_FAIL_CONTENT
+                    );
+
+                    // 알림 객체 저장하기
+                    notificationRepository.save(
+                            Notification.builder()
+                                    .user(userAssignTicket.getUser())
+                                    .title(Constants.ASSIGN_TICKET_FAIL_TITLE)
+                                    .content(name + Constants.ASSIGN_TICKET_FAIL_CONTENT)
+                                    .build()
+                    );
                 });
     }
 

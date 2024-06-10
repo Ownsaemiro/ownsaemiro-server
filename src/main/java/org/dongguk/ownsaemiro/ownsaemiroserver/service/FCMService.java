@@ -1,9 +1,8 @@
 package org.dongguk.ownsaemiro.ownsaemiroserver.service;
 
-import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.Message;
-import com.google.firebase.messaging.Notification;
+import com.google.firebase.messaging.*;
 import lombok.extern.slf4j.Slf4j;
+import org.dongguk.ownsaemiro.ownsaemiroserver.constants.Constants;
 import org.dongguk.ownsaemiro.ownsaemiroserver.exception.CommonException;
 import org.dongguk.ownsaemiro.ownsaemiroserver.exception.ErrorCode;
 import org.springframework.stereotype.Service;
@@ -16,9 +15,27 @@ public class FCMService {
                 .setBody(body)
                 .build();
 
+        AndroidConfig androidConfig = AndroidConfig.builder()
+                .setNotification(AndroidNotification.builder()
+                        .setSound(Constants.NOTIFICATION_DEFAULT_SOUND)
+                        .build())
+                .build();
+
+        ApnsConfig apnsConfig = ApnsConfig.builder()
+                .setAps(Aps.builder()
+                        .setAlert(ApsAlert.builder()
+                                .setTitle(title)
+                                .setBody(body)
+                                .build())
+                        .setSound(Constants.NOTIFICATION_DEFAULT_SOUND)
+                        .build())
+                .build();
+
         Message message = Message.builder()
                 .setToken(token)
                 .setNotification(notification)
+                .setAndroidConfig(androidConfig)
+                .setApnsConfig(apnsConfig)
                 .build();
 
         try {
