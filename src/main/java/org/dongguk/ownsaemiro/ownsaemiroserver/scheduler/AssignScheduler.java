@@ -10,11 +10,10 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class AssignScheduler {
     private final TicketService ticketService;
-    @Scheduled(cron = "0 0 * * * *")
+    @Scheduled(cron = "0 */5 * * * *")
     public void assignTickets(){
-        if (ticketService.assignTickets()){
-            ticketService.failToAssignTicket();
-            log.info("상태 변경 완료");
-        }
+        ticketService.assignTickets();
+        ticketService.failToAssignTicket();
+        log.info("상태 변경 완료");
     }
 }
