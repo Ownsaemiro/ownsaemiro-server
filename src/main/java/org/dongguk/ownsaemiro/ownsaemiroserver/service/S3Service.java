@@ -35,7 +35,7 @@ public class S3Service {
     @Transactional
     public Boolean readyForUpload(Object object, MultipartFile image) {
         if (image.isEmpty()) {
-            throw new CommonException(ErrorCode.INVALID_IMAGE);
+            return Boolean.FALSE;
         }
 
         Optional<Image> optionalOldImage = getOldImage(object);
