@@ -45,7 +45,7 @@ public class UserController {
     @PatchMapping
     public ResponseDto<?> updateProfile(
             @UserId Long userId,
-            @RequestPart("image") MultipartFile image,
+            @RequestPart(value = "image", required = false) MultipartFile image,
             @RequestPart("message") UpdateNicknameDto updateNicknameDto) throws IOException {
 
         UserProfileDto userProfileDto = userService.updateProfile(userId, image, updateNicknameDto);

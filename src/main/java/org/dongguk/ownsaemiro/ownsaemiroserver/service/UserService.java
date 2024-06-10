@@ -94,7 +94,7 @@ public class UserService {
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
 
         // 이미지를 변경 해야 하는 경우
-        if (!newImage.isEmpty() && s3Service.readyForUpload(user, newImage)){
+        if (newImage != null && s3Service.readyForUpload(user, newImage)){
             String url = s3Service.uploadToS3(user, newImage);
             userImageRepository.save(
                     UserImage.builder()
