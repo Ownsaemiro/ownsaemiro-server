@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -40,13 +41,14 @@ public class TicketService {
     /**
      * 양도 대기 목록에서 랜덤하게 하나씩 뽑아서 양도 받는 사람을 결정
      */
+    @Transactional
     public Boolean assignTickets(){
         List<UserAssignTicket> randomUserAssignTicket = userAssignTicketRepository.findRandomUserAssignTicket();
         if (randomUserAssignTicket.size() == 0){
             log.info("양도가 가능한 티켓이 없습니다.");
             return Boolean.FALSE;
         } else {
-            log.info("양도가 가능한 티켓이 존재합니다.");
+            log.info("양도가 가능한 티켓이 존재합니다. {}", randomUserAssignTicket.size());
             sendMessage(
                     randomUserAssignTicket,
                     Constants.ASSIGN_TICKET_COMPLETE_TITLE,
@@ -61,6 +63,7 @@ public class TicketService {
     /**
      * 양도에 실패한 userAssignTicket 상태 변경
      */
+    @Transactional
     public void failToAssignTicket(){
         sendMessage(
                 userAssignTicketRepository.findFailToAssignTicket(),
@@ -75,6 +78,11 @@ public class TicketService {
      */
     @Transactional
     public void sendMessage(List<UserAssignTicket> userAssignTickets, String title, String content, Boolean success){
+        if (!success)
+            log.info("양도 실패 FCM messaging, size = {}", userAssignTickets.size());
+        else
+            log.info("양도 성공 FCM messaging, size = {}", userAssignTickets.size());
+
         userAssignTickets.forEach(userAssignTicket -> {
             // 양도 성공 상태로 변경
             if (success)
@@ -92,6 +100,10 @@ public class TicketService {
                         title,
                         name + content
                 );
+                if (success)
+                    log.info("양도 성공 FCM 전송 완료");
+                else
+                    log.info("양도 실패 FCM 전송 완료");
             } catch (Exception e) {
                 log.error("알림 전송에 실패했습니다 회원 닉네임: {}", userAssignTicket.getUser().getNickname());
             }
@@ -207,15 +219,15 @@ public class TicketService {
         }
 
         // 같은 티켓에 같은 사용자가 두 번 이상 양도 신청 불가능 -> 예외처리
-        if (userAssignTicketRepository.existsByUserAndTicket(user, ticket)){
+        Optional<UserAssignTicket> optionalAssignTicket = userAssignTicketRepository.findByUserAndTicket(user, ticket);
+        if (optionalAssignTicket.isPresent() && optionalAssignTicket.get().getStatus().equals(EAssignStatus.WAITING))
             throw new CommonException(ErrorCode.INVALID_APPLY_ASSIGN_TWICE);
-        }
+
 
         userAssignTicketRepository.save(
                 UserAssignTicket.builder()
                         .user(user)
                         .ticket(ticket)
-                        .createdAt(LocalDate.now())
                         .build()
         );
     }
