@@ -27,14 +27,16 @@ public interface UserAssignTicketRepository extends JpaRepository<UserAssignTick
             "    INNER JOIN " +
             "        tickets t ON ut.ticket_id = t.id " +
             "    WHERE " +
-            "        ut.state = 'WAITING' " +
+            "        ut.status = 'WAITING' AND t.status = 'TRANSFER' " +
             ") AS ut " +
             "WHERE " +
             "    rn = 1", nativeQuery = true)
     List<UserAssignTicket> findRandomUserAssignTicket();
 
 
+
     @Query("select ut from UserAssignTicket ut where ut.status = org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.EAssignStatus.WAITING")
     List<UserAssignTicket> findFailToAssignTicket();
+
     Page<UserAssignTicket> findAllByUser(User user, Pageable pageable);
 }
