@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.EAssignStatus;
 import org.hibernate.annotations.DynamicUpdate;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -22,7 +22,7 @@ public class UserAssignTicket {
     private Long id;
 
     @Column(name = "created_at", nullable = false)
-    private LocalDate createdAt;
+    private LocalDateTime createdAt;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
@@ -37,10 +37,10 @@ public class UserAssignTicket {
     private Ticket ticket;
 
     @Builder
-    public UserAssignTicket(User user, Ticket ticket, LocalDate createdAt) {
+    public UserAssignTicket(User user, Ticket ticket) {
         this.user = user;
         this.ticket = ticket;
-        this.createdAt = createdAt;
+        this.createdAt = LocalDateTime.now();
         this.status = EAssignStatus.WAITING;
     }
 

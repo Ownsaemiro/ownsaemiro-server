@@ -34,7 +34,9 @@ public interface UserAssignTicketRepository extends JpaRepository<UserAssignTick
     List<UserAssignTicket> findRandomUserAssignTicket();
 
 
+
     @Query("select ut from UserAssignTicket ut where ut.status = org.dongguk.ownsaemiro.ownsaemiroserver.dto.type.EAssignStatus.WAITING")
     List<UserAssignTicket> findFailToAssignTicket();
+
     Page<UserAssignTicket> findAllByUser(User user, Pageable pageable);
 }
