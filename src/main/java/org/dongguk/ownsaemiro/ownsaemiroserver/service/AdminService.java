@@ -126,14 +126,17 @@ public class AdminService {
             // 스포츠와 콘서트의 경우에는 AI 모델을 통한 티켓 예상 판매수 받아오기
             Integer seat = event.getSeat();
             if (event.getCategory().equals(ECategory.SPORT)){
-                seat = (Integer) restClientUtil.sendRequestToPredictSport(Constants.createSportsRequest(event.getName())).getAsNumber("spectator");
+                seat = (Integer) restClientUtil.sendRequestToPredictSport(
+                        Constants.createSportsRequest(event.getName())).getAsNumber("spectator");
             } else if (event.getCategory().equals(ECategory.CONCERT)) {
-                seat = (Integer) restClientUtil.sendRequestToPredictConcert(Constants.createConcertRequest()).getAsNumber("ticket");
+                seat = (Integer) restClientUtil.sendRequestToPredictConcert(
+                        Constants.createConcertRequest()).getAsNumber("ticket");
             }
-            seat = (seat > 100) ? 100 : seat;
+            log.info("AI 서버 통신 완료, AI 판단 기준 예상 좌석 판마수: {}", seat);
 
-            // 이벤트 관련 블록체인 정보 업데이트
             BlockChainResponse response = restClientUtil.sendRequestToPublishTickets(seat);
+            log.info("AI 판단 기준을 통한, 블록체인 발행 성공");
+
             if (!response.getSuccess()){
                 throw new CommonException(ErrorCode.EXTERNAL_SERVER_ERROR);
             } else {

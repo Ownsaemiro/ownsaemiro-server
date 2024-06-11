@@ -184,6 +184,7 @@ public class UserTicketService {
     /**
      * 티켓 검증하기
      */
+    @Transactional
     public void validateTicket(ValidateTicketDto validateTicketDto){
         User user = userRepository.findById(validateTicketDto.userId())
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
@@ -198,6 +199,11 @@ public class UserTicketService {
         if (!userTicket.getUser().getDeviceId().equals(validateTicketDto.deviceId())
          || !userTicket.getTicket().getEvent().getEventHash().equals(validateTicketDto.eventHash())) {
             throw new CommonException(ErrorCode.INVALID_TICKET_OWNER);
+        }
+
+        // 티켓 사용날짜가 오늘이 아닌 경우 -> 입장 불가
+        if (!userTicket.getTicket().getActivatedAt().equals(LocalDate.now())){
+            throw new CommonException(ErrorCode.INVALID_TICKET);
         }
 
         // 이미 입장한 사용권 -> 입장 불가

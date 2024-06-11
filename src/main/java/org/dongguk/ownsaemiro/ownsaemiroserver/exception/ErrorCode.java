@@ -23,6 +23,7 @@ public enum ErrorCode {
     INVALID_TICKET_OWNER(40012, HttpStatus.BAD_REQUEST, "일치하지 않는 사용자입니디. 입장이 불가능합니다."),
     INVALID_APPLY_ASSIGN_TWICE(40013, HttpStatus.BAD_REQUEST, "같은 티켓에 두번 이상 신청할 수 없습니다."),
     ALREADY_USED_TICKET(40014, HttpStatus.BAD_REQUEST, "이미 사용한 티켓입니다."),
+    INVALID_TICKET(40015, HttpStatus.BAD_REQUEST, "티켓 사용 날짜가 아닙니다."),
 
     //401
     INVALID_HEADER_VALUE(40100, HttpStatus.UNAUTHORIZED, "올바르지 않은 헤더값입니다."),
