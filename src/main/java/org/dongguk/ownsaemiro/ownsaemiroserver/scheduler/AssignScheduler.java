@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AssignScheduler {
     private final TicketService ticketService;
     @Transactional
-    @Scheduled(cron = "0 0 */1 * * *")
+    @Scheduled(cron = "0 0 * * * *")
     public void assignTickets(){
         if (ticketService.assignTickets()){
             ticketService.failToAssignTicket();
